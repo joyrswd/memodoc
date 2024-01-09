@@ -35,7 +35,7 @@ article ||--|{ article_x_memo : ""
 | 列名       | データ型     | 制約           | 説明         |
 |------------|--------------|----------------|--------------|
 | id         | INT          | PK             | ユーザーID   |
-| username   | VARCHAR(255) | NOT NULL       | ユーザー名（半角英数字_-のみ）   |
+| name       | VARCHAR(255) | NOT NULL       | ユーザー名（半角英数字_-のみ）   |
 | password   | VARCHAR(255) | NOT NULL       | パスワード   |
 | created_at | timestamp    | DEFAULT current_timestamp   | 作成日時     |
 | updated_at | timestamp    | DEFAULT NULL   | 更新日時     |
