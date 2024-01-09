@@ -1,5 +1,5 @@
 ## クラス相関図
-```Mermaid
+```mermaid
 graph TB
     Route
     subgraph Middleware
