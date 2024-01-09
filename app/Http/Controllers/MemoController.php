@@ -2,10 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Memo;
+use App\Services\MemoService;
+use App\Http\Requests\MemoRequest;
 
 class MemoController extends Controller
 {
+    /**
+     * @var MemoService
+     */
+    private $memoService;
+    
+    /**
+     * @param MemoService $memoService
+     */
+    public function __construct(MemoService $memoService)
+    {
+        $this->memoService = $memoService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -19,15 +34,21 @@ class MemoController extends Controller
      */
     public function create()
     {
+        return view('memo.create');
         //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(MemoRequest $request)
     {
-        //
+        $this->memoService->addMemoAndTags([
+            'content' => $request->input('memo.add.content'),
+            'user_id' => $request->user()->id,
+            'tags' => $request->input('tags'),
+        ]);
+        return back()->with('success', __('stored'));
     }
 
     /**
@@ -49,7 +70,7 @@ class MemoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(MemoRequest $request, string $id)
     {
         //
     }
