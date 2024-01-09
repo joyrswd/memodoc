@@ -1,5 +1,5 @@
 ## ER図
-```Mermaid
+```mermaid
 erDiagram
 
 user {
