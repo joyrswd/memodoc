@@ -20,4 +20,4 @@ Route::get('/',function(){return view('login.index');})->name('home');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::resource('memo', MemoController::class);
+Route::middleware('auth')->resource('memo', MemoController::class);

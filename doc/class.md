@@ -122,7 +122,7 @@ graph TB
 #### MemoRequest
 - memo.add.content
     - 文字数チェック（x方式140文字）
-- memo.find.name
+- memo.find.content
     - 文字数チェック（100）
 - memo.find.created_at
     - 日付チェック

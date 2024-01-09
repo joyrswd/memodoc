@@ -103,7 +103,7 @@ return [
         'array' => '『:attribute』 field must have at least :min items.',
         'file' => '『:attribute』 field must be at least :min kilobytes.',
         'numeric' => '『:attribute』 field must be at least :min.',
-        'string' => '『:attribute』 は:max文字以上を入力してください。',
+        'string' => '『:attribute』 は:min文字以上を入力してください。',
     ],
     'min_digits' => '『:attribute』 field must have at least :min digits.',
     'missing' => '『:attribute』 field must be missing.',
@@ -131,7 +131,7 @@ return [
     'prohibited_if' => '『:attribute』 field is prohibited when :other is :value.',
     'prohibited_unless' => '『:attribute』 field is prohibited unless :other is in :values.',
     'prohibits' => '『:attribute』 field prohibits :other from being present.',
-    'regex' => '『:attribute』 field format is invalid.',
+    'regex' => '『:attribute』に不正な文字が含まれています。',
     'required' => '『:attribute』は必須項目です。',
     'required_array_keys' => '『:attribute』 field must contain entries for: :values.',
     'required_if' => '『:attribute』 field is required when :other is :value.',
@@ -189,6 +189,10 @@ return [
     'attributes' => [
         'name' => 'ユーザーID',
         'password' => 'パスワード',
+        'tag' => 'タグ',
+        'memo' => [
+            'content' => 'メモ'
+        ]
     ],
 
 ];
