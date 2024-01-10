@@ -21,7 +21,7 @@
         <label for="name" class="form-label">{{__('validation.attributes.name')}}</label>
         <input type="name" class="form-control" id="name" name="name" value="{{ old('name')}}" required autofocus>
         @error('name')
-        <p class="invalid-feedback">{{ $message }}</p>
+        <span class="invalid-feedback">{{ $message }}</span>
         @enderror
     </div>
 
@@ -29,7 +29,7 @@
         <label for="password" class="form-label">{{__('validation.attributes.password')}}</label>
         <input type="password" class="form-control" id="password" name="password" required>
         @error('password')
-        <p class="invalid-feedback">{{ $message }}</p>
+        <span class="invalid-feedback">{{ $message }}</span>
         @enderror
     </div>
 
@@ -38,7 +38,7 @@
         <label class="form-check-label" for="remember">ログイン情報を記憶する</label>
     </div>
     <div class="mt-3 col-lg-6 mx-auto">
-        <p class="d-grid gap-3"><button type="submit" class="btn btn-primary">ログイン</button></p>
+        <span class="d-grid gap-3"><button type="submit" class="btn btn-primary">ログイン</button></span>
     </div>
 </form>
 @endauth

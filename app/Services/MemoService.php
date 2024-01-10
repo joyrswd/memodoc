@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Repositories\MemoRepository;
 use App\Repositories\TagRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class MemoService
 {
@@ -37,5 +38,13 @@ class MemoService
                 $this->tagRepository->store($tag, $memoId);
             }
         }
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function getMemos(int $userId, array $data): LengthAwarePaginator
+    {
+        return $this->memoRepository->findByUserId($userId, $data)->paginate(10);
     }
 }

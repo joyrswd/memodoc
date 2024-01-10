@@ -7,6 +7,19 @@ use Illuminate\Foundation\Http\FormRequest;
 class MemoRequest extends FormRequest
 {
     /**
+     * @var array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    private $_rules = [
+        'memo.index' => [
+            'memo_content' => 'nullable|min:2|max:100',
+            'memo_from' => 'nullable|date|before_or_equal:today|exclude_if:memo_to,null|before_or_equal:memo_to',
+            'memo_to' => 'nullable|date|before_or_equal:today|exclude_if:memo_from,null|after_or_equal:memo_from',
+        ],
+        'memo.store' => [
+            'memo_content' => 'required|min:5',
+        ],
+    ];
+    /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
@@ -21,11 +34,10 @@ class MemoRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'memo.add.content' => 'required|min:5',
+        return array_merge($this->_rules[$this->route()->getName()], [
             'tags' => 'nullable|array',
-            'tags.*' => 'string|min:2|max:20|regex:/^[^ -\\/:-@\[-~]+$/',
-        ];
+            'tags.*' => 'string|min:2|max:20|regex:/^[^!-\\/:-@[-`{-~]+$/',
+        ]);
     }
 
     /**
@@ -36,8 +48,6 @@ class MemoRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'memo.add.content' => __('validation.attributes.memo.content'),
-            'memo.add.tags' => __('validation.attributes.tag'),
             'tags.*' => __('validation.attributes.tag'),
         ];
     }
@@ -47,7 +57,7 @@ class MemoRequest extends FormRequest
      */
     protected function prepareForValidation() : void
     {
-        $tags = $this->input('memo.add.tags');
+        $tags = $this->input('memo_tags');
         if ($tags) {
             $tagsArray = explode(' ', str_replace('　', ' ', $tags));
             $this->merge(['tags' => array_values(array_filter($tagsArray))]);

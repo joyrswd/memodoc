@@ -16,15 +16,15 @@ return [
     'accepted' => '『:attribute』 field must be accepted.',
     'accepted_if' => '『:attribute』 field must be accepted when :other is :value.',
     'active_url' => '『:attribute』 field must be a valid URL.',
-    'after' => '『:attribute』 field must be a date after :date.',
-    'after_or_equal' => '『:attribute』 field must be a date after or equal to :date.',
+    'after' => '『:attribute』は『:date』より後の日付を入力してください。',
+    'after_or_equal' => '『:attribute』は『:date』以降の日付を入力してください。',
     'alpha' => '『:attribute』 field must only contain letters.',
     'alpha_dash' => '『:attribute』は半角英数字と-(ダッシュ)と_(アンダースコア)のみ入力できます。',
     'alpha_num' => '『:attribute』 field must only contain letters and numbers.',
     'array' => '『:attribute』 field must be an array.',
     'ascii' => '『:attribute』 field must only contain single-byte alphanumeric characters and symbols.',
-    'before' => '『:attribute』 field must be a date before :date.',
-    'before_or_equal' => '『:attribute』 field must be a date before or equal to :date.',
+    'before' => '『:attribute』は『:date』より前の日付を入力してください。',
+    'before_or_equal' => '『:attribute』は『:date』以前の日付を入力してください。',
     'between' => [
         'array' => '『:attribute』 field must have between :min and :max items.',
         'file' => '『:attribute』 field must be between :min and :max kilobytes.',
@@ -35,7 +35,7 @@ return [
     'can' => '『:attribute』 field contains an unauthorized value.',
     'confirmed' => '『:attribute』 field confirmation does not match.',
     'current_password' => 'The password is incorrect.',
-    'date' => '『:attribute』 field must be a valid date.',
+    'date' => '『:attribute』はYYYY-MM-DDの形式で入力してください。',
     'date_equals' => '『:attribute』 field must be a date equal to :date.',
     'date_format' => '『:attribute』 field must match the format :format.',
     'decimal' => '『:attribute』 field must have :decimal decimal places.',
@@ -190,9 +190,17 @@ return [
         'name' => 'ユーザーID',
         'password' => 'パスワード',
         'tag' => 'タグ',
-        'memo' => [
-            'content' => 'メモ'
-        ]
+        'memo_content' => 'メモ',
+        'memo_from' => '日付(開始)',
+        'memo_to' => '日付(終了)',
+    ],
+    'values' => [
+        'memo_from' => [
+            'today' => '今日',
+        ],
+        'memo_to' => [
+            'today' => '今日',
+        ],
     ],
 
 ];
