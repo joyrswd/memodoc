@@ -28,7 +28,7 @@ class MemoController extends Controller
     public function index(MemoRequest $request)
     {
         return view('memo.index', [
-            'page' => $this->memoService->getMemos($request->user()->id, [
+            'page' => $this->memoService->getMemos(auth()->user()->id, [
                 'content' => $request->input('memo_content'),
                 'tags' => $request->input('tags'),
                 'from' => $request->input('memo_from'),
@@ -53,8 +53,8 @@ class MemoController extends Controller
     public function store(MemoRequest $request)
     {
         $this->memoService->addMemoAndTags([
+            'user_id' => auth()->user()->id,
             'content' => $request->input('memo_content'),
-            'user_id' => $request->user()->id,
             'tags' => $request->input('tags'),
         ]);
         return back()->with('success', __('stored'));
@@ -73,6 +73,9 @@ class MemoController extends Controller
      */
     public function edit(string $id)
     {
+        return view('memo.edit', [
+            'memo' => $this->memoService->getMemo(auth()->user()->id, $id),
+        ]);
         //
     }
 
@@ -81,7 +84,11 @@ class MemoController extends Controller
      */
     public function update(MemoRequest $request, string $id)
     {
-        //
+        $this->memoService->updateTags([
+            'memo_id' => $id,
+            'tags' => $request->input('tags'),
+        ]);
+        return back()->with('success', __('updated'));
     }
 
     /**
