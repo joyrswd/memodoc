@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Memo;
 use App\Services\MemoService;
 use App\Http\Requests\MemoRequest;
+use Illuminate\Http\Request;
 
 class MemoController extends Controller
 {
@@ -24,8 +25,16 @@ class MemoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(MemoRequest $request)
     {
+        return view('memo.index', [
+            'page' => $this->memoService->getMemos($request->user()->id, [
+                'content' => $request->input('memo_content'),
+                'tags' => $request->input('tags'),
+                'from' => $request->input('memo_from'),
+                'to' => $request->input('memo_to'),
+            ]),
+        ]);
         //
     }
 
@@ -44,7 +53,7 @@ class MemoController extends Controller
     public function store(MemoRequest $request)
     {
         $this->memoService->addMemoAndTags([
-            'content' => $request->input('memo.add.content'),
+            'content' => $request->input('memo_content'),
             'user_id' => $request->user()->id,
             'tags' => $request->input('tags'),
         ]);
