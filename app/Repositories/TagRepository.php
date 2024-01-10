@@ -7,6 +7,8 @@ class TagRepository
 {
     /**
      * @param string $string
+     * @param int|null $memoId
+     * @return int
      */
     public function store(string $string, int $memoId = null): int
     {
@@ -30,4 +32,16 @@ class TagRepository
     {
         return Tag::where('name', $string)->first();
     }
+
+    /**
+     * @param int $memoId
+     * @return array<string>
+     */
+    public function detachFromMemo(int $memoId): void
+    {
+        Tag::whereHas('memos', function ($query) use ($memoId) {
+            $query->where('memo_id', $memoId);
+        })->detach();
+    }
+    
 }

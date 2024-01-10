@@ -8,6 +8,7 @@ class MemoRepository
 {
     /**
      * @param array<string, mixed> $data
+     * @return int
      */
     public function store(array $data): int
     {
@@ -19,6 +20,9 @@ class MemoRepository
     }
 
     /**
+     * 
+     * @param int $userId
+     * @param array<string, mixed> $data
      * @return Builder<Memo>
      */
     public function findByUserId(int $userId, array $data): Builder
@@ -39,5 +43,27 @@ class MemoRepository
             });
         }
         return $query->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * 
+     * @param int $userId
+     * @param int $memoId
+     * @return array<string, mixed>
+     */
+    public function findByIdAndUserId(int $userId, int $memoId): array
+    {
+        $memo = Memo::whereUserId($userId)->whereId($memoId)->firstOrFail();
+        return array_merge($memo->toArray(), [
+            'tags' => $memo->tags->pluck('name')->toArray(),
+        ]);
+    }
+
+    /**
+     * @param int $memoId
+     */
+    public function detachTags(int $memoId): void
+    {
+        Memo::find($memoId)->tags()->detach();
     }
 }

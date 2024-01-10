@@ -41,6 +41,17 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
+    public function auth_error_memoId(): void
+    {
+        $memo = Memo::factory()->create();
+        $this->get(route('memo.edit', ['memo' => $memo->id]))->assertStatus(404);
+        $this->put(route('memo.update', ['memo' => $memo->id]))->assertStatus(404);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
     public function create(): void
     {
         $response = $this->get(route('memo.create'));
@@ -145,6 +156,8 @@ class MemoControllerTest extends TestCase
      */
     public function store(): void
     {
+        $memoId = Memo::factory()->create()->id + 1;
+        $tagId = Tag::factory()->create()->id + 1;
         $response = $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
@@ -161,12 +174,12 @@ class MemoControllerTest extends TestCase
             'name' => 'タグ2',
         ]);
         $this->assertDatabaseHas('memo_tag', [
-            'memo_id' => 1,
-            'tag_id' => 1,
+            'memo_id' => $memoId,
+            'tag_id' => $tagId,
         ]);
         $this->assertDatabaseHas('memo_tag', [
-            'memo_id' => 1,
-            'tag_id' => 2,
+            'memo_id' => $memoId,
+            'tag_id' => $tagId+1,
         ]);
 
         $response->assertRedirect(route('memo.create'));
@@ -206,7 +219,7 @@ class MemoControllerTest extends TestCase
         $memo = Memo::factory()->create([
             'user_id' => $this->user->id,
             'content' => 'メモの内容',
-        ]);        
+        ]);
         $response = $this->get(route('memo.index', [
             'memo_content' => 'メモの内容',
         ]));
@@ -420,5 +433,153 @@ class MemoControllerTest extends TestCase
                 ]),
             ]);
     }
-    
+
+    /**
+     * @test
+     * @return void
+     */
+    public function edit(): void
+    {
+        $memo = Memo::factory()->create([
+            'user_id' => $this->user->id,
+            'content' => 'メモの内容',
+        ]);
+        $response = $this->get(route('memo.edit', ['memo' => $memo->id]));
+        $response->assertStatus(200);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function edit_フォーム表示(): void
+    {
+        $memo = Memo::factory()->create([
+            'user_id' => $this->user->id,
+            'content' => 'メモの内容',
+        ]);
+        $response = $this->get(route('memo.edit', ['memo' => $memo->id]));
+        $response->assertSee('method="POST"', false)
+            ->assertSee('action="' . route('memo.update', ['memo' => $memo->id]) . '"', false)
+            ->assertSee('name="memo_tags"', false);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function edit_error_タグの最大文字数(): void
+    {
+        $max = 20;
+        $memo = Memo::factory()->create([
+            'user_id' => $this->user->id,
+            'content' => 'メモの内容',
+        ]);
+        $response = $this->from(route('memo.edit', ['memo' => $memo->id]))
+            ->put(route('memo.update', ['memo' => $memo->id]), [
+                'memo_tags' => str_repeat('あ', $max + 1),
+            ]);
+        $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]))
+            ->assertSessionHasErrors([
+                'tags.0' => __('validation.max.string', [
+                    'attribute' => __('validation.attributes.tag'),
+                    'max' => $max,
+                ]),
+            ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function edit_error_タグの最小文字数(): void
+    {
+        $min = 2;
+        $memo = Memo::factory()->create([
+            'user_id' => $this->user->id,
+            'content' => 'メモの内容',
+        ]);
+        $response = $this->from(route('memo.edit', ['memo' => $memo->id]))
+            ->put(route('memo.update', ['memo' => $memo->id]), [
+                'memo_tags' => str_repeat('あ', $min - 1),
+            ]);
+        $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]))
+            ->assertSessionHasErrors([
+                'tags.0' => __('validation.min.string', [
+                    'attribute' => __('validation.attributes.tag'),
+                    'min' => $min,
+                ]),
+            ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function edit_error_タグの不正文字(): void
+    {
+        $memo = Memo::factory()->create([
+            'user_id' => $this->user->id,
+            'content' => 'メモの内容',
+        ]);
+        $response = $this->from(route('memo.edit', ['memo' => $memo->id]))
+            ->put(route('memo.update', ['memo' => $memo->id]), [
+                'memo_tags' => '#!#$%',
+            ]);
+        $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]))
+            ->assertSessionHasErrors([
+                'tags.0' => __('validation.regex', [
+                    'attribute' => __('validation.attributes.tag'),
+                ]),
+            ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update(): void
+    {
+        $memo = Memo::factory()->create([
+            'user_id' => $this->user->id,
+            'content' => 'メモの内容',
+        ]);
+        $tag1 = Tag::factory()->create([
+            'name' => 'tag1',
+        ]);
+        $tag2 = Tag::factory()->create([
+            'name' => 'タグ2',
+        ]);
+        $memo->tags()->attach($tag1->id);
+        $memo->tags()->attach($tag2->id);
+
+        $response = $this->from(route('memo.edit', ['memo' => $memo->id]))
+            ->put(route('memo.update', ['memo' => $memo->id]), [
+                'memo_tags' => 'tag3 タグ4',
+            ]);
+        $this->assertDatabaseHas('tags', [
+            'name' => 'tag3',
+        ]);
+        $this->assertDatabaseHas('tags', [
+            'name' => 'タグ4',
+        ]);
+        $this->assertDatabaseHas('memo_tag', [
+            'memo_id' => $memo->id,
+            'tag_id' => $tag2->id+1,
+        ]);
+        $this->assertDatabaseHas('memo_tag', [
+            'memo_id' => $memo->id,
+            'tag_id' => $tag2->id+2,
+        ]);
+        $this->assertDatabaseMissing('memo_tag', [
+            'memo_id' => $memo->id,
+            'tag_id' => $tag1->id,
+        ]);
+        $this->assertDatabaseMissing('memo_tag', [
+            'memo_id' => $memo->id,
+            'tag_id' => $tag2->id,
+        ]);
+
+        $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]));
+    }
 }

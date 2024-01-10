@@ -18,6 +18,7 @@ class MemoRequest extends FormRequest
         'memo.store' => [
             'memo_content' => 'required|min:5',
         ],
+        'memo.update' => [],
     ];
     /**
      * Determine if the user is authorized to make this request.

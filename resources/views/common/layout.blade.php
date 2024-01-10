@@ -28,7 +28,7 @@
                                     <a class="nav-link{{request()->routeIs('memo.create')?' active':''}}"{{request()->routeIs('memo.create')?' aria-current="page"':''}} href="{{route('memo.create')}}">Write</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link{{request()->routeIs('memo.index')?' active':''}}"{{request()->routeIs('memo.index')?' aria-current="page"':''}}  href="{{route('memo.index')}}">Memo</a>
+                                    <a class="nav-link{{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' active':''}}"{{request()->routeIs('memo.index')?' aria-current="page"':''}}  href="{{route('memo.index')}}">Memo</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="#">Blog</a>
