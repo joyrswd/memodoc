@@ -13,6 +13,7 @@ class MemoControllerTest extends TestCase
 {
     use RefreshDatabase;
     private $user;
+    private $memo;
 
     /**
      * @return void
@@ -21,6 +22,7 @@ class MemoControllerTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
+        $this->memo = Memo::factory()->create();
         $this->actingAs($this->user);
     }
 
@@ -33,8 +35,11 @@ class MemoControllerTest extends TestCase
         $this->get(route('logout'));
         $this->assertGuest();
         $this->get(route('memo.create'))->assertRedirect(route('home'));
-        $this->get(route('memo.store'))->assertRedirect(route('home'));
+        $this->post(route('memo.store'))->assertRedirect(route('home'));
         $this->get(route('memo.index'))->assertRedirect(route('home'));
+        $this->get(route('memo.edit', ['memo' => $this->memo->id]))->assertRedirect(route('home'));
+        $this->put(route('memo.update', ['memo' => $this->memo->id]))->assertRedirect(route('home'));
+        $this->delete(route('memo.destroy', ['memo' => $this->memo->id]))->assertRedirect(route('home'));
     }
 
     /**
@@ -43,9 +48,8 @@ class MemoControllerTest extends TestCase
      */
     public function auth_error_memoId(): void
     {
-        $memo = Memo::factory()->create();
-        $this->get(route('memo.edit', ['memo' => $memo->id]))->assertStatus(404);
-        $this->put(route('memo.update', ['memo' => $memo->id]))->assertStatus(404);
+        $this->get(route('memo.edit', ['memo' => $this->memo->id]))->assertStatus(404);
+        $this->put(route('memo.update', ['memo' => $this->memo->id]))->assertStatus(404);
     }
 
     /**
@@ -179,7 +183,7 @@ class MemoControllerTest extends TestCase
         ]);
         $this->assertDatabaseHas('memo_tag', [
             'memo_id' => $memoId,
-            'tag_id' => $tagId+1,
+            'tag_id' => $tagId + 1,
         ]);
 
         $response->assertRedirect(route('memo.create'));
@@ -565,11 +569,11 @@ class MemoControllerTest extends TestCase
         ]);
         $this->assertDatabaseHas('memo_tag', [
             'memo_id' => $memo->id,
-            'tag_id' => $tag2->id+1,
+            'tag_id' => $tag2->id + 1,
         ]);
         $this->assertDatabaseHas('memo_tag', [
             'memo_id' => $memo->id,
-            'tag_id' => $tag2->id+2,
+            'tag_id' => $tag2->id + 2,
         ]);
         $this->assertDatabaseMissing('memo_tag', [
             'memo_id' => $memo->id,
@@ -582,4 +586,61 @@ class MemoControllerTest extends TestCase
 
         $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]));
     }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function destroy(): void
+    {
+        $memo = Memo::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+        $response = $this->from(route('memo.index'))
+            ->delete(route('memo.destroy', ['memo' => $memo->id]));
+        $this->assertSoftDeleted('memos', [
+            'id' => $memo->id,
+        ]);
+        $response->assertRedirect(route('memo.index'));
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function destroy_error_メモが存在しない(): void
+    {
+        $response = $this->from(route('memo.index'))
+            ->delete(route('memo.destroy', ['memo' => 0]));
+        $response->assertStatus(404);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function destroy_error_メモが他のユーザーのもの(): void
+    {
+        $memo = Memo::factory()->create();
+        $response = $this->from(route('memo.index'))
+            ->delete(route('memo.destroy', ['memo' => $memo->id]));
+        $response->assertStatus(404);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function destroy_error_メモが既に削除済み(): void
+    {
+        $memo = Memo::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+        $memo->delete();
+        $response = $this->from(route('memo.index'))
+            ->delete(route('memo.destroy', ['memo' => $memo->id]));
+        $response->assertStatus(404);
+    }
+
+
 }
