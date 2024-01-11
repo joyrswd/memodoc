@@ -74,4 +74,12 @@ class MemoService
             }
         }
     }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function deleteMemo(int $userId, int $memoId): void
+    {
+        $this->memoRepository->deleteByIdAndUserId($userId, $memoId);
+    }
 }
