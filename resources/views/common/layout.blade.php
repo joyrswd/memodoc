@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title')</title>
+    <title>@yield('title') - {{env('APP_NAME')}}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
@@ -17,7 +17,7 @@
                 </div>
                 <nav class="navbar navbar-expand-md navbar-dark fixed-bottom bg-dark">
                     <div class="container-fluid">
-                        <a class="navbar-brand" href="{{route('home')}}">memo2doc</a>
+                        <a class="navbar-brand" href="{{route('home')}}">{{env('APP_NAME')}}</a>
                         @auth
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
@@ -34,7 +34,7 @@
                                     <a class="nav-link" href="#">Doc</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">Parts</a>
+                                    <a class="position-relative nav-link{{request()->routeIs('parts.index')?' active':''}}" {{request()->routeIs('parts.index')?' aria-current="page"':''}} href="{{route('parts.index')}}">Parts<small><span class="position-absolute mx-1 badge rounded-pill text-bg-success" id="parts_badge"></span></small></a>
                                 </li>
                             </ul>
                             <div class="d-lg-flex col-lg-3 justify-content-lg-end">
@@ -108,6 +108,39 @@
                     }
                     modal.setTexts(texts);
                     new bootstrap.Modal(modal).show();
+                });
+            });
+            
+            // パーツ追加
+            document.querySelectorAll('[data-parts]').forEach(element => {
+                const command = element.dataset.parts;
+                element.addEventListener('submit', event => {
+                    event.preventDefault();
+                    const form = event.target;
+                    const request = new Request(form.action, {
+                        method: form.method,
+                        body: new FormData(form),
+                    });
+                    fetch(request).then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Network response was not ok.');
+                        }
+                    }).then(data => {
+                        if (data.status === 'success') {
+                            if (command === 'add') {
+                                form.querySelector('button').disabled = true;
+                            } else if (command === 'remove') {
+                                form.closest('tr').remove();
+                            }
+                            document.querySelector('#parts_badge').textContent = data.count;
+                        } else {
+                            throw new Error(data.message);
+                        }
+                    }).catch(error => {
+                        alert(error.message);
+                    });
                 });
             });
         })()

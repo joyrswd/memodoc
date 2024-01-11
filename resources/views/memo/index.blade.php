@@ -67,23 +67,33 @@
         </tr>
     </thead>
     <tbody class="table-group-divider">
-        @foreach($page as $row)
+        @foreach($page as $data)
+        @php 
+            $row = $data->toArray();
+            $row['tags'] = $data->tags->pluck('name')->toArray();
+            $row['parts'] = $parts[$row['id']] ?? null;
+        @endphp
         <tr>
-            <td class="py-3">{{ $row->created_at->format('Y-m-d H:i') }}</td>
-            <td class="py-3"><a href="{{route('memo.edit', ['memo' => $row->id])}}">{{ Str::limit($row->content, 30, '...') }}</a></td>
+            <td class="py-3">{{ \Carbon\Carbon::parse($row['created_at'])->format('Y-m-d H:i') }}</td>
+            <td class="py-3"><a href="{{route('memo.edit', ['memo' => $row['id']])}}">{{ Str::limit($row['content'], 30, '...') }}</a></td>
             <td class="py-3">
-                @foreach($row->tags as $tag)
-                <a href="{{route('memo.index', ['memo_tags' => $tag->name])}}" class="badge bg-secondary">{{ $tag->name }}</a>
+                @foreach($row['tags'] as $tag)
+                <a href="{{route('memo.index', ['memo_tags' => $tag])}}" class="badge bg-secondary">{{ $tag }}</a>
                 @endforeach
             </td>
             <td class="py-3">
-                <a href="" data-bs-toggle="tooltip" data-bs-title="パーツ追加">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-plus-fill" viewBox="0 0 16 16">
-                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM8.5 7v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 1 0z" />
-                    </svg> </a>
+                <form action="{{route('parts.add', ['memo' => $row['id']])}}" method="POST" data-parts="add">
+                    @csrf
+                    @method('PUT')
+                    <button type="submit" value="追加" class="m-0 p-0 btn btn-link"{{$row['parts']?' disabled':''}} data-bs-toggle="tooltip" data-bs-title="パーツ追加">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-plus-fill" viewBox="0 0 16 16">
+                            <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM8.5 7v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 1 0z" />
+                        </svg>
+                    </button>
+                </form>
             </td>
             <td class="py-3 text-end">
-                <form action="{{route('memo.destroy', ['memo' => $row->id])}}" method="POST">
+                <form action="{{route('memo.destroy', ['memo' => $row['id']])}}" method="POST">
                     @csrf
                     @method('DELETE')
                     <button type="submit" value="削除" class="m-0 p-0 btn btn-link text-secondary" data-dialog='{"texts":{"title":"削除確認","body":"削除します。よろしいですか？"}}' data-bs-toggle="tooltip" data-bs-title="削除">

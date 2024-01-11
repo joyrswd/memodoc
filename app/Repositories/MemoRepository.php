@@ -53,8 +53,8 @@ class MemoRepository
      */
     public function findByIdAndUserId(int $userId, int $memoId): array
     {
-        $memo = Memo::whereUserId($userId)->whereId($memoId)->firstOrFail();
-        return array_merge($memo->toArray(), [
+        $memo = Memo::whereUserId($userId)->whereId($memoId)->first();
+        return empty($memo) ? [] : array_merge($memo->toArray(), [
             'tags' => $memo->tags->pluck('name')->toArray(),
         ]);
     }

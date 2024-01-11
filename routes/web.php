@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemoController;
+use App\Http\Controllers\PartsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +21,10 @@ Route::get('/',function(){return view('login.index');})->name('home');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->resource('memo', MemoController::class);
+Route::middleware('auth')->group(function(){
+    Route::resource('memo', MemoController::class)->except(['show']);
+    Route::get('/parts/', [PartsController::class, 'index'])->name('parts.index');
+    Route::put('/parts/{memo}', [PartsController::class, 'add'])->name('parts.add');
+    Route::delete('/parts/{memo?}', [PartsController::class, 'remove'])->name('parts.remove');
+});
+

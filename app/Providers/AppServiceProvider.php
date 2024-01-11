@@ -23,8 +23,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // {memo}の作成者がログインユーザーと一致するかチェック
         Route::bind('memo', function ($value) use ($memoService) {
-            if ($memoService->getMemo(auth()->user()->id, $value)) {
-                return $value;
+            $int = filter_var($value, FILTER_VALIDATE_INT);
+            if (is_int($int) && $memoService->getMemo(auth()->user()->id, $int)) {
+                return $int;
             }
             abort(404);
         });

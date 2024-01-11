@@ -73,6 +73,13 @@ graph LR
         D2
         D3
     end
+    subgraph E[記事管理]
+        E1
+        E2
+        E3
+        E4
+        E5
+    end
     subgraph F[記事生成]
         F1
         F2
@@ -86,8 +93,7 @@ graph LR
         B4
         C
         D
-        E3
-        E4
+        E
         F
     end
 

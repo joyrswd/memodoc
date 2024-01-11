@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Memo;
 use App\Services\MemoService;
+use App\Services\PartsService;
 use App\Http\Requests\MemoRequest;
 use Illuminate\Http\Request;
 
@@ -13,13 +14,20 @@ class MemoController extends Controller
      * @var MemoService
      */
     private $memoService;
-    
+
+    /**
+     * @var PartsService
+     */
+    private $partsService;
+
     /**
      * @param MemoService $memoService
+     * @param PartsService $partsService
      */
-    public function __construct(MemoService $memoService)
+    public function __construct(MemoService $memoService, PartsService $partsService)
     {
         $this->memoService = $memoService;
+        $this->partsService = $partsService;
     }
 
     /**
@@ -34,8 +42,8 @@ class MemoController extends Controller
                 'from' => $request->input('memo_from'),
                 'to' => $request->input('memo_to'),
             ]),
+            'parts' => $this->partsService->getPartsMemoIds()
         ]);
-        //
     }
 
     /**
@@ -58,14 +66,6 @@ class MemoController extends Controller
             'tags' => $request->input('tags'),
         ]);
         return back()->with('success', __('stored'));
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**
