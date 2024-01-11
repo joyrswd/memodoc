@@ -66,4 +66,13 @@ class MemoRepository
     {
         Memo::find($memoId)->tags()->detach();
     }
+
+    /**
+     * @param int $userId
+     * @param int $memoId
+     */
+    public function deleteByIdAndUserId(int $userId, int $memoId): void
+    {
+        Memo::whereUserId($userId)->whereId($memoId)->delete();
+    }
 }

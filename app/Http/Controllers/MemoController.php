@@ -96,6 +96,7 @@ class MemoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $this->memoService->deleteMemo(auth()->user()->id, $id);
+        return back()->with('success', __('deleted'));
     }
 }

@@ -25,10 +25,10 @@
                         <div class="collapse navbar-collapse" id="navbarCollapse">
                             <ul class="navbar-nav me-auto mb-2 mb-md-0">
                                 <li class="nav-item">
-                                    <a class="nav-link{{request()->routeIs('memo.create')?' active':''}}"{{request()->routeIs('memo.create')?' aria-current="page"':''}} href="{{route('memo.create')}}">Write</a>
+                                    <a class="nav-link{{request()->routeIs('memo.create')?' active':''}}" {{request()->routeIs('memo.create')?' aria-current="page"':''}} href="{{route('memo.create')}}">Write</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link{{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' active':''}}"{{request()->routeIs('memo.index')?' aria-current="page"':''}}  href="{{route('memo.index')}}">Memo</a>
+                                    <a class="nav-link{{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' active':''}}" {{request()->routeIs('memo.index')?' aria-current="page"':''}} href="{{route('memo.index')}}">Memo</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="#">Blog</a>
@@ -47,13 +47,72 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">送信</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script>
         (function() {
-            // Add the "is_invalid" class to the input element
+            // エラー時当該フォーム強調
             document.querySelectorAll('.invalid-feedback').forEach(element => element.previousElementSibling.classList.add('is-invalid'));
+            // ツールチップ
+            [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(element => new bootstrap.Tooltip(element));
+            // モーダルダイアログ
+            const modal = document.querySelector('#modal');
+            modal.button = modal.querySelector('.modal-footer .btn-primary');
+            modal.setTexts = (properties) => {
+                for (const [key, text] of Object.entries(properties)) {
+                    const query = '.modal-' + key;
+                    modal.querySelector(query).textContent = text;
+                }
+            };
+            document.querySelectorAll('[data-dialog]').forEach(element => {
+                element.addEventListener('click', event => {
+                    let texts = {};
+                    event.preventDefault();
+                    try {
+                        let method = null;
+                        if (element.href) {
+                            method = () => {window.location.href = element.href;};
+                        } else if (element.form) {
+                            method = () => {element.form.submit();};
+                        } else {
+                            throw new Error('実行する処理を特定できません。');
+                        }
+                        const config = JSON.parse(element.dataset.dialog);
+                        texts = config.texts;
+                        modal.button.classList.remove('d-none');
+                        modal.button.addEventListener('click', event => {
+                            event.preventDefault();
+                            method();
+                        }, {once: true});
+                    } catch (e) {
+                        texts = {
+                            title: 'エラー',
+                            body: e.message,
+                        };
+                        modal.button.classList.add('d-none');
+                    }
+                    modal.setTexts(texts);
+                    new bootstrap.Modal(modal).show();
+                });
+            });
         })()
     </script>
+    @yield('asset')
 </body>
 
 </html>
