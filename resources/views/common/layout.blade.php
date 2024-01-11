@@ -17,7 +17,7 @@
                 </div>
                 <nav class="navbar navbar-expand-md navbar-dark fixed-bottom bg-dark">
                     <div class="container-fluid">
-                        <a class="navbar-brand" href="{{route('home')}}">MemoG</a>
+                        <a class="navbar-brand" href="{{route('home')}}">memo2doc</a>
                         @auth
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
@@ -31,7 +31,7 @@
                                     <a class="nav-link{{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' active':''}}" {{request()->routeIs('memo.index')?' aria-current="page"':''}} href="{{route('memo.index')}}">Memo</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">Blog</a>
+                                    <a class="nav-link" href="#">Doc</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="#">Parts</a>
