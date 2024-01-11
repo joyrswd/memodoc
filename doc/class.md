@@ -7,39 +7,39 @@ graph TB
     end
     subgraph Gate
         memo_id  --> Auth
-        article_id  --> Auth
+        doc_id  --> Auth
     end
     subgraph Model
         User
         Memo
         Tag
-        Article
+        Doc
     end
     subgraph Repository
         UserRepository --> User
         MemoRepository --> Memo
         TagRepository --> Tag
-        ArticleRepository --> Article
+        DocRepository --> Doc
     end
     subgraph Service
         UserService --> UserRepository
         MemoService --> MemoRepository
         TagService --> TagRepository
-        ArticleService --> ArticleRepository
-        CartService
+        DocService --> DocRepository
+        PartsService
     end
     subgraph FormRequest
         UserRequest --> UserService
         MemoRequest --> MemoService
-        ArticleRequest --> ArticleService
-        CartRequest
+        DocRequest --> DocService
+        PartsRequest
     end
     subgraph Controller
         LoginController
         UserController --> UserRequest
         MemoController --> MemoRequest
-        ArticleController --> ArticleRequest
-        CartController --> CartRequest
+        DocController --> DocRequest
+        PartsController --> PartsRequest
     end
     DB[(データベース)]
     Model <--> DB
@@ -48,10 +48,10 @@ graph TB
     UserController --> UserService
     MemoController --> MemoService
     MemoController --> TagService
-    ArticleController --> ArticleService
-    CartController --> CartService
-    CartService --> MemoRepository
-    CartRequest --> MemoRepository
+    DocController --> DocService
+    PartsController --> PartsService
+    PartsService --> MemoRepository
+    PartsRequest --> MemoRepository
 ```
 
 ## 機能リスト
@@ -60,7 +60,7 @@ graph TB
 | 機能名       | リクエスト     | URI           | 機能概要         |
 |------------|--------------|----------------|--------------|
 |ログイン入力|GET|/|ユーザー名入力枠表示<br> パスワード入力枠表示|
-|新規ユーザー登録|POST|/login/|アカウント情報認証<br> 認可|
+|ログイン認証|POST|/login/|アカウント情報認証<br> 認可|
 |ログアウト|GET|/logout/|ログイン中ユーザーのログアウト|
 
 #### UserController
@@ -80,17 +80,17 @@ graph TB
 |新規メモ登録|POST|/memo/|メモ内容保存<br>タグ登録<br>タグIDとメモIDの紐づけ|
 |メモ削除|DELETE|/memo/{memo}|指定メモIDの論理削除|
 |メモ一覧|GET|/memo/|内容前方30文字表示<br> タグ編集欄表示<br> 作成日時表示<br> 削除ボタン表示<br> 内容検索<br> 作成日時絞り込み<br> タグ絞り込み<br> 削除済み表示/非表示切り替え|
-|タグ変更|POST|/memo/tag/{memo}|タグIDとメモIDの紐づけ変更
+|メモ（タグ）更新|POST|/memo/{memo}/edit|タグIDとメモIDの紐づけ変更
 
-#### CartController
+#### PartsController
 | 機能名       | リクエスト     | URI           | 機能概要         |
 |------------|--------------|----------------|--------------|
-|素材メモ一覧|GET|/cart/|内容前方30文字表示<br> 作成日時表示<br> メモ順番調整機能<br> メモ順番調整機能<br> 記事生成ボタン表示<br> カートから削除ボタン表示<br> カートを空にするボタン表示|
-|素材メモ登録|GET|/cart/{memo}/add|素材となるメモをセッションに保存<br> カート内限界数判定|
-|素材メモ削除|GET|/cart/{memo}/remove|素材となるメモをセッションから削除|
-|素材メモ全削除|GET|/cart/empty|素材となるメモをセッションから全削除|
+|素材メモ一覧|GET|/parts/|内容前方30文字表示<br> 作成日時表示<br> メモ順番調整機能<br> メモ順番調整機能<br> 記事生成ボタン表示<br> カートから削除ボタン表示<br> カートを空にするボタン表示|
+|素材メモ登録|GET|/parts/{memo}/add|素材となるメモをセッションに保存<br> カート内限界数判定|
+|素材メモ削除|GET|/parts/{memo}/remove|素材となるメモをセッションから削除|
+|素材メモ全削除|GET|/parts/empty|素材となるメモをセッションから全削除|
 
-#### ArticleController
+#### DocController
 | 機能名       | リクエスト     | URI           | 機能概要         |
 |------------|--------------|----------------|--------------|
 |新規記事生成|POST|/article/|素材メモから記事を生成<br>素材メモの限界数判定|
@@ -134,17 +134,17 @@ graph TB
     - 全角空白を半角に変換
     - 半角空白毎にタグを区切る
 
-#### ArticleRequest
-- article.edit.title
+#### DocRequest
+- doc.edit.title
     - 文字数チェック（255）
     - 未入力チェック
-- article.find.name
+- doc.find.name
     - 文字数チェック（100）
-- article.edit.content
+- doc.edit.content
     - 未入力チェック
-- article.find.content
+- doc.find.content
     - 文字数チェック（100）
-- article.find.created_at
+- doc.find.created_at
     - 日付チェック
-- article.deleted
+- doc.deleted
     - 入力値チェック(1のみ)

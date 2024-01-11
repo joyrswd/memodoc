@@ -60,7 +60,7 @@ article ||--|{ article_memo : ""
 | name       | VARCHAR(20)  | NOT NULL       | タグ名       |
 | created_at | DATETIME     | DEFAULT NULL   | 作成日時     |
 
-### テーブル名: articles
+### テーブル名: docs
 
 | 列名       | データ型     | 制約           | 説明         |
 |------------|--------------|----------------|--------------|
@@ -79,7 +79,7 @@ article ||--|{ article_memo : ""
 | memo_id    | INT          | FK             | メモID       |
 | tag_id     | INT          | FK             | タグID       |
 
-### テーブル名: article_memo
+### テーブル名: doc_memo
 
 | 列名       | データ型     | 制約           | 説明         |
 |------------|--------------|----------------|--------------|

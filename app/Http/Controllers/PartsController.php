@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Services\PartsService;
+use Illuminate\Http\Request;
+
+
+class PartsController extends Controller
+{
+    /**
+     * @var PartsService
+     */
+    private $partsService;
+
+    /**
+     * @param PartsService $partsService
+     */
+    public function __construct(PartsService $partsService)
+    {
+        $this->partsService = $partsService;
+    }
+
+    public function index()
+    {
+        return view('parts.index', [
+            'items' => $this->partsService->getParts(auth()->user()->id),
+        ]);
+    }
+
+    public function add(int $id)
+    {
+        $result = $this->partsService->addParts($id);
+        $status = ($result['status'] === PartsService::STATUS_SUCCESS) ? 200 : 422;
+        return response()->json($result, $status);
+    }
+
+    public function remove(int $id=null)
+    {
+        $result = $this->partsService->deleteParts($id);
+        $status = ($result['status'] === PartsService::STATUS_SUCCESS) ? 200 : 422;
+        return response()->json($result, $status);
+    }
+    
+    //
+}
