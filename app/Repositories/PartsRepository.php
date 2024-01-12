@@ -87,9 +87,6 @@ class PartsRepository
 
     public function isUnderLimit($equal=false): bool
     {
-        if (empty($this->items)) {
-            $this->load();
-        }
         if ($equal === true) {
             return count($this->items) <= self::LIMIT;
         } else {

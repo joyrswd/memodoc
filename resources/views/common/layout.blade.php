@@ -34,7 +34,9 @@
                                     <a class="nav-link" href="#">Doc</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="position-relative nav-link{{request()->routeIs('parts.index')?' active':''}}" {{request()->routeIs('parts.index')?' aria-current="page"':''}} href="{{route('parts.index')}}">Parts<small><span class="position-absolute mx-1 badge rounded-pill text-bg-success" id="parts_badge"></span></small></a>
+                                    @inject('partsService', 'App\Services\PartsService')
+                                    @php $count = $partsService->getStatus('count'); @endphp
+                                    <a class="position-relative nav-link{{request()->routeIs('parts.index')?' active':''}}" {{request()->routeIs('parts.index')?' aria-current="page"':''}} href="{{route('parts.index')}}">Parts<small><span class="position-absolute mx-1 badge rounded-pill text-bg-success" id="parts_badge">{{empty($count)?'':$count}}</span></small></a>
                                 </li>
                             </ul>
                             <div class="d-lg-flex col-lg-3 justify-content-lg-end">
@@ -72,6 +74,7 @@
             [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(element => new bootstrap.Tooltip(element));
             // モーダルダイアログ
             const modal = document.querySelector('#modal');
+            const myModal = new bootstrap.Modal(modal);
             modal.button = modal.querySelector('.modal-footer .btn-primary');
             modal.setTexts = (properties) => {
                 for (const [key, text] of Object.entries(properties)) {
@@ -84,21 +87,19 @@
                     let texts = {};
                     event.preventDefault();
                     try {
-                        let method = null;
-                        if (element.href) {
-                            method = () => {window.location.href = element.href;};
-                        } else if (element.form) {
-                            method = () => {element.form.submit();};
-                        } else {
-                            throw new Error('実行する処理を特定できません。');
-                        }
                         const config = JSON.parse(element.dataset.dialog);
                         texts = config.texts;
                         modal.button.classList.remove('d-none');
-                        modal.button.addEventListener('click', event => {
-                            event.preventDefault();
-                            method();
-                        }, {once: true});
+                        modal.button.addEventListener('click', modalEvent => {
+                            // 参照元のフォームに送信処理を設定しなおしてsubmitイベントを発火させる
+                            // (フォームに設定されている他のsubmitイベントを発火させた後に通常の送信処理を実行させるため)
+                            element.form.addEventListener('submit', ev => element.form.submit(), {once: true});
+                            element.form.dispatchEvent(new Event('submit'));
+                            // モーダルを閉じる
+                            myModal.hide();
+                        }, {
+                            once: true
+                        });
                     } catch (e) {
                         texts = {
                             title: 'エラー',
@@ -107,15 +108,16 @@
                         modal.button.classList.add('d-none');
                     }
                     modal.setTexts(texts);
-                    new bootstrap.Modal(modal).show();
+                    myModal.show();
                 });
-            });
-            
-            // パーツ追加
+            }, false);
+
+            // パーツ追加・削除
             document.querySelectorAll('[data-parts]').forEach(element => {
                 const command = element.dataset.parts;
                 element.addEventListener('submit', event => {
                     event.preventDefault();
+                    event.stopImmediatePropagation(); //以降のsubmitイベントを強制キャンセル
                     const form = event.target;
                     const request = new Request(form.action, {
                         method: form.method,
@@ -132,9 +134,21 @@
                             if (command === 'add') {
                                 form.querySelector('button').disabled = true;
                             } else if (command === 'remove') {
-                                form.closest('tr').remove();
+                                //elementに設定されたtooltipを削除
+                                form.querySelectorAll('button').forEach(button => {
+                                    const tooltip = bootstrap.Tooltip.getInstance(button);
+                                    if (tooltip) {
+                                        tooltip.dispose();
+                                    }
+                                });
+                                const tr = form.closest('tr');
+                                if (tr) {
+                                    tr.remove();
+                                } else if (data.count == 0) {
+                                    document.querySelectorAll('tbody.table-group-divider>tr').forEach(tr => tr.remove());
+                                }
                             }
-                            document.querySelector('#parts_badge').textContent = data.count;
+                            document.querySelector('#parts_badge').textContent = (data.count) ? data.count : '';
                         } else {
                             throw new Error(data.message);
                         }
@@ -143,7 +157,7 @@
                     });
                 });
             });
-        })()
+        })();
     </script>
     @yield('asset')
 </body>
