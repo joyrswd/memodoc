@@ -42,7 +42,7 @@ class MemoController extends Controller
                 'from' => $request->input('memo_from'),
                 'to' => $request->input('memo_to'),
             ]),
-            'parts' => $this->partsService->getPartsMemoIds()
+            'parts' => $this->partsService->getStatus('items')
         ]);
     }
 

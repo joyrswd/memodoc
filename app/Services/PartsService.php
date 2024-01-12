@@ -29,11 +29,6 @@ class PartsService
         $this->memoRepository = $memoRepository;
     }
 
-    public function __destruct()
-    {
-        $this->partsRepository->save();
-    }
-
     /**
      * @param int $id
      */
@@ -60,6 +55,16 @@ class PartsService
     }
 
     /**
+     * 
+     * @return int
+     */
+    public function getStatus(?string $name)
+    {
+        $status = $this->setSuccess('現在のパーツ内容です。'); 
+        return empty($name) ? $status : $status[$name];
+    }
+
+    /**
      * @param int $id
      */
     public function getParts(int $userId): array
@@ -70,19 +75,11 @@ class PartsService
             $memo = $this->memoRepository->findByIdAndUserId($userId, $item->value);
             if ($memo) {
                 $result[] = $memo;
+            } else {
+                $this->partsRepository->remove($item->value);
             }
         }
         return $result;
-    }
-
-    /**
-     * 
-     * @return array<string, string>
-     */
-    public function getPartsMemoIds(): array
-    {
-        $items = $this->partsRepository->all();
-        return Arr::pluck($items, 'value', 'value');
     }
 
     /**
@@ -114,6 +111,6 @@ class PartsService
     private function setResult(string $status, string $message): array
     {
         $items = $this->partsRepository->all();
-        return ['status' => $status, 'message' => $message, 'count' => count($items)];
+        return ['status' => $status, 'message' => $message, 'count' => count($items), 'items' => Arr::pluck($items, 'value', 'key')];
     }
 }

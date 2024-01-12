@@ -71,7 +71,7 @@
         @php 
             $row = $data->toArray();
             $row['tags'] = $data->tags->pluck('name')->toArray();
-            $row['parts'] = $parts[$row['id']] ?? null;
+            $row['parts'] = (array_search($row['id'], $parts) !== false);
         @endphp
         <tr>
             <td class="py-3">{{ \Carbon\Carbon::parse($row['created_at'])->format('Y-m-d H:i') }}</td>

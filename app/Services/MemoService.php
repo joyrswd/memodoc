@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Repositories\MemoRepository;
 use App\Repositories\TagRepository;
+use App\Repositories\PartsRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class MemoService
@@ -18,13 +19,20 @@ class MemoService
     private $tagRepository;
 
     /**
+     * @var PartsRepository
+     */
+    private $partsRepository;
+
+    /**
      * @param MemoRepository $memoRepository
      * @param TagRepository $tagRepository
+     * @param PartsRepository $partsRepository
      */
-    public function __construct(MemoRepository $memoRepository, TagRepository $tagRepository)
+    public function __construct(MemoRepository $memoRepository, TagRepository $tagRepository, PartsRepository $partsRepository)
     {
         $this->memoRepository = $memoRepository;
         $this->tagRepository = $tagRepository;
+        $this->partsRepository = $partsRepository;
     }
 
     /**
@@ -81,5 +89,6 @@ class MemoService
     public function deleteMemo(int $userId, int $memoId): void
     {
         $this->memoRepository->deleteByIdAndUserId($userId, $memoId);
+        $this->partsRepository->remove($memoId);
     }
 }
