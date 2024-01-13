@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('memo_tag', function (Blueprint $table) {
+        Schema::create('document_memo', function (Blueprint $table) {
+            $table->foreignId('document_id')->constrained()->cascadeOnDelete()->comment('ドキュメントID');
             $table->foreignId('memo_id')->constrained()->cascadeOnDelete()->comment('メモID');
-            $table->foreignId('tag_id')->constrained()->cascadeOnDelete()->comment('タグID');
-            $table->unique(['memo_id', 'tag_id']);
+            $table->unique(['document_id', 'memo_id']);
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('memo_tag');
+        Schema::dropIfExists('document_memo');
     }
 };

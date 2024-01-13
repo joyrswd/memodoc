@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('memo_tag', function (Blueprint $table) {
+        Schema::create('api_job_memo', function (Blueprint $table) {
+            $table->foreignId('api_job_id')->constrained()->cascadeOnDelete()->comment('APIジョブID');
             $table->foreignId('memo_id')->constrained()->cascadeOnDelete()->comment('メモID');
-            $table->foreignId('tag_id')->constrained()->cascadeOnDelete()->comment('タグID');
-            $table->unique(['memo_id', 'tag_id']);
+            $table->tinyInteger('order')->default(1)->comment('パーツ内の順番');
+            $table->unique(['api_job_id', 'memo_id']);
         });
     }
 
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('memo_tag');
+        Schema::dropIfExists('api_job_memo');
     }
 };

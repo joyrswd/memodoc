@@ -135,6 +135,24 @@ class PartsControllerTest extends TestCase
      * @test
      * @return void
      */
+    public function remove_all(): void
+    {
+        for ($i = 0; $i < PartsRepository::LIMIT; $i++) {
+            $memo = Memo::factory(['user_id' => $this->user->id])->create();
+            $this->put(route('parts.add', $memo))->assertOk();
+        }
+        $response = $this->delete(route('parts.remove'))->assertOk();
+        $response->assertJson([
+            'status' => 'success',
+            'message' => '削除しました。',
+            'count' => '0',
+        ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
     public function remove_error_存在しない(): void
     {
         $memo = Memo::factory(['user_id' => $this->user->id])->create();

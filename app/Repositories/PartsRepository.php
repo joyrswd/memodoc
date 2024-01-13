@@ -73,7 +73,7 @@ class PartsRepository
         return $this->save();
     }
 
-    public function remove(?int $id): bool
+    public function remove(?int $id=null): bool
     {
         if ($id === null) {
             $this->items = [];

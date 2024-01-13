@@ -8,6 +8,8 @@ use App\Services\PartsService;
 use App\Http\Requests\MemoRequest;
 use Illuminate\Http\Request;
 
+use function Psy\debug;
+
 class MemoController extends Controller
 {
     /**

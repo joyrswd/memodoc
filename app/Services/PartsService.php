@@ -46,7 +46,7 @@ class PartsService
     /**
      * @param int $id
      */
-    public function deleteParts(?int $id): array
+    public function deleteParts(?int $id=null): array
     {
         if ($this->partsRepository->remove($id) === true) {
             return $this->setSuccess('削除しました。');
@@ -81,6 +81,11 @@ class PartsService
         }
         return $result;
     }
+
+    public function getMemoValues(int $userId, string $key): array
+    {
+        return Arr::pluck($this->getParts($userId), $key);
+    }   
 
     /**
      * 

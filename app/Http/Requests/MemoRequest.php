@@ -58,6 +58,7 @@ class MemoRequest extends FormRequest
      */
     protected function prepareForValidation() : void
     {
+        //タグのリクエスト配列をスペース区切りの文字列から生成する
         $tags = $this->input('memo_tags');
         if ($tags) {
             $tagsArray = explode(' ', str_replace('　', ' ', $tags));

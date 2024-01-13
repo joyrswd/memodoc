@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('memos', function (Blueprint $table) {
-            $table->id()->comment('メモID');
+        Schema::create('documents', function (Blueprint $table) {
+            $table->id()->comment('ドキュメントID');
+            $table->string('title', 255)->comment('タイトル');
+            $table->text('content')->nullable()->comment('内容');
             $table->foreignId('user_id')->constrained()->comment('ユーザーID');
-            $table->text('content')->comment('内容');
+            $table->foreignId('api_job_id')->constrained()->comment('APIジョブID');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('memos');
+        Schema::dropIfExists('documents');
     }
 };
