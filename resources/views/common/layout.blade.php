@@ -87,8 +87,7 @@
                     let texts = {};
                     event.preventDefault();
                     try {
-                        const config = JSON.parse(element.dataset.dialog);
-                        texts = config.texts;
+                        texts = JSON.parse(element.dataset.dialog);
                         modal.button.classList.remove('d-none');
                         modal.button.addEventListener('click', modalEvent => {
                             // 参照元のフォームに送信処理を設定しなおしてsubmitイベントを発火させる

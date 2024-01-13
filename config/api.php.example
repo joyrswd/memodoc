@@ -1,0 +1,16 @@
+<?php
+// 本フォイルをコピーしてapi.phpにリネームして使用してください。
+return [
+    'openai' => [
+        'endpoint' => 'https://api.openai.com/v1/chat/completions',
+        'model' => 'gpt-3.5-turbo',
+        'secret' => null, // ご自身で取得して設定してください。
+        'timeout' => 120,
+        'daily_limit'=> 0,
+        'prompt' => <<<EOM
+userから入力される{count}個のメモを参考にして、タイトル付きの文章を作成してください。
+EOM // 上記はプロンプト例になります。
+,
+    ]
+];
+
