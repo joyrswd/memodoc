@@ -36,13 +36,13 @@ class MemoService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $params
      */
-    public function addMemoAndTags(array $data): void
+    public function addMemoAndTags(array $params): void
     {
-        $memoId = $this->memoRepository->store($data);        
-        if (empty($data['tags']) === false) {
-            foreach($data['tags'] as $tag) {
+        $memoId = $this->memoRepository->store($params);        
+        if (empty($params['tags']) === false) {
+            foreach($params['tags'] as $tag) {
                 $this->tagRepository->store($tag, $memoId);
             }
         }
@@ -51,12 +51,12 @@ class MemoService
     /**
      * 
      * @param int $userId
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $params
      * @return LengthAwarePaginator
      */
-    public function getMemos(int $userId, array $data): LengthAwarePaginator
+    public function getMemos(int $userId, array $params): LengthAwarePaginator
     {
-        return $this->memoRepository->findByUserId($userId, $data)->paginate(10);
+        return $this->memoRepository->findByUserId($userId, $params)->paginate(10);
     }
 
     /**
@@ -71,20 +71,20 @@ class MemoService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $params
      */
-    public function updateTags(array $data): void
+    public function updateTags(array $params): void
     {
-        $this->memoRepository->detachTags($data['memo_id']);
-        if (empty($data['tags']) === false) {
-            foreach($data['tags'] as $tag) {
-                $this->tagRepository->store($tag, $data['memo_id']);
+        $this->memoRepository->detachTags($params['memo_id']);
+        if (empty($params['tags']) === false) {
+            foreach($params['tags'] as $tag) {
+                $this->tagRepository->store($tag, $params['memo_id']);
             }
         }
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $params
      */
     public function deleteMemo(int $userId, int $memoId): void
     {

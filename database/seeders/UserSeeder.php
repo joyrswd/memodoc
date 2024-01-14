@@ -14,9 +14,9 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'name' => env('ADMIN_USER_NAME'),
-            'password' => bcrypt(env('ADMIN_USER_PASSWORD')),
-            'email' => bcrypt(env('ADMIN_USER_EMAIL')),
+            'name' => config('app.admin.name'),
+            'password' => bcrypt(config('app.admin.password')),
+            'email' => bcrypt(config('app.admin.email')),
         ]);
     }
 }

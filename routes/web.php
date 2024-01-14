@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemoController;
 use App\Http\Controllers\PartsController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\ApiJobController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/parts/', [PartsController::class, 'index'])->name('parts.index');
     Route::put('/parts/{memo}', [PartsController::class, 'add'])->name('parts.add');
     Route::delete('/parts/{memo?}', [PartsController::class, 'remove'])->name('parts.remove');
-    Route::resource('doc', DocumentController::class)->except(['show', 'create']);
+    Route::resource('doc', DocumentController::class)->except(['show', 'create', 'store']);
+    Route::post('/job/store', [ApiJobController::class, 'store'])->name('job.store');
 });
 

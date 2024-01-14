@@ -12,7 +12,7 @@
 @auth
 <div class="text-center">
     <p><strong>{{ auth()->user()->name }}</strong>でログイン中です。</p>
-    <p><a href="{{ route('logout') }}" class="btn btn-primary">ログアウト</a></p>
+    <p><a href="{{ route('logout') }}" class="btn btn-secondary">ログアウト</a></p>
 </div>
 @else
 <form method="POST" action="{{ route('login') }}">
