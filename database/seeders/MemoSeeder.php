@@ -24,7 +24,7 @@ class MemoSeeder extends Seeder
                 '即席ユーザー',
             ], 0);
         if ($user === '管理者') {
-            $userId = User::where('name', env('ADMIN_USER_NAME'))->first()->id;
+            $userId = User::where('name', config('app.admin.name'))->first()->id;
         } elseif ($user === '即席ユーザー') {
             $userId = User::factory()->create()->id;
         } else {

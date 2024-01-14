@@ -185,4 +185,9 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'admin' => [
+        'name' => env('ADMIN_NAME', 'admin'),
+        'email' => env('ADMIN_EMAIL', 'email@localhost'),
+        'password' => env('ADMIN_PASSWORD', 'password'),
+    ]
 ];

@@ -56,9 +56,10 @@
         </form>
     </div>
     <div class="col-lg-7 mx-auto">
-        <form action="{{route('doc.store')}}" method="POST">
+        <form action="{{route('job.store')}}" method="POST">
             @csrf
             <span class="d-grid gap-3">
+                <input type="hidden" name="generate" value="memo">
                 <button type="submit" {{empty($items)?' disabled':''}} class="btn btn-primary" data-dialog='{"title":"内容確認","body":"こちらのメモから文書を作成します。よろしいですか？"}'>作成</button>
             </span>
         </form>

@@ -16,7 +16,7 @@ class MemoRequest extends FormRequest
             'memo_to' => 'nullable|date|before_or_equal:today|exclude_if:memo_from,null|after_or_equal:memo_from',
         ],
         'memo.store' => [
-            'memo_content' => 'required|min:5',
+            'memo_content' => 'required|min:5|max:140',
         ],
         'memo.update' => [],
     ];
