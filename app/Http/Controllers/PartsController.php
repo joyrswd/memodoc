@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\PartsService;
-use Illuminate\Http\Request;
-
 
 class PartsController extends Controller
 {

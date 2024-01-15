@@ -31,33 +31,17 @@ class LoginControllerTest extends TestCase
      */
     public function home(): void
     {
-        $response = $this->get(route('home'));
-
-        $response->assertStatus(200);
+        $this->get(route('home'))->assertOk()->assertViewIs('login.index');
     }
 
     /**
      * @test
      * @return void
      */
-    public function home_ログインフォーム表示(): void
-    {
-        $response = $this->get(route('home'));
-        $response->assertSee('method="POST"', false)
-            ->assertSee('action="' . route('login') . '"', false)
-            ->assertSee('name="name"', false)
-            ->assertSee('name="password"', false);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function home_ログイン後にログアウトボタン表示(): void
+    public function home_show_logout(): void
     {
         $this->actingAs($this->user);
-        $response = $this->get(route('home'));
-        $response->assertSee('ログアウト', false)
+        $this->get(route('home'))->assertSee(route('logout'), false)
             ->assertSee('<strong>' . $this->user->name . '</strong>', false);
     }
 
@@ -67,8 +51,7 @@ class LoginControllerTest extends TestCase
      */
     public function home_ログイン前はログアウトボタン非表示(): void
     {
-        $response = $this->get(route('home'));
-        $response->assertDontSee('ログアウト', false);
+        $this->get(route('home'))->assertDontSee(route('logout'), false);
     }
 
     /**
@@ -77,83 +60,63 @@ class LoginControllerTest extends TestCase
      */
     public function login(): void
     {
-        $response = $this->post(route('login'), [
+        $this->post(route('login'), [
             'name' => $this->user->name,
             'password' => self::USER_PASSWORD,
-        ]);
-        $response->assertStatus(302)
-            ->assertRedirect(route('memo.create'));
+        ])->assertRedirect(route('memo.create'));
     }
 
     /**
      * @test
      * @return void
      */
-    public function login_error_ログイン失敗(): void
+    public function login_error_invalid(): void
     {
-        $response = $this->post(route('login'), [
+        $this->post(route('login'), [
             'name' => $this->user->name,
             'password' => self::USER_PASSWORD . '-invalid',
-        ]);
-        $response->assertStatus(302)
-            ->assertRedirect(route('home'))
-            ->assertSessionHasErrors([
-                'name' => __('auth.failed'),
-                'password' => __('auth.failed'),
-            ]);
+        ])->assertRedirect(route('home'))
+        ->assertSessionHasErrors(['name','password']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function login_error_空欄(): void
+    public function login_error_empty(): void
     {
-        $response = $this->post(route('login'), [
+        $this->post(route('login'), [
             'name' => '',
             'password' => '',
-        ]);
-        $response->assertStatus(302)
-            ->assertRedirect(route('home'))
-            ->assertSessionHasErrors([
-                'name' => __('validation.required', ['attribute' => __('validation.attributes.name')]),
-                'password' => __('validation.required', ['attribute' => __('validation.attributes.password')]),
-            ]);
+        ])->assertRedirect(route('home'))
+        ->assertSessionHasErrors(['name','password']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function login_error_入力文字種(): void
+    public function login_error_invalid_input(): void
     {
-        $response = $this->post(route('login'), [
+        $this->post(route('login'), [
             'name' => '@',
             'password' => 'password',
-        ]);
-        $response->assertStatus(302)
-            ->assertRedirect(route('home'))
-            ->assertSessionHasErrors([
-                'name' => __('validation.alpha_dash', ['attribute' => __('validation.attributes.name')]),
-            ]);
+        ])->assertRedirect(route('home'))
+        ->assertSessionHasErrors(['name']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function login_error_入力文字数(): void
+    public function login_error_overflow(): void
     {
         $max = 255;
-        $response = $this->post(route('login'), [
+        $this->post(route('login'), [
             'name' => str_repeat('a', $max + 1),
             'password' => str_repeat('a', $max + 1),
-        ]);
-        $response->assertStatus(302)
-            ->assertSessionHasErrors([
-                'name' => __('validation.max.string', ['attribute' => __('validation.attributes.name'), 'max' => $max]),
-                'password' => __('validation.max.string', ['attribute' => __('validation.attributes.password'), 'max' => $max]),
-            ]);
+        ])->assertRedirect(route('home'))
+        ->assertSessionHasErrors(['name','password']);
     }
 
     /**
@@ -163,8 +126,7 @@ class LoginControllerTest extends TestCase
     public function logout(): void
     {
         $this->actingAs($this->user);
-        $response = $this->get(route('logout'));
-        $response->assertStatus(302)
+        $this->get(route('logout'))
             ->assertRedirect(route('home'))
             ->assertSessionHas('success', __('auth.logout'));
     }

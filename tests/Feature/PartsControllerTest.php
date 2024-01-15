@@ -30,7 +30,7 @@ class PartsControllerTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->memo = Memo::factory()->create();
+        $this->memo = Memo::factory(['user_id' => $this->user->id])->create();
         $this->actingAs($this->user);
     }
 
@@ -52,8 +52,9 @@ class PartsControllerTest extends TestCase
      */
     public function auth_error_memoId(): void
     {
-        $this->put(route('parts.add', $this->memo))->assertStatus(404);
-        $this->delete(route('parts.remove', $this->memo))->assertStatus(404);
+        $memo = Memo::factory()->create();
+        $this->put(route('parts.add', $memo))->assertStatus(404);
+        $this->delete(route('parts.remove', $memo))->assertStatus(404);
     }
 
     /**
@@ -62,7 +63,7 @@ class PartsControllerTest extends TestCase
      */
     public function index(): void
     {
-        $this->get(route('parts.index'))->assertOk();
+        $this->get(route('parts.index'))->assertOk()->assertViewIs('parts.index');
     }
 
     /**
@@ -72,46 +73,44 @@ class PartsControllerTest extends TestCase
     public function add(): void
     {
         $memo = Memo::factory(['user_id' => $this->user->id])->create();
-        $response = $this->put(route('parts.add', $memo))->assertOk();
-        $response->assertSessionHas(PartsRepository::KEY, [
-            $memo->id,
-        ])->assertJson([
-            'status' => 'success',
-            'message' => '追加しました。',
-        ]);
+        $this->put(route('parts.add', $memo))->assertOk()
+            ->assertSessionHas(PartsRepository::KEY, [$memo->id])
+            ->assertJson([
+                'status' => 'success',
+                'message' => '追加しました。',
+            ]);
     }
 
     /**
      * @test
      * @return void
      */
-    public function add_error_リミット(): void
+    public function add_error_overlimit(): void
     {
         for ($i = 0; $i < PartsRepository::LIMIT; $i++) {
             $memo = Memo::factory(['user_id' => $this->user->id])->create();
             $this->put(route('parts.add', $memo))->assertOk();
         }
         $memo = Memo::factory(['user_id' => $this->user->id])->create();
-        $response = $this->put(route('parts.add', $memo))->assertStatus(422);
-        $response->assertJson([
-            'status' => 'error',
-            'message' => 'これ以上追加できません。',
-        ]);
+        $this->put(route('parts.add', $memo))->assertStatus(422)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'これ以上追加できません。',
+            ]);
     }
 
     /**
      * @test
      * @return void
      */
-    public function add_error_重複(): void
+    public function add_error_overlapped(): void
     {
-        $memo = Memo::factory(['user_id' => $this->user->id])->create();
-        $this->put(route('parts.add', $memo))->assertOk();
-        $response = $this->put(route('parts.add', $memo))->assertStatus(422);
-        $response->assertJson([
-            'status' => 'error',
-            'message' => 'すでに存在しています。',
-        ]);
+        $this->put(route('parts.add', $this->memo))->assertOk();
+        $this->put(route('parts.add', $this->memo))->assertStatus(422)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'すでに存在しています。',
+            ]);
     }
 
     /**
@@ -120,15 +119,14 @@ class PartsControllerTest extends TestCase
      */
     public function remove(): void
     {
-        $memo = Memo::factory(['user_id' => $this->user->id])->create();
-        $this->put(route('parts.add', $memo))->assertOk();
-        $response = $this->delete(route('parts.remove', $memo))->assertOk();
-        $response->assertJson([
-            'status' => 'success',
-            'message' => '削除しました。',
-        ])->assertSessionHas(PartsRepository::KEY, function ($parts) use ($memo) {
-            return !in_array($memo->id, $parts);
-        });
+        $this->put(route('parts.add', $this->memo))->assertOk();
+        $this->delete(route('parts.remove', $this->memo))->assertOk()
+            ->assertJson([
+                'status' => 'success',
+                'message' => '削除しました。',
+            ])->assertSessionHas(PartsRepository::KEY, function ($parts)  {
+                return !in_array($this->memo->id, $parts);
+            });
     }
 
     /**
@@ -141,25 +139,24 @@ class PartsControllerTest extends TestCase
             $memo = Memo::factory(['user_id' => $this->user->id])->create();
             $this->put(route('parts.add', $memo))->assertOk();
         }
-        $response = $this->delete(route('parts.remove'))->assertOk();
-        $response->assertJson([
-            'status' => 'success',
-            'message' => '削除しました。',
-            'count' => '0',
-        ]);
+        $this->delete(route('parts.remove'))->assertOk()
+            ->assertJson([
+                'status' => 'success',
+                'message' => '削除しました。',
+                'count' => '0',
+            ]);
     }
 
     /**
      * @test
      * @return void
      */
-    public function remove_error_存在しない(): void
+    public function remove_error_not_in_session(): void
     {
-        $memo = Memo::factory(['user_id' => $this->user->id])->create();
-        $response = $this->delete(route('parts.remove', $memo))->assertStatus(422);
-        $response->assertJson([
-            'status' => 'error',
-            'message' => '存在しません。',
-        ]);
+        $this->delete(route('parts.remove', $this->memo))->assertStatus(422)
+            ->assertJson([
+                'status' => 'error',
+                'message' => '存在しません。',
+            ]);
     }
 }

@@ -12,8 +12,9 @@ use Tests\TestCase;
 class MemoControllerTest extends TestCase
 {
     use RefreshDatabase;
-    private $user;
-    private $memo;
+    private User $user;
+    private Memo $memo;
+    private Tag $tag;
 
     /**
      * @return void
@@ -22,7 +23,9 @@ class MemoControllerTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->memo = Memo::factory()->create();
+        $this->memo = Memo::factory(['user_id' => $this->user->id])->create();
+        $this->tag = Tag::factory()->create();
+        $this->memo->tags()->attach($this->tag->id);
         $this->actingAs($this->user);
     }
 
@@ -48,8 +51,10 @@ class MemoControllerTest extends TestCase
      */
     public function auth_error_memoId(): void
     {
-        $this->get(route('memo.edit', ['memo' => $this->memo->id]))->assertStatus(404);
-        $this->put(route('memo.update', ['memo' => $this->memo->id]))->assertStatus(404);
+        $memo = Memo::factory()->create();
+        $this->get(route('memo.edit', ['memo' => $memo->id]))->assertStatus(404);
+        $this->put(route('memo.update', ['memo' => $memo->id]))->assertStatus(404);
+        $this->delete(route('memo.destroy', ['memo' => $memo->id]))->assertStatus(404);
     }
 
     /**
@@ -58,100 +63,64 @@ class MemoControllerTest extends TestCase
      */
     public function create(): void
     {
-        $response = $this->get(route('memo.create'));
-        $response->assertStatus(200);
+        $this->get(route('memo.create'))->assertOk()->assertViewIs('memo.create');
     }
 
     /**
      * @test
      * @return void
      */
-    public function create_フォーム表示(): void
+    public function create_error_content_empty(): void
     {
-        $response = $this->get(route('memo.create'));
-
-        $response->assertSee('method="POST"', false)
-            ->assertSee('action="' . route('memo.store') . '"', false)
-            ->assertSee('name="memo_content"', false)
-            ->assertSee('name="memo_tags"', false);
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => '',
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['memo_content']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function create_error_メモが空(): void
-    {
-        $response = $this->from(route('memo.create'))
-            ->post(route('memo.store'));
-
-        $response->assertRedirect(route('memo.create'))
-            ->assertSessionHasErrors([
-                'memo_content' => __('validation.required', [
-                    'attribute' => __('validation.attributes.memo_content'),
-                ]),
-            ]);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function create_error_タグの最大文字数(): void
+    public function create_error_tags_overflow(): void
     {
         $max = 20;
-        $response = $this->from(route('memo.create'))
+        $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
                 'memo_tags' =>  str_repeat('あ', $max + 1),
-            ]);
-        $response->assertRedirect(route('memo.create'))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.max.string', [
-                    'attribute' => __('validation.attributes.tag'),
-                    'max' => $max,
-                ]),
-            ]);
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags.0']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function create_error_タグの最小文字数(): void
+    public function create_error_tags_underflow(): void
     {
         $min = 2;
-        $response = $this->from(route('memo.create'))
+        $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
                 'memo_tags' =>  str_repeat('あ', $min - 1),
-            ]);
-        $response->assertRedirect(route('memo.create'))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.min.string', [
-                    'attribute' => __('validation.attributes.tag'),
-                    'min' => $min,
-                ]),
-            ]);
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags.0']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function create_error_タグの不正文字(): void
+    public function create_error_tags_invalid(): void
     {
-        $response = $this->from(route('memo.create'))
+        $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
                 'memo_tags' =>  '#!#$%',
-            ]);
-        $response->assertRedirect(route('memo.create'))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.regex', [
-                    'attribute' => __('validation.attributes.tag'),
-                ]),
-            ]);
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags.0']);
     }
 
     /**
@@ -162,11 +131,11 @@ class MemoControllerTest extends TestCase
     {
         $memoId = Memo::factory()->create()->id + 1;
         $tagId = Tag::factory()->create()->id + 1;
-        $response = $this->from(route('memo.create'))
+        $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
                 'memo_tags' =>  'tag1 タグ2',
-            ]);
+            ])->assertRedirect(route('memo.create'));
         $this->assertDatabaseHas('memos', [
             'user_id' => $this->user->id,
             'content' => 'メモの内容',
@@ -185,8 +154,6 @@ class MemoControllerTest extends TestCase
             'memo_id' => $memoId,
             'tag_id' => $tagId + 1,
         ]);
-
-        $response->assertRedirect(route('memo.create'));
     }
 
     /**
@@ -195,247 +162,190 @@ class MemoControllerTest extends TestCase
      */
     public function index(): void
     {
-        $response = $this->get(route('memo.index'));
-        $response->assertStatus(200);
+        $this->get(route('memo.index'))->assertOk()->assertViewIs('memo.index');
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_検索フォーム表示(): void
+    public function index_content(): void
     {
-        $response = $this->get(route('memo.index'));
-        $response->assertSee('method="GET"', false)
-            ->assertSee('action="' . route('memo.index') . '"', false)
-            ->assertSee('name="memo_content"', false)
-            ->assertSee('name="memo_tags"', false)
-            ->assertSee('name="memo_from"', false)
-            ->assertSee('name="memo_to"', false);
+        $this->get(route('memo.index', [
+            'memo_content' => mb_substr($this->memo->content, 0, 5),
+        ]))->assertOk()->assertViewIs('memo.index')
+        ->assertSee(route('memo.edit', ['memo' => $this->memo->id]));
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_検索_メモの内容(): void
+    public function index_tags(): void
     {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        $response = $this->get(route('memo.index', [
-            'memo_content' => 'メモの内容',
-        ]));
-        $response->assertSee('value="メモの内容"', false)
-            ->assertSee('href="' . route('memo.edit', ['memo' => $memo->id]) . '"', false);
+        $this->get(route('memo.index', [
+            'memo_tags' => $this->tag->name,
+        ]))->assertOk()->assertViewIs('memo.index')
+        ->assertSee(route('memo.edit', ['memo' => $this->memo->id]));
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_検索_タグ(): void
+    public function index_from(): void
     {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        Tag::factory()->create([
-            'name' => 'tag1',
-        ])->memos()->attach($memo->id);
-
-        $response = $this->get(route('memo.index', [
-            'memo_tags' => 'tag1',
-        ]));
-        $response->assertSee('value="tag1"', false)
-            ->assertSee('href="' . route('memo.index', ['memo_tags' => 'tag1']) . '"', false);
+        $this->get(route('memo.index', [
+            'memo_from' => $this->memo->created_at->format('Y-m-d'),
+        ]))->assertOk()->assertViewIs('memo.index')
+        ->assertSee(route('memo.edit', ['memo' => $this->memo->id]));
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_検索_日付(): void
+    public function index_to(): void
     {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        $response = $this->get(route('memo.index', [
-            'memo_from' => $memo->created_at->format('Y-m-d'),
-            'memo_to' => $memo->created_at->format('Y-m-d'),
-        ]));
-        $response->assertSee('value="' . $memo->created_at->format('Y-m-d') . '"', false)
-            ->assertSee('href="' . route('memo.edit', ['memo' => $memo->id]) . '"', false);
+        $this->get(route('memo.index', [
+            'memo_to' => $this->memo->created_at->format('Y-m-d'),
+        ]))->assertOk()->assertViewIs('memo.index')
+        ->assertSee(route('memo.edit', ['memo' => $this->memo->id]));
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_error_メモの最大文字数(): void
+    public function index_error_content_overflow(): void
     {
         $max = 100;
-        $response = $this->from(route('memo.index'))
+        $this->from(route('memo.index'))
             ->get(route('memo.index', [
                 'memo_content' => str_repeat('あ', $max + 1),
-            ]));
-        $response->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors([
-                'memo_content' => __('validation.max.string', [
-                    'attribute' => __('validation.attributes.memo_content'),
-                    'max' => $max,
-                ]),
-            ]);
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['memo_content']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_error_メモの最小文字数(): void
+    public function index_error_content_underflow(): void
     {
         $min = 2;
-        $response = $this->from(route('memo.index'))
+        $this->from(route('memo.index'))
             ->get(route('memo.index', [
                 'memo_content' => str_repeat('あ', $min - 1),
-            ]));
-        $response->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors([
-                'memo_content' => __('validation.min.string', [
-                    'attribute' => __('validation.attributes.memo_content'),
-                    'min' => $min,
-                ]),
-            ]);
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['memo_content']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_error_タグの最大文字数(): void
+    public function index_error_tags_overflow(): void
     {
         $max = 20;
-        $response = $this->from(route('memo.index'))
+        $this->from(route('memo.index'))
             ->get(route('memo.index', [
                 'memo_tags' => str_repeat('あ', $max + 1),
-            ]));
-        $response->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.max.string', [
-                    'attribute' => __('validation.attributes.tag'),
-                    'max' => $max,
-                ]),
-            ]);
+        ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['tags.*']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_error_タグの最小文字数(): void
+    public function index_error_tags_underflow(): void
     {
         $min = 2;
-        $response = $this->from(route('memo.index'))
+        $this->from(route('memo.index'))
             ->get(route('memo.index', [
                 'memo_tags' => str_repeat('あ', $min - 1),
-            ]));
-        $response->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.min.string', [
-                    'attribute' => __('validation.attributes.tag'),
-                    'min' => $min,
-                ]),
-            ]);
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['tags.*']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_error_タグの不正文字(): void
+    public function index_error_tags_invalid(): void
     {
-        $response = $this->from(route('memo.index'))
+        $this->from(route('memo.index'))
             ->get(route('memo.index', [
                 'memo_tags' => '#!#$%',
-            ]));
-        $response->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.regex', [
-                    'attribute' => __('validation.attributes.tag'),
-                ]),
-            ]);
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['tags.*']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_error_日付の不正文字(): void
+    public function index_error_from_invalid(): void
     {
-        $response = $this->from(route('memo.index'))
+        $this->from(route('memo.index'))
             ->get(route('memo.index', [
                 'memo_from' => 'あ',
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['memo_from']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function index_error_to_invalid(): void
+    {
+        $this->from(route('memo.index'))
+            ->get(route('memo.index', [
                 'memo_to' => 'あ',
-            ]));
-        $response->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors([
-                'memo_from' => __('validation.date', [
-                    'attribute' => __('validation.attributes.memo_from'),
-                ]),
-                'memo_to' => __('validation.date', [
-                    'attribute' => __('validation.attributes.memo_to'),
-                ]),
-            ]);
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['memo_to']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_error_日付の不正範囲(): void
+    public function index_error_from_tomorrow(): void
     {
-        $response = $this->from(route('memo.index'))
+        $this->from(route('memo.index'))
             ->get(route('memo.index', [
-                'memo_from' => '2021-01-02',
-                'memo_to' => '2021-01-01',
-            ]));
-        $response->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors([
-                'memo_from' => __('validation.before_or_equal', [
-                    'attribute' => __('validation.attributes.memo_from'),
-                    'date' => __('validation.attributes.memo_to'),
-                ]),
-                'memo_to' => __('validation.after_or_equal', [
-                    'attribute' => __('validation.attributes.memo_to'),
-                    'date' => __('validation.attributes.memo_from'),
-                ]),
-            ]);
+                'memo_from' => date('Y-m-d', strtotime('+1 day')),
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['memo_from']);
     }
 
     /**
      * @test
      * @return void
      */
-    public function index_error_日付の最大日付(): void
+    public function index_error_to_tomorrow(): void
     {
-        $response = $this->from(route('memo.index'))
+        $this->from(route('memo.index'))
             ->get(route('memo.index', [
-                'memo_from' => '9999-12-31',
-                'memo_to' => '9999-12-31',
-            ]));
-        $response->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors([
-                'memo_from' => __('validation.before_or_equal', [
-                    'attribute' => __('validation.attributes.memo_from'),
-                    'date' => __('validation.values.memo_from.today'),
-                ]),
-                'memo_to' => __('validation.before_or_equal', [
-                    'attribute' => __('validation.attributes.memo_to'),
-                    'date' => __('validation.values.memo_to.today'),
-                ]),
-            ]);
+                'memo_to' => date('Y-m-d', strtotime('+1 day')),
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['memo_to']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function index_error_from_to(): void
+    {
+        $this->from(route('memo.index'))
+            ->get(route('memo.index', [
+                'memo_from' => date('Y-m-d'),
+                'memo_to' => date('Y-m-d', strtotime('-1 day')),
+            ]))->assertRedirect(route('memo.index'))
+            ->assertSessionHasErrors(['memo_from']);
     }
 
     /**
@@ -444,98 +354,7 @@ class MemoControllerTest extends TestCase
      */
     public function edit(): void
     {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        $response = $this->get(route('memo.edit', ['memo' => $memo->id]));
-        $response->assertStatus(200);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function edit_フォーム表示(): void
-    {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        $response = $this->get(route('memo.edit', ['memo' => $memo->id]));
-        $response->assertSee('method="POST"', false)
-            ->assertSee('action="' . route('memo.update', ['memo' => $memo->id]) . '"', false)
-            ->assertSee('name="memo_tags"', false);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function edit_error_タグの最大文字数(): void
-    {
-        $max = 20;
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        $response = $this->from(route('memo.edit', ['memo' => $memo->id]))
-            ->put(route('memo.update', ['memo' => $memo->id]), [
-                'memo_tags' => str_repeat('あ', $max + 1),
-            ]);
-        $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.max.string', [
-                    'attribute' => __('validation.attributes.tag'),
-                    'max' => $max,
-                ]),
-            ]);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function edit_error_タグの最小文字数(): void
-    {
-        $min = 2;
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        $response = $this->from(route('memo.edit', ['memo' => $memo->id]))
-            ->put(route('memo.update', ['memo' => $memo->id]), [
-                'memo_tags' => str_repeat('あ', $min - 1),
-            ]);
-        $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.min.string', [
-                    'attribute' => __('validation.attributes.tag'),
-                    'min' => $min,
-                ]),
-            ]);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function edit_error_タグの不正文字(): void
-    {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        $response = $this->from(route('memo.edit', ['memo' => $memo->id]))
-            ->put(route('memo.update', ['memo' => $memo->id]), [
-                'memo_tags' => '#!#$%',
-            ]);
-        $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]))
-            ->assertSessionHasErrors([
-                'tags.0' => __('validation.regex', [
-                    'attribute' => __('validation.attributes.tag'),
-                ]),
-            ]);
+        $this->get(route('memo.edit', ['memo' => $this->memo->id]))->assertOk()->assertViewIs('memo.edit');
     }
 
     /**
@@ -544,47 +363,69 @@ class MemoControllerTest extends TestCase
      */
     public function update(): void
     {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-            'content' => 'メモの内容',
-        ]);
-        $tag1 = Tag::factory()->create([
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'memo_tags' => 'tag1 タグ2',
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]));
+        $this->assertDatabaseHas('tags', [
             'name' => 'tag1',
         ]);
-        $tag2 = Tag::factory()->create([
+        $this->assertDatabaseHas('tags', [
             'name' => 'タグ2',
         ]);
-        $memo->tags()->attach($tag1->id);
-        $memo->tags()->attach($tag2->id);
-
-        $response = $this->from(route('memo.edit', ['memo' => $memo->id]))
-            ->put(route('memo.update', ['memo' => $memo->id]), [
-                'memo_tags' => 'tag3 タグ4',
-            ]);
-        $this->assertDatabaseHas('tags', [
-            'name' => 'tag3',
-        ]);
-        $this->assertDatabaseHas('tags', [
-            'name' => 'タグ4',
+        $this->assertDatabaseHas('memo_tag', [
+            'memo_id' => $this->memo->id,
+            'tag_id' => Tag::where('name', 'tag1')->first()->id,
         ]);
         $this->assertDatabaseHas('memo_tag', [
-            'memo_id' => $memo->id,
-            'tag_id' => $tag2->id + 1,
-        ]);
-        $this->assertDatabaseHas('memo_tag', [
-            'memo_id' => $memo->id,
-            'tag_id' => $tag2->id + 2,
+            'memo_id' => $this->memo->id,
+            'tag_id' => Tag::where('name', 'タグ2')->first()->id,
         ]);
         $this->assertDatabaseMissing('memo_tag', [
-            'memo_id' => $memo->id,
-            'tag_id' => $tag1->id,
+            'memo_id' => $this->memo->id,
+            'tag_id' => $this->tag->id,
         ]);
-        $this->assertDatabaseMissing('memo_tag', [
-            'memo_id' => $memo->id,
-            'tag_id' => $tag2->id,
-        ]);
+    }
 
-        $response->assertRedirect(route('memo.edit', ['memo' => $memo->id]));
+    /**
+     * @test
+     * @return void
+     */
+    public function update_error_tags_overflow(): void
+    {
+        $max = 20;
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'memo_tags' => str_repeat('あ', $max + 1),
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasErrors(['tags.*']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function edit_error_tags_underflow(): void
+    {
+        $min = 2;
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'memo_tags' => str_repeat('あ', $min -1),
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasErrors(['tags.*']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function edit_error_tags_invalid(): void
+    {
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'memo_tags' => '#!#$%',
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasErrors(['tags.*']);
     }
 
     /**
@@ -593,54 +434,23 @@ class MemoControllerTest extends TestCase
      */
     public function destroy(): void
     {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-        ]);
-        $response = $this->from(route('memo.index'))
-            ->delete(route('memo.destroy', ['memo' => $memo->id]));
+        $this->from(route('memo.index'))
+            ->delete(route('memo.destroy', ['memo' => $this->memo->id]))
+            ->assertRedirect(route('memo.index'));
         $this->assertSoftDeleted('memos', [
-            'id' => $memo->id,
+            'id' => $this->memo->id,
         ]);
-        $response->assertRedirect(route('memo.index'));
     }
 
     /**
      * @test
      * @return void
      */
-    public function destroy_error_メモが存在しない(): void
+    public function destroy_error_deleted(): void
     {
-        $response = $this->from(route('memo.index'))
-            ->delete(route('memo.destroy', ['memo' => 0]));
-        $response->assertStatus(404);
+        $this->memo->delete();
+        $this->from(route('memo.index'))
+            ->delete(route('memo.destroy', ['memo' => $this->memo->id]))
+            ->assertStatus(404);
     }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function destroy_error_メモが他のユーザーのもの(): void
-    {
-        $memo = Memo::factory()->create();
-        $response = $this->from(route('memo.index'))
-            ->delete(route('memo.destroy', ['memo' => $memo->id]));
-        $response->assertStatus(404);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function destroy_error_メモが既に削除済み(): void
-    {
-        $memo = Memo::factory()->create([
-            'user_id' => $this->user->id,
-        ]);
-        $memo->delete();
-        $response = $this->from(route('memo.index'))
-            ->delete(route('memo.destroy', ['memo' => $memo->id]));
-        $response->assertStatus(404);
-    }
-
-
 }

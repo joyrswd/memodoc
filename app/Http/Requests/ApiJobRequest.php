@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Services\PartsService;
 use App\Services\ApiJobService;
+use App\Services\MemoService;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ApiJobRequest extends FormRequest
@@ -11,13 +12,14 @@ class ApiJobRequest extends FormRequest
     private $_rules = [
         'job.index' => [
             'job_status' => 'nullable|array',
-            'job_from' => 'nullable|date|before_or_equal:today|exclude_if:job_to,null|before_or_equal:job_to',
-            'job_to' => 'nullable|date|before_or_equal:today|exclude_if:job_from,null|after_or_equal:job_from',
+            'job_status.*' => ['required'],
+            'job_from' => 'nullable|date|before_or_equal:today|exclude_without:job_to|before_or_equal:job_to',
+            'job_to' => 'nullable|date|before_or_equal:today|exclude_without:job_from|after_or_equal:job_from',
         ],
         'job.store' => [
             'regenerate' => ['nullable','integer'],
             'memos' => 'required|array',
-            'memos.*' => 'required|integer|exists:memos,id',
+            'memos.*' => ['required','integer'],
         ],
     ];
 
@@ -31,14 +33,19 @@ class ApiJobRequest extends FormRequest
      */
     private $apiJobService;
 
+    private MemoService $memoService;
+
     /**
      * @param PartsService $partsService
      */
-    public function __construct(PartsService $partsService, ApiJobService $apiJobService)
+    public function __construct(PartsService $partsService, ApiJobService $apiJobService, MemoService $memoService)
     {
         $this->partsService = $partsService;
         $this->apiJobService = $apiJobService;
+        $this->memoService = $memoService;
+        $this->_rules['job.store']['memos.*'][] = function ($attribute, $value, $fail) {$this->isYourMemo($attribute, $value, $fail);};
         $this->_rules['job.store']['regenerate'][] = function ($attribute, $value, $fail) {$this->isRegeneratable($attribute, $value, $fail);};
+        $this->_rules['job.index']['job_status.*'][] = function ($attribute, $value, $fail) {$this->inStatuses($attribute, $value, $fail);};
     }
 
     /**
@@ -93,9 +100,24 @@ class ApiJobRequest extends FormRequest
     {
         $userId = auth()->id();
         $apiJob = $this->apiJobService->getApiJob($userId, $value);
-        if (empty($apiJob) === false && $this->apiJobService->isRegeneratable($apiJob['status']) === false) {
+        if (empty($apiJob) === true || $this->apiJobService->isRegeneratable($apiJob['status']) === false) {
             $fail('再生成できないジョブです。');
         }
     }
 
+    private function inStatuses($attribute, $value, $fail)
+    {
+        if (in_array($value, $this->apiJobService->getStatuses()) === false) {
+            $fail('不正な値が含まれています。');
+        }
+    }
+
+    private function isYourMemo($attribute, $value, $fail)
+    {
+        $userId = auth()->id();
+        $memo = $this->memoService->getMemo($userId, $value);
+        if (empty($memo)) {
+            $fail('不正な値が含まれています。');
+        }
+    }
 }

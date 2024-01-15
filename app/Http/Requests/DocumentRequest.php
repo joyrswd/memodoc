@@ -13,8 +13,8 @@ class DocumentRequest extends FormRequest
         'doc.index' => [
             'doc_title' => 'nullable|min:2|max:100',
             'doc_content' => 'nullable|min:2|max:100',
-            'doc_from' => 'nullable|date|before_or_equal:today|exclude_if:doc_to,null|before_or_equal:doc_to',
-            'doc_to' => 'nullable|date|before_or_equal:today|exclude_if:doc_from,null|after_or_equal:doc_from',
+            'doc_from' => 'nullable|date|before_or_equal:today|exclude_without:doc_to|before_or_equal:doc_to',
+            'doc_to' => 'nullable|date|before_or_equal:today|exclude_without:doc_from|after_or_equal:doc_from',
         ],
         'doc.update' => [
             'doc_title' => 'required|max:255',

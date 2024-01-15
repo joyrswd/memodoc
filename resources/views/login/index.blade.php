@@ -35,6 +35,7 @@
         <span class="d-grid gap-3"><button type="submit" class="btn btn-primary">ログイン</button></span>
     </div>
 </form>
+<p><a href="{{ route('user.entry') }}">新規登録</a></p>
 @endauth
 
 @endsection

@@ -37,18 +37,20 @@ class ApiJobService
 
     public function process(int $id, string $apiName): void
     {
+        Log::info("ジョブID:{$id} APIリクエストを送信します。");
         $this->apiJobRepository->update($id, ['status' => ApiJobRepository::STATUS_PROCESSING, 'api_name' => $apiName]);
     }
 
     public function error(int $id, string $message, array $result): void
     {
         $response = $this->apiJobRepository->encodeResponse($result);
-        Log::error($message . "\n" . $response);
+        Log::error("ジョブID:{$id} {$message}  \n  {$response}");
         $this->apiJobRepository->update($id, ['status' => ApiJobRepository::STATUS_ERROR, 'response' => $response, 'error_message' => $message]);
     }
 
     public function complete(int $id, array $result): void
     {
+        Log::info("ジョブID:{$id} APIリクエストが完了しました。");
         $response = $this->apiJobRepository->encodeResponse($result);
         $this->apiJobRepository->update($id, ['status' => ApiJobRepository::STATUS_PROCESSED, 'response' => $response]);
     }
@@ -60,7 +62,7 @@ class ApiJobService
 
     public function exception(int $id, string $message, string $detail = ''): void
     {
-        Log::error($message . "\n" . $detail);
+        Log::error("ジョブID:{$id} {$message}  \n  {$detail}");
         $this->apiJobRepository->update($id, ['status' => ApiJobRepository::STATUS_ABORTED, 'response' => $detail, 'error_message' => $message]);
     }
 
