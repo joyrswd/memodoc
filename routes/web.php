@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function(){
     Route::put('/parts/{memo}', [PartsController::class, 'add'])->name('parts.add');
     Route::delete('/parts/{memo?}', [PartsController::class, 'remove'])->name('parts.remove');
     Route::resource('doc', DocumentController::class)->except(['show', 'create', 'store']);
+    Route::get('/job/', [ApiJobController::class, 'index'])->name('job.index');
     Route::post('/job/store', [ApiJobController::class, 'store'])->name('job.store');
+    Route::delete('/job/{job}', [ApiJobController::class, 'destroy'])->name('job.destroy');
 });
 

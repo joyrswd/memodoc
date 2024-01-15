@@ -1,13 +1,8 @@
 @extends('common.layout')
 
-@section('title','書類一覧')
+@section('title','文書一覧')
 
 @section('content')
-@if(session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
 <div class="text-end">
     <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#finder" aria-expanded="false" aria-controls="finder">
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -65,13 +60,10 @@
         </tr>
     </thead>
     <tbody class="table-group-divider">
-        @foreach($page as $data)
-        @php
-        $row = $data->toArray();
-        @endphp
+        @foreach($page['data'] as $row)
         <tr>
-            <td class="py-3 text-nowrap">{{ \Carbon\Carbon::parse($row['created_at'])->format('Y-m-d H:i') }}</td>
-            <td class="py-3"><a href="{{route('doc.edit', ['doc' => $row['id']])}}">{{ empty($row['title']) ? '（無題）' : $row['title'] }}</a></td>
+            <td class="py-3 text-nowrap">{{ $row['datetime'] }}</td>
+            <td class="py-3"><a href="{{route('doc.edit', ['doc' => $row['id']])}}">{{ $row['listTitle'] }}</a></td>
             <td class="py-3 text-end">
                 <form action="{{route('doc.destroy', ['doc' => $row['id']])}}" method="POST">
                     @csrf
@@ -89,6 +81,6 @@
     </tbody>
 </table>
 <div class="py-3">
-    {{ $page->withQueryString()->links('pagination::bootstrap-5') }}
+    {{ $page['navigation'] }}
 </div>
 @endsection

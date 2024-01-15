@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\Document;
+use Illuminate\Database\Eloquent\Builder;
 
 class DocumentRepository
 {
@@ -23,7 +24,7 @@ class DocumentRepository
     /**
      * ユーザーIDに紐づくレコードを取得する
      */
-    public function findByUserId(int $userId, array $params)
+    public function findByUserId(int $userId, array $params) : Builder
     {
         $query = Document::query();
         $query->where('user_id', $userId);
@@ -39,7 +40,7 @@ class DocumentRepository
         if (empty($data['to']) === false) {
             $query->where('created_at', '<=', $params['to'] . ' 23:59:59');
         }
-        return $query;
+        return $query->orderBy('created_at', 'desc');
     }
 
     /**

@@ -24,7 +24,7 @@ class PartsController extends Controller
     public function index()
     {
         return view('parts.index', [
-            'items' => $this->partsService->getParts(auth()->user()->id),
+            'items' => $this->partsService->getParts(auth()->id()),
         ]);
     }
 

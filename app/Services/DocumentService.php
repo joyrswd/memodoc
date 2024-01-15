@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Repositories\DocumentRepository;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class DocumentService
 {
@@ -30,9 +29,16 @@ class DocumentService
         return $this->documentRepository->findByIdAndUserId($userId, $documentId);
     }
 
-    public function getDocuments(int $userId, array $params): LengthAwarePaginator
+    public function getDocuments(int $userId, array $params): array
     {
-        return $this->documentRepository->findByUserId($userId, $params)->paginate(10);
+        $pagination = $this->documentRepository->findByUserId($userId, $params)->paginate(10);
+        foreach ($pagination->items() as $item) {
+            $item->listTitle = empty($item->title) ? '（無題）' : $item->title;
+            $item->datetime = $item->created_at->format('Y-m-d H:i');
+        }
+        $data = $pagination->toArray();
+        $data['navigation'] = $pagination->withQueryString()->links('pagination::bootstrap-5');
+        return $data;
     }
 
     public function deleteDocument(int $userId, int $documentId): void

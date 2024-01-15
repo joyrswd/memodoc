@@ -13,6 +13,16 @@
         <div class="row justify-content-center py-4">
             <div class="col-md-7">
                 <div class="container">
+                    @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+                    @if(session('failed'))
+                    <div class="alert alert-danger">
+                        {{ session('failed') }}
+                    </div>
+                    @endif
                     @yield('content')
                 </div>
                 <nav class="navbar navbar-expand-md navbar-dark fixed-bottom bg-dark">
@@ -24,16 +34,21 @@
                         </button>
                         <div class="collapse navbar-collapse" id="navbarCollapse">
                             <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                                <li class="nav-item">
+                                <li class="nav-item pe-2">
                                     <a class="nav-link{{request()->routeIs('memo.create')?' active':''}}" {{request()->routeIs('memo.create')?' aria-current="page"':''}} href="{{route('memo.create')}}">Write</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item pe-1">
                                     <a class="nav-link{{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' active':''}}" {{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' aria-current="page"':''}} href="{{route('memo.index')}}">Memos</a>
                                 </li>
                                 <li class="nav-item pe-2">
                                     @inject('partsService', 'App\Services\PartsService')
                                     @php $count = $partsService->getStatus('count'); @endphp
                                     <a class="position-relative nav-link{{request()->routeIs('parts.index')?' active':''}}" {{request()->routeIs('parts.index')?' aria-current="page"':''}} href="{{route('parts.index')}}">Parts<small><span class="position-absolute badge rounded-pill text-bg-success" id="parts_badge">{{empty($count)?'':$count}}</span></small></a>
+                                </li>
+                                <li class="nav-item pe-2">
+                                    @inject('jobService', 'App\Services\ApiJobService')
+                                    @php $count = $jobService->getUpcomingCount(auth()->id()); @endphp
+                                    <a class="position-relative nav-link{{request()->routeIs('job.index')?' active':''}}" {{request()->routeIs('job.index')?' aria-current="page"':''}} href="{{route('job.index')}}">Jobs<small><span class="position-absolute badge rounded-pill text-bg-success" id="job_badge">{{empty($count)?'':$count}}</span></small></a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link{{request()->routeIs('doc.index')||request()->routeIs('doc.edit')?' active':''}}" {{request()->routeIs('doc.index')||request()->routeIs('doc.edit')?' aria-current="page"':''}} href="{{route('doc.index')}}">Docs</a>

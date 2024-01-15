@@ -1,13 +1,8 @@
 @extends('common.layout')
 
-@section('title','書類更新')
+@section('title','文書更新')
 
 @section('content')
-@if(session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
 <form action="{{route('doc.update', ['doc' => $document['id']])}}" method="POST">
     @csrf
     @method('PUT')
