@@ -4,7 +4,7 @@ namespace App\Services;
 use App\Repositories\MemoRepository;
 use App\Repositories\TagRepository;
 use App\Repositories\PartsRepository;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 class MemoService
 {
@@ -52,11 +52,18 @@ class MemoService
      * 
      * @param int $userId
      * @param array<string, mixed> $params
-     * @return LengthAwarePaginator
      */
-    public function getMemos(int $userId, array $params): LengthAwarePaginator
+    public function getMemos(int $userId, array $params): array
     {
-        return $this->memoRepository->findByUserId($userId, $params)->paginate(10);
+        $pagination = $this->memoRepository->findByUserId($userId, $params)->paginate(10);
+        foreach ($pagination->items() as $item) {
+            $item->datetime = $item->created_at->format('Y-m-d H:i');
+            $item->intro = Str::limit($item->content, 30, '...');
+            $item->tagNames = $item->tags->pluck('name')->toArray();
+        }
+        $data = $pagination->toArray();
+        $data['navigation'] = $pagination->withQueryString()->links('pagination::bootstrap-5');
+        return $data;
     }
 
     /**

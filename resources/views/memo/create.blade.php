@@ -3,11 +3,6 @@
 @section('title','メモ作成')
 
 @section('content')
-@if(session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
 <form action="{{route('memo.store')}}" method="POST">
     @csrf
     <div class="mt-3">

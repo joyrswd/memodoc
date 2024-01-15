@@ -3,11 +3,6 @@
 @section('title','パーツ一覧')
 
 @section('content')
-@if(session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
 <table class="table">
     <thead>
         <tr>
@@ -20,8 +15,8 @@
     <tbody class="table-group-divider">
         @foreach($items as $row)
         <tr>
-            <td class="py-3">{{ \Carbon\Carbon::parse($row['created_at'])->format('Y-m-d H:i') }}</td>
-            <td class="py-3"><a href="{{route('memo.edit', ['memo' => $row['id']])}}">{{ Str::limit($row['content'], 30, '...') }}</a></td>
+            <td class="py-3">{{ $row['datetime'] }}</td>
+            <td class="py-3"><a href="{{route('memo.edit', ['memo' => $row['id']])}}">{{ $row['intro'] }}</a></td>
             <td class="py-3">
                 @foreach($row['tags'] as $tag)
                 <a href="{{route('memo.index', ['memo_tags' => $tag])}}" class="badge bg-secondary">{{ $tag }}</a>

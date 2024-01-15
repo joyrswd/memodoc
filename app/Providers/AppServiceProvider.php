@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         // {memo}の作成者がログインユーザーと一致するかチェック
         Route::bind('memo', function ($value) use ($memoService) {
             $int = filter_var($value, FILTER_VALIDATE_INT);
-            if (is_int($int) && $memoService->getMemo(auth()->user()->id, $int)) {
+            if (is_int($int) && $memoService->getMemo(auth()->id(), $int)) {
                 return $int;
             }
             abort(404);
@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
         // {doc}の作成者がログインユーザーと一致するかチェック
         Route::bind('doc', function ($value) use ($documentService) {
             $int = filter_var($value, FILTER_VALIDATE_INT);
-            if (is_int($int) && $documentService->getDocument(auth()->user()->id, $int)) {
+            if (is_int($int) && $documentService->getDocument(auth()->id(), $int)) {
                 return $int;
             }
             abort(404);

@@ -63,7 +63,7 @@ class DocumentController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->documentService->deleteDocument(auth()->user()->id, $id);
+        $this->documentService->deleteDocument(auth()->id(), $id);
         return back()->with('success', __('deleted'));
     }
 }

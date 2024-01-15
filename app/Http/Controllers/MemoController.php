@@ -38,7 +38,7 @@ class MemoController extends Controller
     public function index(MemoRequest $request)
     {
         return view('memo.index', [
-            'page' => $this->memoService->getMemos(auth()->user()->id, [
+            'page' => $this->memoService->getMemos(auth()->id(), [
                 'content' => $request->input('memo_content'),
                 'tags' => $request->input('tags'),
                 'from' => $request->input('memo_from'),
@@ -63,7 +63,7 @@ class MemoController extends Controller
     public function store(MemoRequest $request)
     {
         $this->memoService->addMemoAndTags([
-            'user_id' => auth()->user()->id,
+            'user_id' => auth()->id(),
             'content' => $request->input('memo_content'),
             'tags' => $request->input('tags'),
         ]);
@@ -76,7 +76,7 @@ class MemoController extends Controller
     public function edit(string $id)
     {
         return view('memo.edit', [
-            'memo' => $this->memoService->getMemo(auth()->user()->id, $id),
+            'memo' => $this->memoService->getMemo(auth()->id(), $id),
         ]);
         //
     }
@@ -98,7 +98,7 @@ class MemoController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->memoService->deleteMemo(auth()->user()->id, $id);
+        $this->memoService->deleteMemo(auth()->id(), $id);
         return back()->with('success', __('deleted'));
     }
 }

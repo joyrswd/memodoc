@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Repositories\PartsRepository;
 use App\Repositories\MemoRepository;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class PartsService
 {
@@ -74,6 +75,9 @@ class PartsService
         foreach ($items as $item) {
             $memo = $this->memoRepository->findByIdAndUserId($userId, $item->value);
             if ($memo) {
+                //日付をフォーマット
+                $memo['datetime'] = date('Y-m-d', strtotime($memo['created_at']));
+                $memo['intro'] = Str::limit($memo['content'], 30, '...');
                 $result[] = $memo;
             } else {
                 $this->partsRepository->remove($item->value);

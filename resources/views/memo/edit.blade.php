@@ -3,11 +3,6 @@
 @section('title','メモ更新')
 
 @section('content')
-@if(session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
 <form action="{{route('memo.update', ['memo' => $memo['id']])}}" method="POST">
     @csrf
     @method('PUT')

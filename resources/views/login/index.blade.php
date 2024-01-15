@@ -3,12 +3,6 @@
 @section('title','ログイン')
 
 @section('content')
-@if(session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
-
 @auth
 <div class="text-center">
     <p><strong>{{ auth()->user()->name }}</strong>でログイン中です。</p>

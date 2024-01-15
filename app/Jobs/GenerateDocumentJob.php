@@ -23,11 +23,10 @@ class GenerateDocumentJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(int $userId, int $jobId, ApiJobService $jobService)
+    public function __construct(int $userId, int $jobId)
     {
         $this->userId = $userId;
         $this->jobId = $jobId;
-        $jobService->queue($jobId);
     }
 
     /**
@@ -35,9 +34,9 @@ class GenerateDocumentJob implements ShouldQueue
      */
     public function handle(AiApiServiceInterface $apiService, DocumentService $documentService, ApiJobService $jobService): void
     {
-        $limit = $apiService->getDailyLimit();
-        if($jobService->underDailyLimit($limit) === false) {
-            $jobService->exception($this->jobId, 'リクエスト回数上限に達しました。');
+        if (($message = $this->isDeleted($jobService))
+                || ($message = $this->isOverLimit($jobService, $apiService->getDailyLimit()))) {
+            $jobService->exception($this->jobId, $message);
             return;
         }
         try {
@@ -45,20 +44,42 @@ class GenerateDocumentJob implements ShouldQueue
             $contents = $jobService->getMemoContents($this->jobId);
             $apiResponse = $apiService->sendRequest($contents);
         } catch (\Exception $e) {
-            $jobService->exception($this->jobId, $e->getMessage(), 'エラーが発生したため中断されました。');
+            $jobService->exception($this->jobId, 'エラーが発生したため中断されました。', $e->getMessage());
             return;
         }
         if($apiService->isError($apiResponse)) {
-            $jobService->error($this->jobId, $apiResponse);
+            $jobService->error($this->jobId, 'APIのリクエストに失敗しました', $apiResponse);
         } else {
             $jobService->complete($this->jobId, $apiResponse);
-            // APIレスポンスからタイトルと本文を取得する
-            $title = $apiService->getTitle($apiResponse);
-            $content = $apiService->getContent($apiResponse, $title);
-            // メモのIDを取得して、文書を保存する
-            $memoIds = $jobService->getMemoIds($this->jobId);
-            $documentService->addDocument($this->userId, $this->jobId, $title, $content, $memoIds);
+            $this->createDocuemnt($apiService, $documentService, $apiResponse, $jobService->getMemoIds($this->jobId));
             $jobService->success($this->jobId);
         }
+    }
+
+    private function createDocuemnt(AiApiServiceInterface $apiService, DocumentService $documentService, array $apiResponse, array $memoIds): void
+    {
+        $title = $apiService->getTitle($apiResponse);
+        $content = $apiService->getContent($apiResponse, $title);
+        $documentService->addDocument($this->userId, $this->jobId, $title, $content, $memoIds);
+    }
+
+    private function isOverLimit(ApiJobService $jobService, int $limit): ?string
+    {
+        // リクエスト回数が上限に達している場合は、ジョブを中断する
+        if($jobService->underDailyLimit($limit) === false) {
+            $message = 'リクエスト回数上限に達したため、処理を中断しました。';
+            return $message;
+        }
+        return null;
+    }
+
+    private function isDeleted(ApiJobService $jobService): ?string
+    {
+        // ジョブが削除されている場合は、ジョブを中断する
+        if(empty($jobService->getApiJob($this->userId, $this->jobId))) {
+            $message = 'ジョブが削除されているため、処理を中断しました。';
+            return $message;
+        }
+        return null;
     }
 }
