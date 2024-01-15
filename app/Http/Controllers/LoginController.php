@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class LoginController extends Controller
 {
@@ -28,4 +29,25 @@ class LoginController extends Controller
         auth()->logout();
         return redirect()->route('home')->with('success', __('auth.logout'));
     }
+
+    /**
+     * メール認証
+     */
+    public function notice()
+    {
+        return view('login.notice');
+    }
+
+    public function resend()
+    {
+        auth()->user()->sendEmailVerificationNotification();
+        return back()->with('success', '認証メールを再送信しました。');
+    }
+
+    public function verify(EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+        return redirect()->route('memo.create')->with('success', 'メール認証が完了しました。');
+    }    
+
 }

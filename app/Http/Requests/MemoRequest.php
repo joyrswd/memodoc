@@ -12,8 +12,8 @@ class MemoRequest extends FormRequest
     private $_rules = [
         'memo.index' => [
             'memo_content' => 'nullable|min:2|max:100',
-            'memo_from' => 'nullable|date|before_or_equal:today|exclude_if:memo_to,null|before_or_equal:memo_to',
-            'memo_to' => 'nullable|date|before_or_equal:today|exclude_if:memo_from,null|after_or_equal:memo_from',
+            'memo_from' => 'nullable|date|before_or_equal:today|exclude_without:memo_to|before_or_equal:memo_to',
+            'memo_to' => 'nullable|date|before_or_equal:today|exclude_without:memo_from|after_or_equal:memo_from',
         ],
         'memo.store' => [
             'memo_content' => 'required|min:5|max:140',

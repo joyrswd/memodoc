@@ -34,6 +34,7 @@
                         </button>
                         <div class="collapse navbar-collapse" id="navbarCollapse">
                             <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                                @if(auth()->user()->email_verified_at)
                                 <li class="nav-item pe-2">
                                     <a class="nav-link{{request()->routeIs('memo.create')?' active':''}}" {{request()->routeIs('memo.create')?' aria-current="page"':''}} href="{{route('memo.create')}}">Write</a>
                                 </li>
@@ -53,6 +54,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link{{request()->routeIs('doc.index')||request()->routeIs('doc.edit')?' active':''}}" {{request()->routeIs('doc.index')||request()->routeIs('doc.edit')?' aria-current="page"':''}} href="{{route('doc.index')}}">Docs</a>
                                 </li>
+                                @endif
                             </ul>
                             <div class="d-lg-flex col-lg-3 justify-content-lg-end">
                                 <a class="btn btn-sm btn-secondary" href="{{route('logout')}}">ログアウト</a>
@@ -84,7 +86,13 @@
     <script>
         (function() {
             // エラー時当該フォーム強調
-            document.querySelectorAll('.invalid-feedback').forEach(element => element.previousElementSibling.classList.add('is-invalid'));
+            document.querySelectorAll('.invalid-feedback').forEach((element) => {
+                let prevElem = element.previousElementSibling;
+                prevElem.classList.add('is-invalid');
+                if (prevElem = prevElem.querySelector('.form-control')) {
+                    prevElem.classList.add('is-invalid');
+                }
+            });
             // ツールチップ
             [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(element => new bootstrap.Tooltip(element));
             // モーダルダイアログ

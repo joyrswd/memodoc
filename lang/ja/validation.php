@@ -193,12 +193,31 @@ return [
         'memo_content' => 'メモ',
         'memo_from' => '日付(開始)',
         'memo_to' => '日付(終了)',
+        'doc_title' => 'タイトル',
+        'doc_content' => '本文',
+        'doc_from' => '日付(開始)',
+        'doc_to' => '日付(終了)',
+        'job_from' => '日付(開始)',
+        'job_to' => '日付(終了)',
+        'job_status' => 'ステータス',
     ],
     'values' => [
         'memo_from' => [
             'today' => '今日',
         ],
         'memo_to' => [
+            'today' => '今日',
+        ],
+        'doc_from' => [
+            'today' => '今日',
+        ],
+        'doc_to' => [
+            'today' => '今日',
+        ],
+        'job_from' => [
+            'today' => '今日',
+        ],
+        'job_to' => [
             'today' => '今日',
         ],
     ],

@@ -6,6 +6,7 @@ use App\Http\Controllers\MemoController;
 use App\Http\Controllers\PartsController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ApiJobController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +21,21 @@ use App\Http\Controllers\ApiJobController;
 
 // ログイン画面表示
 Route::get('/',function(){return view('login.index');})->name('home');
-Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function(){
+Route::middleware('guest')->group(function(){
+    Route::post('/login', [LoginController::class, 'login'])->name('login');
+    Route::get('/user/entry', [UserController::class, 'entry'])->name('user.entry');
+    Route::post('/user/register', [UserController::class, 'register'])->name('user.register');
+});
+
+Route::group(['middleware' =>'auth', 'prefix' => 'email', 'as' => 'verification.'], function(){
+    Route::get('notice', [LoginController::class, 'notice'])->name('notice');
+    Route::get('verify/{id}/{hash}',[LoginController::class, 'verify'])->middleware('signed')->name('verify');
+    Route::post('resend', [LoginController::class, 'resend'])->name('resend');
+});
+
+Route::middleware(['auth', 'verified'])->group(function(){
     Route::resource('memo', MemoController::class)->except(['show']);
     Route::get('/parts/', [PartsController::class, 'index'])->name('parts.index');
     Route::put('/parts/{memo}', [PartsController::class, 'add'])->name('parts.add');

@@ -37,7 +37,7 @@
                     <label class="form-check-label" for="status_{{$status}}">{{$status}}</label>
                 </span>
                 @endforeach
-                @error('job_status')
+                @error('job_status.*')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
             </div>
