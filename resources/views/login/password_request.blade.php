@@ -9,7 +9,7 @@
         <div class="row mt-3">
             <label for="email" class="col-sm-3 col-form-label text-end text-nowrap">メールアドレス</label>
             <div class="col-sm-9">
-                <div class="col-md-8"><input type="email" class="form-control" name="email" id="email" value="{{old('email')}}"></div>
+                <div class="col-md-8"><input type="email" class="form-control" name="email" id="email" value="{{old('email')}}" required></div>
                 @error('email')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror

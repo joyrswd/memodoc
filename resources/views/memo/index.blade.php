@@ -15,7 +15,7 @@
         <div class="row mt-3">
             <label for="content" class="col-sm-2 col-form-label">メモ</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="memo_content" id="content" value="{{old('memo_content', request()->input('memo_content'))}}">
+                <input type="text" class="form-control" minlength="2" maxlength="100" name="memo_content" id="content" value="{{old('memo_content', request()->input('memo_content'))}}">
                 @error('memo_content')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -24,7 +24,7 @@
         <div class="row mt-3">
             <label for="tags" class="col-sm-2 col-form-label">タグ</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="memo_tags" id="tags" value="{{old('memo_tags', request()->input('memo_tags'))}}">
+                <input type="text" class="form-control" name="memo_tags" minlength="2" maxlength="100" id="tags" value="{{old('memo_tags', request()->input('memo_tags'))}}">
                 @error('tags.*')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -34,8 +34,8 @@
             <label for="from" class="col-sm-2 col-form-label">日付</label>
             <div class="col-sm-10">
                 <div class="row">
-                    <span class="col-auto"><input type="text" class="form-control" name="memo_from" id="from" value="{{old('memo_from', request()->input('memo_from'))}}" placeholder="開始"></span>
-                    <span class="col-auto"><input type="text" class="form-control" name="memo_to" id="to" value="{{old('memo_to', request()->input('memo_to'))}}" placeholder="終了"></span>
+                    <span class="col-auto"><input type="date" max="{{date('Y-m-d')}}" class="form-control" name="memo_from" id="from" value="{{old('memo_from', request()->input('memo_from'))}}" placeholder="開始"></span>
+                    <span class="col-auto"><input type="date" max="{{date('Y-m-d')}}" class="form-control" name="memo_to" id="to" value="{{old('memo_to', request()->input('memo_to'))}}" placeholder="終了"></span>
                 </div>
                 @error('memo_from')
                 <span class="invalid-feedback">{{ $message }}</span>
