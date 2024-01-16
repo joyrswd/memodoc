@@ -12,58 +12,58 @@
     <div class="container">
         <div class="row justify-content-center py-4">
             <div class="col-md-7">
-                <div class="container">
-                    @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                    @endif
-                    @if(session('failed'))
-                    <div class="alert alert-danger">
-                        {{ session('failed') }}
-                    </div>
-                    @endif
-                    @yield('content')
+                @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
                 </div>
-                <nav class="navbar navbar-expand-md navbar-dark fixed-bottom bg-dark">
-                    <div class="container-fluid">
-                        <a class="navbar-brand" href="{{route('home')}}">{{config('app.name')}}</a>
-                        @auth
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarCollapse">
-                            <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                                @if(auth()->user()->email_verified_at)
-                                <li class="nav-item pe-2">
-                                    <a class="nav-link{{request()->routeIs('memo.create')?' active':''}}" {{request()->routeIs('memo.create')?' aria-current="page"':''}} href="{{route('memo.create')}}">Write</a>
-                                </li>
-                                <li class="nav-item pe-1">
-                                    <a class="nav-link{{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' active':''}}" {{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' aria-current="page"':''}} href="{{route('memo.index')}}">Memos</a>
-                                </li>
-                                <li class="nav-item pe-2">
-                                    @inject('partsService', 'App\Services\PartsService')
-                                    @php $count = $partsService->getStatus('count'); @endphp
-                                    <a class="position-relative nav-link{{request()->routeIs('parts.index')?' active':''}}" {{request()->routeIs('parts.index')?' aria-current="page"':''}} href="{{route('parts.index')}}">Parts<small><span class="position-absolute badge rounded-pill text-bg-success" id="parts_badge">{{empty($count)?'':$count}}</span></small></a>
-                                </li>
-                                <li class="nav-item pe-2">
-                                    @inject('jobService', 'App\Services\ApiJobService')
-                                    @php $count = $jobService->getUpcomingCount(auth()->id()); @endphp
-                                    <a class="position-relative nav-link{{request()->routeIs('job.index')?' active':''}}" {{request()->routeIs('job.index')?' aria-current="page"':''}} href="{{route('job.index')}}">Jobs<small><span class="position-absolute badge rounded-pill text-bg-success" id="job_badge">{{empty($count)?'':$count}}</span></small></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link{{request()->routeIs('doc.index')||request()->routeIs('doc.edit')?' active':''}}" {{request()->routeIs('doc.index')||request()->routeIs('doc.edit')?' aria-current="page"':''}} href="{{route('doc.index')}}">Docs</a>
-                                </li>
-                                @endif
-                            </ul>
-                            <div class="d-lg-flex col-lg-3 justify-content-lg-end">
-                                <a class="btn btn-sm btn-secondary" href="{{route('logout')}}">ログアウト</a>
-                            </div>
-                        </div>
-                        @endauth
-                    </div>
-                </nav>
+                @endif
+                @if(session('failed'))
+                <div class="alert alert-danger">
+                    {{ session('failed') }}
+                </div>
+                @endif
+                <main class="row justify-content-center">
+                    @yield('content')
+                </main>
             </div>
+            <nav class="navbar navbar-expand-md navbar-dark fixed-bottom bg-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="{{route('home')}}">{{config('app.name')}}</a>
+                    @auth
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                            @if(auth()->user()->hasVerifiedEmail())
+                            <li class="nav-item pe-2">
+                                <a class="nav-link{{request()->routeIs('memo.create')?' active':''}}" {{request()->routeIs('memo.create')?' aria-current="page"':''}} href="{{route('memo.create')}}">Write</a>
+                            </li>
+                            <li class="nav-item pe-1">
+                                <a class="nav-link{{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' active':''}}" {{request()->routeIs('memo.index')||request()->routeIs('memo.edit')?' aria-current="page"':''}} href="{{route('memo.index')}}">Memos</a>
+                            </li>
+                            <li class="nav-item pe-2">
+                                @inject('partsService', 'App\Services\PartsService')
+                                @php $count = $partsService->getStatus('count'); @endphp
+                                <a class="position-relative nav-link{{request()->routeIs('parts.index')?' active':''}}" {{request()->routeIs('parts.index')?' aria-current="page"':''}} href="{{route('parts.index')}}">Parts<small><span class="position-absolute badge rounded-pill text-bg-success" id="parts_badge">{{empty($count)?'':$count}}</span></small></a>
+                            </li>
+                            <li class="nav-item pe-2">
+                                @inject('jobService', 'App\Services\ApiJobService')
+                                @php $count = $jobService->getUpcomingCount(auth()->id()); @endphp
+                                <a class="position-relative nav-link{{request()->routeIs('job.index')?' active':''}}" {{request()->routeIs('job.index')?' aria-current="page"':''}} href="{{route('job.index')}}">Jobs<small><span class="position-absolute badge rounded-pill text-bg-success" id="job_badge">{{empty($count)?'':$count}}</span></small></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link{{request()->routeIs('doc.index')||request()->routeIs('doc.edit')?' active':''}}" {{request()->routeIs('doc.index')||request()->routeIs('doc.edit')?' aria-current="page"':''}} href="{{route('doc.index')}}">Docs</a>
+                            </li>
+                            @endif
+                        </ul>
+                        <div class="d-lg-flex col-lg-3 justify-content-lg-end">
+                            <a class="btn btn-sm btn-secondary" href="{{route('logout')}}">ログアウト</a>
+                        </div>
+                    </div>
+                    @endauth
+                </div>
+            </nav>
         </div>
     </div>
     <div class="modal" id="modal" tabindex="-1">
@@ -115,7 +115,9 @@
                         modal.button.addEventListener('click', modalEvent => {
                             // 参照元のフォームに送信処理を設定しなおしてsubmitイベントを発火させる
                             // (フォームに設定されている他のsubmitイベントを発火させた後に通常の送信処理を実行させるため)
-                            element.form.addEventListener('submit', ev => element.form.submit(), {once: true});
+                            element.form.addEventListener('submit', ev => element.form.submit(), {
+                                once: true
+                            });
                             element.form.dispatchEvent(new Event('submit'));
                             // モーダルを閉じる
                             myModal.hide();

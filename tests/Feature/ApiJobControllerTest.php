@@ -123,7 +123,7 @@ class ApiJobControllerTest extends TestCase
     {
         // ジョブディスパッチを迂回する
         Bus::fake();
-        // 登録済みのジョブから書類を再作成する
+        // 登録済みのジョブから文書を再作成する
         $this->from('job.index')->post(route('job.store', ['regenerate' => $this->apiJob->id]))->assertRedirect(route('job.index'));
         //ジョブが登録されていることを確認
         Bus::assertDispatched(GenerateDocumentJob::class);

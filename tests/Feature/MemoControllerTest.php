@@ -135,7 +135,7 @@ class MemoControllerTest extends TestCase
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
                 'memo_tags' =>  'tag1 タグ2',
-            ])->assertRedirect(route('memo.create'));
+            ])->assertRedirect(route('memo.index'));
         $this->assertDatabaseHas('memos', [
             'user_id' => $this->user->id,
             'content' => 'メモの内容',
@@ -154,6 +154,20 @@ class MemoControllerTest extends TestCase
             'memo_id' => $memoId,
             'tag_id' => $tagId + 1,
         ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_with_add_next_redirect(): void
+    {
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' =>  'メモの内容',
+                'memo_tags' =>  'tag1 タグ2',
+                'add_next' => 1,
+            ])->assertRedirect(route('memo.create'));
     }
 
     /**

@@ -14,12 +14,12 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
-    public function entry()
+    public function create()
     {
-        return view('user.entry');
+        return view('user.create');
     }
 
-    public function register(UserRequest $request)
+    public function store(UserRequest $request)
     {
         $this->userService->register([
             'name' => $request->input('user_name'),

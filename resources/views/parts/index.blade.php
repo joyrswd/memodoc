@@ -55,7 +55,7 @@
             @csrf
             <span class="d-grid gap-3">
                 <input type="hidden" name="generate" value="memo">
-                <button type="submit" {{empty($items)?' disabled':''}} class="btn btn-primary" data-dialog='{"title":"内容確認","body":"こちらのメモから文書を作成します。よろしいですか？"}'>作成</button>
+                <button type="submit" {{empty($items)?' disabled':''}} class="btn btn-primary" data-dialog='{"title":"内容確認","body":"こちらのメモから文書生成します。よろしいですか？"}'>文書生成</button>
             </span>
         </form>
     </div>

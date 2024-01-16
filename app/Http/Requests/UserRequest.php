@@ -7,10 +7,10 @@ use Illuminate\Foundation\Http\FormRequest;
 class UserRequest extends FormRequest
 {
     private array $_rules = [
-        'user.register' => [
-            'user_name' => 'required|alpha_dash|min:3|max:255|unique:users,name',
+        'user.store' => [
+            'user_name' => 'required|regex:/^[A-Za-z\d_-]+$/|min:3|max:255|unique:users,name',
             'user_email' => 'required|email|max:255|unique:users,email',
-            'user_password' => 'required|min:8|max:255|confirmed',
+            'user_password' => 'required|regex:/^[!-~]+$/|min:8|max:255|confirmed',
             'user_password_confirmation' => 'required',
         ],
     ];
