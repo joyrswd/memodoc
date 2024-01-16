@@ -9,7 +9,7 @@
         <div class="row mt-3">
             <label for="name" class="col-sm-3 col-form-label text-end text-nowrap">ユーザーID</label>
             <div class="col-sm-9">
-                <div class="col-md-5"><input type="text" class="form-control" placeholder="半角英数_-のみ" name="user_name" id="name" value="{{old('user_name')}}"></div>
+                <div class="col-md-5"><input type="text" class="form-control" minlength="3" maxlength="255" placeholder="半角英数_-のみ" name="user_name" id="name" value="{{old('user_name')}}" required></div>
                 @error('user_name')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -18,7 +18,7 @@
         <div class="row mt-3">
             <label for="email" class="col-sm-3 col-form-label text-end text-nowrap">メールアドレス</label>
             <div class="col-sm-9">
-                <div class="col-md-8"><input type="email" class="form-control" name="user_email" id="email" value="{{old('user_email')}}"></div>
+                <div class="col-md-8"><input type="email" class="form-control" name="user_email" id="email" value="{{old('user_email')}}" required></div>
                 @error('user_email')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -27,11 +27,11 @@
         <div class="row mt-3">
             <label for="password" class="col-sm-3 col-form-label text-end text-nowrap">パスワード</label>
             <div class="col-sm-9">
-                <div class="col-md-6"><input type="password" class="form-control" placeholder="半角英数記号8文字以上" min="8" name="user_password" id="password" value=""></div>
+                <div class="col-md-6"><input type="password" class="form-control" minlength="8" maxlength="255" placeholder="半角英数記号8文字以上" name="user_password" id="password" value="" required></div>
                 @error('user_password')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
-                <div class="col-md-6"><input type="password" class="form-control mt-2" placeholder="（確認）" name="user_password_confirmation" id="password_confirmation" value=""></div>
+                <div class="col-md-6"><input type="password" class="form-control mt-2" minlength="8" maxlength="255" placeholder="（確認）" name="user_password_confirmation" id="password_confirmation" value="" required></div>
                 @error('user_password_confirmation')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror

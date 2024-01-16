@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Memo;
 use App\Services\MemoService;
 use App\Services\PartsService;
 use App\Http\Requests\MemoRequest;
-use Illuminate\Http\Request;
 
 use function Psy\debug;
 

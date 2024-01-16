@@ -15,7 +15,7 @@
         <div class="row mt-3">
             <label for="title" class="col-sm-2 col-form-label">タイトル</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="doc_title" id="title" value="{{old('doc_title', request()->input('doc_title'))}}">
+                <input type="text" class="form-control" name="doc_title" minlength="2" maxlength="100" id="title" value="{{old('doc_title', request()->input('doc_title'))}}">
                 @error('doc_title')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -24,7 +24,7 @@
         <div class="row mt-3">
             <label for="content" class="col-sm-2 col-form-label">本文</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="doc_content" id="content" value="{{old('doc_content', request()->input('doc_content'))}}">
+                <input type="text" class="form-control" name="doc_content" minlength="2" maxlength="100" id="content" value="{{old('doc_content', request()->input('doc_content'))}}">
                 @error('doc_content')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -34,8 +34,8 @@
             <label for="from" class="col-sm-2 col-form-label">日付</label>
             <div class="col-sm-10">
                 <div class="row">
-                    <span class="col-auto"><input type="text" class="form-control" name="doc_from" id="from" value="{{old('doc_from', request()->input('doc_from'))}}" placeholder="開始"></span>
-                    <span class="col-auto"><input type="text" class="form-control" name="doc_to" id="to" value="{{old('doc_to', request()->input('doc_to'))}}" placeholder="終了"></span>
+                    <span class="col-auto"><input type="date" max="{{date('Y-m-d')}}" class="form-control" name="doc_from" id="from" value="{{old('doc_from', request()->input('doc_from'))}}" placeholder="開始"></span>
+                    <span class="col-auto"><input type="date" max="{{date('Y-m-d')}}" class="form-control" name="doc_to" id="to" value="{{old('doc_to', request()->input('doc_to'))}}" placeholder="終了"></span>
                 </div>
                 @error('doc_from')
                 <span class="invalid-feedback">{{ $message }}</span>

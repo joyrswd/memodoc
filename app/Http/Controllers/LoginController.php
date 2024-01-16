@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Http\Requests\LoginRequest;
 use App\Services\PasswordService;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -80,7 +79,7 @@ class LoginController extends Controller
     public function passwordEmail(LoginRequest $request)
     {
         $result = $this->passwordService->sendResetLink($request->only('email'));
-        return $result ? back()->with(['success' => 'パスワードリセットメールを送信しました。'])
+        return $result ? back()->with(['success' => 'パスワード再設定メールを送信しました。'])
             : back()->withErrors(['email' => [$this->passwordService->getMessage()]]);
     }
 

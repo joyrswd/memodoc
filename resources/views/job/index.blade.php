@@ -16,8 +16,8 @@
             <label for="from" class="col-sm-2 col-form-label">日付</label>
             <div class="col-sm-10">
                 <div class="row">
-                    <span class="col-auto"><input type="text" class="form-control" name="job_from" id="from" value="{{old('job_from', request()->input('job_from'))}}" placeholder="開始"></span>
-                    <span class="col-auto"><input type="text" class="form-control" name="job_to" id="to" value="{{old('job_to', request()->input('job_to'))}}" placeholder="終了"></span>
+                    <span class="col-auto"><input type="date" max="{{date('Y-m-d')}}" class="form-control" name="job_from" id="from" value="{{old('job_from', request()->input('job_from'))}}" placeholder="開始"></span>
+                    <span class="col-auto"><input type="date" max="{{date('Y-m-d')}}" class="form-control" name="job_to" id="to" value="{{old('job_to', request()->input('job_to'))}}" placeholder="終了"></span>
                 </div>
                 @error('job_from')
                 <span class="invalid-feedback">{{ $message }}</span>
