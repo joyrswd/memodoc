@@ -3,25 +3,33 @@
 @section('title','メモ作成')
 
 @section('content')
-<form action="{{route('memo.store')}}" method="POST">
-    @csrf
-    <div class="mt-3">
-        <label for="content">メモ</label>
-        <textarea class="form-control" name="memo_content" id="content" rows="7">{{old('memo_content')}}</textarea>
-        @error('memo_content')
-        <span class="invalid-feedback">{{ $message }}</span>
-        @enderror
+<div class="position-absolute top-50 start-50 translate-middle col-md-5">
+    <form action="{{route('memo.store')}}" method="POST">
+        @csrf
+        <div class="mt-3">
+            <label for="content">メモ</label>
+            <textarea class="form-control" name="memo_content" id="content" rows="7">{{old('memo_content')}}</textarea>
+            @error('memo_content')
+            <span class="invalid-feedback">{{ $message }}</span>
+            @enderror
+        </div>
+        <div class="mt-3">
+            <label for="tags">タグ</label>
+            <input type="text" class="form-control" name="memo_tags" id="tags" value="{{old('memo_tags')}}">
+            @error('tags.*')
+            <span class="invalid-feedback">{{ $message }}</span>
+            @enderror
+        </div>
+        <div class="mt-3 small">
+            <input type="checkbox" class="form-check-input" name="add_next" id="add_next" value="1"{{old('add_next')?' checked' : ''}}>
+            <label for="add_next" class="form-check-label">連続作成</label>
+        </div>
+        <div class="mt-3 col-lg-6 mx-auto">
+            <span class="d-grid gap-3"><button type="submit" class="btn btn-primary">メモ保存</button></span>
+        </div>
+    </form>
+    <div class="mt-3 col-lg-3 mx-auto">
+        <span class="d-grid gap-3"><a href="{{route('memo.index')}}" class="btn btn-sm btn-secondary">メモ一覧へ</a></span>
     </div>
-    <div class="mt-3">
-        <label for="tags">タグ</label>
-        <input type="text" class="form-control" name="memo_tags" id="tags" value="{{old('memo_tags')}}">
-        @error('tags.*')
-        <span class="invalid-feedback">{{ $message }}</span>
-        @enderror
-    </div>
-    <div class="mt-5 col-lg-6 mx-auto">
-        <span class="d-grid gap-3"><button type="submit" class="btn btn-primary">作成</button></span>
-    </div>
-</form>
-
+</div>
 @endsection

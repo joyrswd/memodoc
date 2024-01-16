@@ -2,19 +2,21 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Repositories\UserRepository;
 
 class UserService
 {
+
+    private UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function register(array $params): void
     {
-        $user = new User();
-        $user->fill($params);
-        $user->save();
-        // 登録後認証用メールを送信
-        event(new Registered($user));
-        // ログイン
-        auth()->login($user);
+        $userId = $this->userRepository->store($params);
+        auth()->loginUsingId($userId);
     }
 }

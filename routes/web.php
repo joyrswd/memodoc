@@ -25,14 +25,20 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware('guest')->group(function(){
     Route::post('/login', [LoginController::class, 'login'])->name('login');
-    Route::get('/user/entry', [UserController::class, 'entry'])->name('user.entry');
-    Route::post('/user/register', [UserController::class, 'register'])->name('user.register');
+    Route::get('/user/entry', [UserController::class, 'create'])->name('user.create');
+    Route::post('/user/register', [UserController::class, 'store'])->name('user.store');
+    Route::group(['prefix' => 'password', 'as' => 'password.'], function(){
+        Route::get('request', [LoginController::class, 'passwordRequest'])->name('request');
+        Route::post('email', [LoginController::class, 'passwordEmail'])->name('email');
+        Route::get('reset/{token}', [LoginController::class, 'passwordReset'])->name('reset');
+        Route::post('reset', [LoginController::class, 'passwordUpdate'])->name('update');
+    });
 });
 
-Route::group(['middleware' =>'auth', 'prefix' => 'email', 'as' => 'verification.'], function(){
-    Route::get('notice', [LoginController::class, 'notice'])->name('notice');
-    Route::get('verify/{id}/{hash}',[LoginController::class, 'verify'])->middleware('signed')->name('verify');
-    Route::post('resend', [LoginController::class, 'resend'])->name('resend');
+Route::group(['middleware' =>'not.verified', 'prefix' => 'email', 'as' => 'verification.'], function(){
+    Route::get('notice', [LoginController::class, 'emailNotice'])->name('notice');
+    Route::get('verify/{id}/{hash}',[LoginController::class, 'emailVerify'])->middleware('signed')->name('verify');
+    Route::post('resend', [LoginController::class, 'emailResend'])->name('resend');
 });
 
 Route::middleware(['auth', 'verified'])->group(function(){

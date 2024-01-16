@@ -140,7 +140,7 @@ class ApiJobRepository
     }
 
     /**
-     * これから生成される書類のステータスを取得する
+     * これから生成される文書のステータスを取得する
      */
     public function getUpcomingStatuses(): array
     {
