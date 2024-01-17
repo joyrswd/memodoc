@@ -6,7 +6,7 @@ return [
         'model' => 'gpt-3.5-turbo',
         'secret' => null, // ご自身で取得して設定してください。
         'timeout' => 120,
-        'daily_limit'=> 0,
+        'daily_limit'=> 0, //サイト全体の1日のリクエスト制限数（0は無制限）
         'prompt' => <<<EOM
 userから入力される{count}個のメモを参考にして、タイトル付きの文章を作成してください。
 EOM // 上記はプロンプト例になります。
