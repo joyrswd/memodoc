@@ -56,7 +56,7 @@ class ApiJobRepository
      */
     public function countToday(): int
     {
-        return ApiJob::whereDate('started_at', now())->count();
+        return ApiJob::withTrashed()->whereDate('started_at', now())->count();
     }
 
     /**
