@@ -66,9 +66,12 @@ class ApiJobService
         $this->apiJobRepository->update($id, ['status' => ApiJobRepository::STATUS_ABORTED, 'response' => $detail, 'error_message' => $message]);
     }
 
+    /**
+     * 1日のリクエスト回数制限を超えていないか（0の場合は無制限）
+     */
     public function underDailyLimit(int $limit): bool
     {
-        return $this->apiJobRepository->countToday() < $limit;
+        return ($limit === 0 || $this->apiJobRepository->countToday() < $limit);
     }
 
     public function getMemoContents(int $id): array

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Services\PasswordService;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -61,7 +62,12 @@ class LoginController extends Controller
      */
     public function emailResend()
     {
-        auth()->user()->sendEmailVerificationNotification();
+        try {
+            auth()->user()->sendEmailVerificationNotification();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return back()->with(['failed' => 'メール認証メールの送信に失敗しました。']);
+        }
         return back()->with('success', '認証メールを再送信しました。');
     }
 
