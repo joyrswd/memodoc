@@ -2,12 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\MemoService;
-use App\Services\ApiJobService;
-use App\Services\DocumentService;
 use App\Services\OpenAiApiService;
 use App\Interfaces\AiApiServiceInterface;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,31 +22,8 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(MemoService $memoService, DocumentService $documentService, ApiJobService $apiJobService): void
+    public function boot(): void
     {
-        // {memo}の作成者がログインユーザーと一致するかチェック
-        Route::bind('memo', function ($value) use ($memoService) {
-            $int = filter_var($value, FILTER_VALIDATE_INT);
-            if (is_int($int) && $memoService->getMemo(auth()->id(), $int)) {
-                return $int;
-            }
-            abort(404);
-        });
-        // {doc}の作成者がログインユーザーと一致するかチェック
-        Route::bind('doc', function ($value) use ($documentService) {
-            $int = filter_var($value, FILTER_VALIDATE_INT);
-            if (is_int($int) && $documentService->getDocument(auth()->id(), $int)) {
-                return $int;
-            }
-            abort(404);
-        });
-        // {apiJob}の作成者がログインユーザーと一致するかチェック
-        Route::bind('job', function ($value) use ($apiJobService) {
-            $int = filter_var($value, FILTER_VALIDATE_INT);
-            if (is_int($int) && $apiJobService->getApiJob(auth()->id(), $int)) {
-                return $int;
-            }
-            abort(404);
-        });
+        //
     }
 }

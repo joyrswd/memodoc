@@ -102,4 +102,7 @@
 <div class="py-3">
     {{ $page['navigation'] }}
 </div>
+<div class="mt-3 col-lg-3 mx-auto">
+    <span class="d-grid gap-3"><a href="{{route('parts.index')}}" class="btn btn-sm btn-secondary">パーツ一覧へ</a></span>
+</div>
 @endsection

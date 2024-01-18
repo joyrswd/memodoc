@@ -221,7 +221,8 @@ class LoginControllerTest extends TestCase
     public function password_reset(): void
     {
         $token = $this->createToken();
-        $this->get(route('password.reset', ['token' => $token]))
+        $email = $this->user->email;
+        $this->get(route('password.reset', ['token' => $token, 'email' => $email]))
         ->assertOk()
         ->assertViewIs('login.password_reset');
     }

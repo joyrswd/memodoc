@@ -2,26 +2,36 @@
 
 namespace App\Services;
 
-use App\Jobs\GenerateDocumentJob;
 use App\Repositories\ApiJobRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class ApiJobService
 {
-    private $apiJobRepository;
+    private ApiJobRepository $apiJobRepository;
 
     public function __construct(ApiJobRepository $apiJobRepository)
     {
         $this->apiJobRepository = $apiJobRepository;
     }
 
-    public function prepare(int $userId, array $memos): bool
+    public function bind(mixed $value): int
+    {
+        $int = filter_var($value, FILTER_VALIDATE_INT);
+        if (is_int($int) && $this->getApiJob(auth()->id(), $int)) {
+            return $int;
+        }
+        abort(404);
+        return 1;
+    }
+
+    public function prepare(int $userId, array $memos, \Closure $dispather): bool
     {
         $result = true;
         $jobId = $this->apiJobRepository->store($userId, $memos);
         try {
-            GenerateDocumentJob::dispatch($userId, $jobId, $this);
+            $dispather($userId, $jobId, $this);
             $this->queue($jobId);
         } catch (\Throwable $e) {
             $this->exception($jobId, 'ジョブの登録に失敗しました。', $e->getMessage());
