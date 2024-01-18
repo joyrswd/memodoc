@@ -57,7 +57,7 @@ graph TB
     end
     DB[(データベース)]
     Model <--> DB
-    Route --> Bootstrap --> Middleware --> Controller
+    Route --> Middleware --> Controller
     PartsRepository --> Session
 
     LoginController --> UserService 
