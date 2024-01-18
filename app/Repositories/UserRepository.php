@@ -16,8 +16,13 @@ class UserRepository
         $user = new User();
         $user->fill($params);
         $user->save();
-        // 登録後のイベントを発行
-        event(new Registered($user));
+        try {
+            // 登録後のイベントを発行
+            event(new Registered($user));
+        } catch (\Exception $e) {
+            // エラー時はログ出力
+            Log::error($e->getMessage());
+        }
         return $user->id;
     }
 
