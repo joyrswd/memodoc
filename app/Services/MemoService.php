@@ -35,6 +35,16 @@ class MemoService
         $this->partsRepository = $partsRepository;
     }
 
+    public function bind(mixed $value): int
+    {
+        $int = filter_var($value, FILTER_VALIDATE_INT);
+        if (is_int($int) && $this->getMemo(auth()->id(), $int)) {
+            return $int;
+        }
+        abort(404);
+    }
+
+
     /**
      * @param array<string, mixed> $params
      */
