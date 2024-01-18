@@ -19,4 +19,11 @@ class UserService
         $userId = $this->userRepository->store($params);
         auth()->loginUsingId($userId);
     }
+
+    public function getUserNameByEmail(string $email): ?string
+    {
+        $user = $this->userRepository->findByEmail($email);
+        return $user['name'] ?? null;
+    }
+
 }

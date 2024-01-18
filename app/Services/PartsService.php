@@ -37,11 +37,11 @@ class PartsService
     {
         if ($this->partsRepository->isUnderLimit() === false) {
             return $this->setError('これ以上追加できません。');
-        }
-        if ($this->partsRepository->add($id) === true) {
+        } elseif ($this->partsRepository->add($id) === false) {
+            return $this->setError('すでに存在しています。');
+        } else {
             return $this->setSuccess('追加しました。');
         }
-        return $this->setError('すでに存在しています。');
     }
 
     /**

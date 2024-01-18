@@ -5,9 +5,12 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 
 class UserRepository
 {
+    private string $passwordResetStatus;
     /**
      * 新規追加
      */
@@ -19,7 +22,7 @@ class UserRepository
         try {
             // 登録後のイベントを発行
             event(new Registered($user));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // エラー時はログ出力
             Log::error($e->getMessage());
         }
@@ -27,25 +30,80 @@ class UserRepository
     }
 
     /**
-     * IDで取得
+     * メールアドレスからユーザー名を取得
      */
-    public function getById(int $id): array
+    public function findByEmail(string $email): array
     {
-        return User::find($id)->toArray();
+        $user = User::where('email', $email)->first();
+        if ($user === null) {
+            return [];
+        }
+        return $user->toArray();
     }
 
     /**
-     * パスワードリセットのコールバックメソッドを取得
+     * トークンとメールアドレスの組み合わせが正しいかチェック
      */
-    public function getPasswordResetCallback(): \Closure
+    public function checkTokenWithEmail(string $email, string $token): bool
     {
-        return function (User $user, string $password) {
+        $user = User::where('email', $email)->first();
+        if ($user === null) {
+            return false;
+        }
+        return Password::tokenExists($user, $token);
+    }
+
+    /**
+     * パスワードリセットメール送信
+     */
+    public function sendResetPasswordLink(array $params): string
+    {
+        $this->passwordResetStatus = Password::sendResetLink($params);
+        return ($this->passwordResetStatus === Password::RESET_LINK_SENT);
+    }
+
+    /**
+     * パスワードリセット
+     */
+    public function resetPassword(array $params): bool
+    {
+        $this->passwordResetStatus = Password::reset($params, function (User $user, string $password) {
             $user->forceFill([
                 'password' => Hash::make($password)
             ]);
             $user->save();
-            event(new PasswordReset($user));
-        };
+            try {
+                // パスワードリセット後のイベントを発行
+                event(new PasswordReset($user));
+            } catch (\Throwable $e) {
+                // エラー時はログ出力
+                Log::error($e->getMessage());
+            }
+        });
+        return ($this->passwordResetStatus === Password::PASSWORD_RESET);
+    }
+
+    /**
+     * パスワードリセット処理結果
+     */
+    public function getPasswordResetStatus(): string
+    {
+        return $this->passwordResetStatus;
+    }
+
+    /**
+     * メール認証メール送信
+     */
+    public function sendVerification(int $id): bool
+    {
+        $user = User::find($id);
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
+        return true;
     }
 
 }
