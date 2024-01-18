@@ -121,6 +121,9 @@ class OpenAiApiService implements AiApiServiceInterface
      */
     private function makeMessages(string $prompt, array $parts): array
     {
+        if (empty($parts)) {
+            throw new \Exception('有効な$partsが無いため処理を中断しました。');
+        }
         // $partsの数量を$promptに含める
         $content = str_replace('{count}', count($parts), $prompt);
         $messages = [

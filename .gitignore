@@ -20,3 +20,4 @@ yarn-error.log
 /config/api.php
 docker-compose.yml
 .editorconfig
+outsource.blade.php

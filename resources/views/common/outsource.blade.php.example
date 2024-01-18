@@ -1,0 +1,6 @@
+<script>
+  /*
+    Google Analyticsなど、外部のリソースを呼ぶ場合は、
+    このファイルに記載してoutsource.blade.phpとリネームしてください。
+  */
+</script>
