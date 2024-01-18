@@ -3,18 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Services\PasswordService;
+use App\Services\LoginService;
+use App\Services\UserService;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
 
-    private PasswordService $passwordService;
+    private UserService $userService;
+    private LoginService $loginService;
 
-    public function __construct(PasswordService $passwordService)
+    public function __construct(UserService $userService, LoginService $loginService)
     {
-        $this->passwordService = $passwordService;
+        $this->userService = $userService;
+        $this->loginService = $loginService;
     }
 
     // ログイン処理
@@ -62,13 +64,9 @@ class LoginController extends Controller
      */
     public function emailResend()
     {
-        try {
-            auth()->user()->sendEmailVerificationNotification();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return back()->with(['failed' => 'メール認証メールの送信に失敗しました。']);
-        }
-        return back()->with('success', '認証メールを再送信しました。');
+        $result = $this->loginService->sendVerification(auth()->id());
+        return $result ? back()->with('success', '認証メールを再送信しました。')
+                        : back()->with(['failed' => 'メール認証メールの送信に失敗しました。']);
     }
 
     /**
@@ -84,9 +82,9 @@ class LoginController extends Controller
      */
     public function passwordEmail(LoginRequest $request)
     {
-        $result = $this->passwordService->sendResetLink($request->only('email'));
+        $result = $this->loginService->sendResetPasswordLink($request->only('email'));
         return $result ? back()->with(['success' => 'パスワード再設定メールを送信しました。'])
-            : back()->withErrors(['email' => [$this->passwordService->getMessage()]]);
+            : back()->withErrors(['email' => [$this->loginService->getErrorMessage()]]);
     }
 
     /**
@@ -102,8 +100,13 @@ class LoginController extends Controller
      */
     public function passwordUpdate(LoginRequest $request)
     {
-        $result = $this->passwordService->reset($request->only('email', 'password', 'password_confirmation', 'token'));
-        return $result ? redirect()->route('home')->with('success', 'パスワードを再設定しました。')
-            : back()->withErrors(['email' => [$this->passwordService->getMessage()]]);
+        $result = $this->loginService->resetPassword($request->only('email', 'password', 'password_confirmation', 'token'));
+        if ($result) {
+            $userName = $this->userService->getUserNameByEmail($request->input('email'));
+            return redirect()->route('home')->with('success', 'パスワードを再設定しました。')->withInput(['name' => $userName]);
+        } else {
+            $message = $this->loginService->getErrorMessage();
+            return back()->withErrors(['email' => [$message]]);
+        }
     }
 }

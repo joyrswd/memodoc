@@ -19,6 +19,15 @@ class DocumentService
         $this->documentRepository = $documentRepository;
     }
 
+    public function bind (mixed $value): int
+    {
+        $int = filter_var($value, FILTER_VALIDATE_INT);
+        if (is_int($int) && $this->getDocument(auth()->id(), $int)) {
+            return $int;
+        }
+        abort(404);
+    }
+
     public function addDocument(int $userId, int $jobId, string $title, string $content, array $memoIds): int
     {
         return $this->documentRepository->store($userId, $jobId, $title, $content, $memoIds);

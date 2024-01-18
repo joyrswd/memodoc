@@ -4,18 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Services\ApiJobService;
 use App\Http\Requests\ApiJobRequest;
+use App\Jobs\GenerateDocumentJob;
 
 class ApiJobController extends Controller
 {
 
-    /**
-     * @var ApiJobService
-     */
-    private $apiJobService;
+    private ApiJobService $apiJobService;
 
-    /**
-     * @param ApiJobService $apiJobService
-     */
     public function __construct(ApiJobService $apiJobService)
     {
         $this->apiJobService = $apiJobService;
@@ -42,7 +37,7 @@ class ApiJobController extends Controller
     public function store(ApiJobRequest $request)
     {
         $userId = auth()->id();
-        $result = $this->apiJobService->prepare($userId, $request->input('memos'));
+        $result = $this->apiJobService->prepare($userId, $request->input('memos'), fn(...$args) => GenerateDocumentJob::dispatch(...$args));
         if ($result === true) {
             if ($request->has('regenerate')) {
                 //　再作成の場合は元のジョブを削除
