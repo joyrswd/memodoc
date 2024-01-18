@@ -29,8 +29,10 @@ api_job ||--|{ api_job_memo : ""
 | 列名       | データ型     | 制約           | 説明         |
 |------------|--------------|----------------|--------------|
 | id         | INT          | PK             | ユーザーID   |
-| name       | VARCHAR(255) | NOT NULL       | ユーザー名（半角英数字_-のみ）   |
-| password   | VARCHAR(255) | NOT NULL       | パスワード   |
+| name       | VARCHAR(255) | UK, NOT NULL | ユーザー名（半角英数字_-のみ）   |
+| email      | VARCHAR(255) | UK, NOT NULL       | メールアドレス   |
+| password   | VARCHAR(255) | NOT NULL  | パスワード   |
+| email_verified_at | timestamp | |メール認証日時 |
 | created_at | timestamp    | DEFAULT current_timestamp   | 作成日時     |
 | updated_at | timestamp    | DEFAULT NULL   | 更新日時     |
 | deleted_at | timestamp    | DEFAULT NULL   | 削除日時     |
