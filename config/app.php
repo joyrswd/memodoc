@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Tokyo',
 
     /*
     |--------------------------------------------------------------------------
@@ -186,8 +186,8 @@ return [
     ])->toArray(),
 
     'admin' => [
-        'name' => env('ADMIN_NAME', 'admin'),
-        'email' => env('ADMIN_EMAIL', 'email@localhost'),
-        'password' => env('ADMIN_PASSWORD', 'password'),
+        'name' => env('ADMIN_USER_NAME', 'admin'),
+        'email' => env('ADMIN_USER_EMAIL', 'email@localhost'),
+        'password' => env('ADMIN_USER_PASSWORD', 'password'),
     ]
 ];
