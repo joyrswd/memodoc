@@ -17,7 +17,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/config/api.php
 docker-compose.yml
 .editorconfig
-outsource.blade.php
