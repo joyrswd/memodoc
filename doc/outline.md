@@ -76,6 +76,7 @@ graph LR
     H(素材メモから文書生成)
     I[ユーザー登録]
     J[パスワードリマインダー]
+    K[操作マニュアル]
 
     subgraph Navi[ナビゲーション]
         Navi1(メモ作成リンク)
@@ -142,6 +143,7 @@ graph LR
     H .-o E
     A .-> I
     A .-> J
+    A .-> K
     Navi1 --> B1
     Navi2 --> D
     Navi3 --> F2

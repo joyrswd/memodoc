@@ -31,5 +31,6 @@
         </div>
     </form>
     @endauth
+    <p class="text-center"><a href="{{ route('about') }}" class="text-secondary-emphasis" style="font-size:x-small;">当サイトについて</a></p>
 </div>
 @endsection
