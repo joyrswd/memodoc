@@ -41,7 +41,7 @@ class GenerateDocumentJob implements ShouldQueue
             $jobService->process($this->jobId, $apiService->getKey());
             $contents = $jobService->getMemoContents($this->jobId);
             $apiResponse = $apiService->sendRequest($contents);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $jobService->exception($this->jobId, 'エラーが発生したため中断されました。', $e->getMessage());
             return;
         }
