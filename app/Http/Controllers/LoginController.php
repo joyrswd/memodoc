@@ -109,4 +109,12 @@ class LoginController extends Controller
             return back()->withErrors(['email' => [$message]]);
         }
     }
+
+    /**
+     * アバウト画面表示
+     */
+    public function about()
+    {
+        return view('login.about');
+    }
 }

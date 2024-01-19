@@ -16,7 +16,7 @@
             @error('name')
             <span class="invalid-feedback">{{ $message }}</span>
             @enderror
-            <a class="float-end mt-2 text-info-emphasis" style="font-size:x-small;" href="{{ route('user.create') }}">新規登録</a>
+            <a class="float-end mt-2 text-info-emphasis" style="font-size:small;" href="{{ route('user.create') }}">新規登録</a>
         </div>
         <div class="overflow-hidden">
             <label for="password" class="form-label">{{__('validation.attributes.password')}}</label>
@@ -24,12 +24,13 @@
             @error('password')
             <span class="invalid-feedback">{{ $message }}</span>
             @enderror
-            <a class="float-end mt-2 text-info-emphasis" style="font-size:x-small;" href="{{ route('password.request') }}">再設定</a>
+            <a class="float-end mt-2 text-info-emphasis" style="font-size:small;" href="{{ route('password.request') }}">再設定</a>
         </div>
         <div class="mt-4 col-lg-6 mx-auto">
             <span class="d-grid gap-3"><button type="submit" class="btn btn-primary">ログイン</button></span>
         </div>
     </form>
     @endauth
+    <p class="text-center"><a href="{{ route('about') }}" class="text-secondary-emphasis" style="font-size:small;">当サイトについて</a></p>
 </div>
 @endsection

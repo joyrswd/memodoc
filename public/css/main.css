@@ -1,0 +1,88 @@
+.steps {
+    overflow: hidden;
+}
+
+.steps .row {
+    margin-top: 1.5em;
+    padding-bottom: 1.5em;
+    border-bottom: ridge 1px #000000;
+}
+
+.steps em {
+    display: block;
+    font-weight: bold;
+    font-size: 3em;
+    text-shadow: -1px -1px 1px #000000, 1px 1px #999999;
+    opacity: 0.4;
+    -webkit-text-fill-color: transparent;
+    min-width: 1em;
+}
+
+.steps p {
+    margin: 0;
+    font-size: 1em;
+}
+
+.steps p:has(img) {
+    text-align: center;
+}
+
+span.viewer {
+    display: inline-block;
+    height: 100px;
+    padding: 3px;
+    border: 1px solid (0, 0, 0, 0.5);
+    border-radius: 0.5em;
+    box-shadow: 0 0 0.5em #000;
+    margin: 0.5em;
+}
+
+span.viewer>label {
+    display: inline-block;
+    height: 100%;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: 0.3s;
+}
+
+span.viewer>label:hover {
+    opacity: 0.5;
+}
+
+span.viewer>label>input[type="checkbox"] {
+    display: none;
+}
+
+span.viewer>label>img {
+    vertical-align: middle;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+span.viewer:has(input[type="checkbox"]:checked) {
+    border-color: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+span.viewer>label:has(input[type="checkbox"]:checked) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+span.viewer>label>input[type="checkbox"]:checked+img {
+    width: auto;
+    height: auto;
+    max-width: 95%;
+    max-height: 80%;
+}
