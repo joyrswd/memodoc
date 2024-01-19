@@ -370,4 +370,14 @@ class LoginControllerTest extends TestCase
         ])->assertRedirect(route('password.reset', ['token' => $token]))
         ->assertSessionHasErrors(['password']);
     }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function about(): void
+    {
+        $this->get(route('about'))->assertOk()->assertViewIs('login.about');
+        $this->get(route('home'))->assertSee(route('about'), false);
+    }
 }
