@@ -22,6 +22,7 @@ use App\Http\Controllers\UserController;
 // ログイン画面表示
 Route::get('/',function(){return view('login.index');})->name('home');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/about', [LoginController::class, 'about'])->name('about');
 
 Route::middleware('guest')->group(function(){
     Route::post('/login', [LoginController::class, 'login'])->name('login');

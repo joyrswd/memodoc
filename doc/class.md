@@ -1,3 +1,4 @@
+# クラス構成
 ## クラス相関図
 ```mermaid
 graph TB
@@ -107,6 +108,7 @@ graph TB
 |再設定メール|POST|/password/email|再設定メール送信|
 |新パスワード入力|GET|/password/reset/{token}|パスワード入力枠表示<br> パスワード入力枠表示|
 |新パスワード登録|POST|/password/reset|新パスワード保存|
+|マニュアル表示|GET|/about|サイト概要と操作方法の説明|
 
 #### UserController
 | 機能名       | リクエスト     | URI           | 機能概要         |
