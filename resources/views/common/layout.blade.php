@@ -7,11 +7,12 @@
     <title>@yield('title') - {{config('app.name')}}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     @includeIf('common.outsource')
+    <link rel="stylesheet" href="{{asset('css/main.css')}}">
 </head>
 
 <body>
     <div class="container">
-        <div class="row justify-content-center py-4">
+        <div class="row justify-content-center pb-5">
             <div class="col-md-7">
                 @if(session('success'))
                 <div class="alert alert-success">
@@ -23,7 +24,7 @@
                     {{ session('failed') }}
                 </div>
                 @endif
-                <main class="row justify-content-center">
+                <main class="row justify-content-center pt-5">
                     @yield('content')
                 </main>
             </div>
