@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="dark">
-
 <head>
+    @php $nonce = Str::random(16); @endphp
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-{{$nonce}}' https://cdn.jsdelivr.net/">
     <title>@yield('title') - {{config('app.name')}}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    @includeIf('common.outsource')
+    @includeIf('common.outsource', ['nonce' => $nonce])
     <link rel="stylesheet" href="{{asset('css/main.css')}}">
 </head>
 
@@ -84,107 +85,8 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script>
-        (function() {
-            // エラー時当該フォーム強調
-            document.querySelectorAll('.invalid-feedback').forEach((element) => {
-                let prevElem = element.previousElementSibling;
-                prevElem.classList.add('is-invalid');
-                if (prevElem = prevElem.querySelector('.form-control')) {
-                    prevElem.classList.add('is-invalid');
-                }
-            });
-            // ツールチップ
-            [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(element => new bootstrap.Tooltip(element));
-            // モーダルダイアログ
-            const modal = document.querySelector('#modal');
-            const myModal = new bootstrap.Modal(modal);
-            modal.button = modal.querySelector('.modal-footer .btn-primary');
-            modal.setTexts = (properties) => {
-                for (const [key, text] of Object.entries(properties)) {
-                    const query = '.modal-' + key;
-                    modal.querySelector(query).textContent = text;
-                }
-            };
-            document.querySelectorAll('[data-dialog]').forEach(element => {
-                element.addEventListener('click', event => {
-                    let texts = {};
-                    event.preventDefault();
-                    try {
-                        texts = JSON.parse(element.dataset.dialog);
-                        modal.button.classList.remove('d-none');
-                        modal.button.addEventListener('click', modalEvent => {
-                            // 参照元のフォームに送信処理を設定しなおしてsubmitイベントを発火させる
-                            // (フォームに設定されている他のsubmitイベントを発火させた後に通常の送信処理を実行させるため)
-                            element.form.addEventListener('submit', ev => element.form.submit(), {
-                                once: true
-                            });
-                            element.form.dispatchEvent(new Event('submit'));
-                            // モーダルを閉じる
-                            myModal.hide();
-                        }, {
-                            once: true
-                        });
-                    } catch (e) {
-                        texts = {
-                            title: 'エラー',
-                            body: e.message,
-                        };
-                        modal.button.classList.add('d-none');
-                    }
-                    modal.setTexts(texts);
-                    myModal.show();
-                });
-            }, false);
-
-            // パーツ追加・削除
-            document.querySelectorAll('[data-parts]').forEach(element => {
-                const command = element.dataset.parts;
-                element.addEventListener('submit', event => {
-                    event.preventDefault();
-                    event.stopImmediatePropagation(); //以降のsubmitイベントを強制キャンセル
-                    const form = event.target;
-                    const request = new Request(form.action, {
-                        method: form.method,
-                        body: new FormData(form),
-                    });
-                    fetch(request).then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error('Network response was not ok.');
-                        }
-                    }).then(data => {
-                        if (data.status === 'success') {
-                            if (command === 'add') {
-                                form.querySelector('button').disabled = true;
-                            } else if (command === 'remove') {
-                                //elementに設定されたtooltipを削除
-                                form.querySelectorAll('button').forEach(button => {
-                                    const tooltip = bootstrap.Tooltip.getInstance(button);
-                                    if (tooltip) {
-                                        tooltip.dispose();
-                                    }
-                                });
-                                const tr = form.closest('tr');
-                                if (tr) {
-                                    tr.remove();
-                                } else if (data.count == 0) {
-                                    document.querySelectorAll('tbody.table-group-divider>tr').forEach(tr => tr.remove());
-                                }
-                            }
-                            document.querySelector('#parts_badge').textContent = (data.count) ? data.count : '';
-                        } else {
-                            throw new Error(data.message);
-                        }
-                    }).catch(error => {
-                        alert(error.message);
-                    });
-                });
-            });
-        })();
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" nonce="{{$nonce}}" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script type="module" src="/js/main.js"></script>
     @yield('asset')
 </body>
 </html>
