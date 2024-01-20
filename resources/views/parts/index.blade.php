@@ -63,19 +63,5 @@
 @endsection
 
 @section('asset')
-<script>
-    (function() {
-        // tableが空になったらsubmitボタンを無効化する
-        const observer = new MutationObserver(records => {
-            const tbody = records[0].target;
-            if (tbody.childElementCount === 0) {
-                document.querySelectorAll('button[type="submit"]').forEach(button => button.disabled = true);
-            }
-        });
-        observer.observe(document.querySelector('table.table'), {
-            childList: true,
-            subtree: true
-        });
-    })();
-</script>
+<script src="/js/parts.js"></script>
 @endsection
