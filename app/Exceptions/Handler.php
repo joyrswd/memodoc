@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Exceptions\MailReport;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -38,6 +39,9 @@ class Handler extends ExceptionHandler
         });
     }
 
+    /**
+     * Report or log an exception.
+     */
     public function report(Throwable $exception)
     {
         if ($this->shouldReport($exception)) {
@@ -45,6 +49,17 @@ class Handler extends ExceptionHandler
         }
 
         parent::report($exception);
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     */
+    public function render($request, Throwable $exception)
+    {
+        if($exception instanceof MethodNotAllowedHttpException){
+            return abort('404');
+        }
+        return parent::render($request, $exception);
     }
 
 }

@@ -86,3 +86,7 @@ span.viewer>label>input[type="checkbox"]:checked+img {
     max-width: 95%;
     max-height: 80%;
 }
+
+a.small-link {
+    font-size: small;
+}
