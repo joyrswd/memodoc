@@ -3,16 +3,17 @@
 namespace App\Exceptions;
 
 use App\Exceptions\MailReport;
+use App\Exceptions\ErrorRenderer;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
     private MailReport $mailReport;
+    private ErrorRenderer $errorRenderer;
 
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
@@ -25,9 +26,10 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    public function __construct(Container $container, MailReport $mailReport)
+    public function __construct(Container $container, MailReport $mailReport, ErrorRenderer $errorRenderer)
     {
         $this->mailReport = $mailReport;
+        $this->errorRenderer = $errorRenderer;
         parent::__construct($container);
     }
 
@@ -63,33 +65,7 @@ class Handler extends ExceptionHandler
         || $request->expectsJson()) {
             return parent::render($request, $exception);
         }
-        $code = $this->isHttpException($exception) ? $exception->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
-        $title = $this->getStatusTitle($code);
-        return response()->view('common.error', compact('code', 'title'), $code);
-    }
-
-    /**
-     * Get status title
-     */
-    private function getStatusTitle(int $code): string
-    {
-        $reflection = new \ReflectionClass(Response::class);
-        $codes = $reflection->getConstants();
-        $key = array_search($code, $codes);
-        if (empty($key)) {
-            return 'Unknown Error Occurred';
-        }
-        return $this->generateTitle($key);
-    }
-
-    /**
-     * Generate title
-     */
-    private function generateTitle(string $label): string
-    {
-        $lower = strtolower($label);
-        $phrase = str_replace(['http_','_'], ['', ' '], $lower);
-        return ucwords($phrase);
+        return $this->errorRenderer->render($exception, $this->isHttpException($exception));
     }
 
 }
