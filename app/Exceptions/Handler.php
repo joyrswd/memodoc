@@ -65,7 +65,8 @@ class Handler extends ExceptionHandler
         || $request->expectsJson()) {
             return parent::render($request, $exception);
         }
-        return $this->errorRenderer->render($exception, $this->isHttpException($exception));
+        $preparedException = $this->prepareException($exception);
+        return $this->errorRenderer->render($preparedException, $this->isHttpException($preparedException));
     }
 
 }

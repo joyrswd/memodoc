@@ -11,7 +11,7 @@ class ErrorRenderer
     public function render(\Throwable $exception, bool $isException): Response
     {
         $code = $this->getStatusCode($exception, $isException);
-        $title = $this->getStatusTitle($code);
+        $title = $this->getStatusTitle($code, $exception->getMessage());
         return response()->view('common.error', compact('code', 'title'), $code);
     }
 
@@ -26,13 +26,13 @@ class ErrorRenderer
     /**
      * Get status title
      */
-    private function getStatusTitle(int $code): string
+    private function getStatusTitle(int $code, ?string $message=null): string
     {
         $reflection = new \ReflectionClass(Response::class);
         $codes = $reflection->getConstants();
         $key = array_search($code, $codes);
         if (empty($key)) {
-            return 'Unknown Error Occurred';
+            return empty($message) ? 'Unknown error occurred' : $message;
         }
         return $this->generateTitle($key);
     }
@@ -44,7 +44,7 @@ class ErrorRenderer
     {
         $lower = strtolower($label);
         $phrase = str_replace(['http_','_'], ['', ' '], $lower);
-        return ucwords($phrase);
+        return ucfirst($phrase);
     }
 
 }
