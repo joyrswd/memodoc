@@ -8,7 +8,8 @@
     border-bottom: ridge 1px #000000;
 }
 
-.steps em {
+.steps em,
+.error {
     display: block;
     font-weight: bold;
     font-size: 3em;
