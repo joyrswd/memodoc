@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Throwable;
 
 class MailReport
@@ -68,7 +69,7 @@ class MailReport
      */
     private function sendMail(string $key, string $message, string $detail): void
     {
-        $subject = $key . ': ' . $message;
+        $subject = $key . ': ' . Str::limit($message, 50);
         $to = config('app.admin.email');
         $mailer = $this->createMailer($detail, $subject);
         Mail::to($to)->send($mailer);

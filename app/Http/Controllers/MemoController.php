@@ -6,8 +6,6 @@ use App\Services\MemoService;
 use App\Services\PartsService;
 use App\Http\Requests\MemoRequest;
 
-use function Psy\debug;
-
 class MemoController extends Controller
 {
     /**

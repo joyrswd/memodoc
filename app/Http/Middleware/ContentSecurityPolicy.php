@@ -5,14 +5,14 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\Response as RequestResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ContentSecurityPolicy
 {
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next): RequestResponse
+    public function handle(Request $request, Closure $next): Response
     {
         $config = config('csp', []);
         if (empty($config) === false) {
