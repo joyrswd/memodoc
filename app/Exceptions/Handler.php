@@ -6,6 +6,7 @@ use App\Exceptions\MailReport;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -56,10 +57,33 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if($exception instanceof MethodNotAllowedHttpException){
-            return abort('404');
+        $code = $this->isHttpException($exception) ? $exception->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
+        $title = $this->getStatusTitle($code);
+        return response()->view('common.error', compact('code', 'title'), $code);
+    }
+
+    /**
+     * Get status title
+     */
+    private function getStatusTitle(int $code): string
+    {
+        $reflection = new \ReflectionClass(Response::class);
+        $codes = $reflection->getConstants();
+        $key = array_search($code, $codes);
+        if (empty($key)) {
+            return 'Unknown Error Occurred';
         }
-        return parent::render($request, $exception);
+        return $this->generateTitle($key);
+    }
+
+    /**
+     * Generate title
+     */
+    private function generateTitle(string $label): string
+    {
+        $lower = strtolower($label);
+        $phrase = str_replace(['http_','_'], ['', ' '], $lower);
+        return ucwords($phrase);
     }
 
 }
