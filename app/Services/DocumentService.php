@@ -59,4 +59,19 @@ class DocumentService
     {
         $this->documentRepository->updateByUserIdAndId($userId, $documentId, $params);
     }
+
+    public function fixTitle(string $rawTitle): ?string
+    {
+        $title = trim($rawTitle);
+        return (mb_strlen($title) > 255) ? '' : $title;
+    }
+    
+    public function fixContent(string $rawContent, string $rawTitle, string $title): string
+    {
+        $content = trim($rawContent);
+        if (empty($title) && !empty($rawTitle)) {
+            $content = $rawTitle . "\n" . $content;
+        }
+        return empty($content) ? $title : $content;
+    }
 }
