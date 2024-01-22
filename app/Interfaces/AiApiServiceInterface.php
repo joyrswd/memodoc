@@ -8,5 +8,5 @@ interface AiApiServiceInterface
     public function sendRequest(array $parts): array;
     public function isError(array $response): bool;
     public function getTitle(array $response): string;
-    public function getContent(array $response, ?string $title = null): string;
+    public function getContent(array $response): string;
 }

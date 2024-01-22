@@ -15,8 +15,8 @@ class GenerateDocumentJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $userId;
-    protected $jobId;
+    public $userId;
+    public $jobId;
 
     /**
      * Create a new job instance.
@@ -56,8 +56,10 @@ class GenerateDocumentJob implements ShouldQueue
 
     private function createDocuemnt(AiApiServiceInterface $apiService, DocumentService $documentService, array $apiResponse, array $memoIds): void
     {
-        $title = $apiService->getTitle($apiResponse);
-        $content = $apiService->getContent($apiResponse, $title);
+        $rawTitle = $apiService->getTitle($apiResponse);
+        $title = $documentService->fixTitle($rawTitle);
+        $rawContent = $apiService->getContent($apiResponse);
+        $content = $documentService->fixContent($rawContent, $rawTitle, $title);
         $documentService->addDocument($this->userId, $this->jobId, $title, $content, $memoIds);
     }
 
