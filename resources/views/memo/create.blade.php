@@ -8,7 +8,7 @@
         @csrf
         <div class="mt-3">
             <label for="content">メモ</label>
-            <textarea class="form-control" name="memo_content" minlength="2" maxlength="140" placeholder="2文字以上140文字以内" id="content" rows="7" required>{{old('memo_content')}}</textarea>
+            <textarea class="form-control" name="memo_content" minlength="5" maxlength="140" placeholder="5文字以上140文字以内" id="content" rows="7" required>{{old('memo_content')}}</textarea>
             @error('memo_content')
             <span class="invalid-feedback">{{ $message }}</span>
             @enderror

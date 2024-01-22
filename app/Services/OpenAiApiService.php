@@ -73,26 +73,19 @@ class OpenAiApiService implements AiApiServiceInterface
     public function getTitle(array $response): string
     {
         $text = $this->getText($response);
-        //1行目を取得する(255文字以上の場合は空欄にする)
-        $title = explode("\n", $text)[0];
-        return (mb_strlen($title) > 255) ? '' : trim($title);
+        //1行目を取得する
+        return explode("\n", $text)[0];
     }
 
     /**
      * ChatGPTのAPIから返ってきたレスポンスから本文を取得する
      */
-    public function getContent(array $response, ?string $title = null): string
+    public function getContent(array $response): string
     {
         $text = $this->getText($response);
-        // $titleが空欄の場合は$textをそのまま返す
-        if (empty($title)) {
-            return trim($text);
-        }
         // 2行目以降を取得する
         $lines = array_slice(explode("\n", $text), 1);
-        $content = trim(implode("\n", $lines));
-        // $contentが空欄の場合は$titleを返す
-        return empty($content) ? $title : $content;
+        return trim(implode("\n", $lines));
     }
 
     /**
