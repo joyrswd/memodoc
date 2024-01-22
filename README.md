@@ -15,15 +15,17 @@
 ## 開発環境
 - Docker Desktop 4.12.0
 - Ubuntu 22.04.3 LTS（Windows 11 WSL上）
-- Laravel Sail 1.18
-    - PHP 8.2.13 (cli)
-        - Composer 2.6.6
-        - Laravel Framework 10.35.0 [^1]
-    - MySQL 8.0.32
-    - Redis 7.2.3 [^2]  
+- PHP 8.3.1 (cli)
+    - Composer 2.6.6
+    - Laravel Framework 10.35.0 [^1]
+- MariaDB 11.2.2
+- Apache 2.4.58  
 
-[^1]: composer install実行でインストールされます  
-[^2]: Redisは無くても動作します。
+[^1]: composer install実行で自動的にインストールされます  
+
+開発環境構築用のリポジトリも下記で公開しています。  
+https://github.com/joyrswd/memodoc-dev-environment
+
 
 ## システム構成
 
@@ -76,11 +78,9 @@
     # cronの起動
     /etc/init.d/cron start
     ```
-- storageとbootstrap/cacheのパーミッションエラーが出る場合は所有者を変更する
+- storageでパーミッションエラーが出る場合は所有権を変更する
     ```bash
-    # 例）Laravel sailの場合
-    chown sail:sail -R ./bootstrap/cache
-    chown sail:sail -R ./storage
+    chmod 777 -R ./storage
     ```
 </details>
 
@@ -98,6 +98,7 @@ https://memodoc.joyrswd.com/about
 - 削除データの表示、復元機能
 - ユーザー管理機能
 - 他の生成AIのAPI導入
+- 多言語対応
 
 ## ライセンス
 
