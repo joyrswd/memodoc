@@ -91,3 +91,32 @@ span.viewer>label>input[type="checkbox"]:checked+img {
 a.small-link {
     font-size: small;
 }
+
+a[href^="https://twitter.com/intent/tweet"][target="xpost"] {
+    background: -webkit-gradient(linear, left top, left bottom, from(#333), to(#000));
+    background-repeat: no-repeat;
+    color: white;
+    text-decoration: none;
+    vertical-align: baseline;
+    border-radius: 0.5em;
+    padding: 0.2em 0.5em;
+    box-shadow: 0 0 5px 1px rgba(0,0,0,0.5);
+}
+
+a[href^="https://twitter.com/intent/tweet"][target="xpost"]:before {
+    content: "";
+    display: inline-block;
+    line-height: 0;
+    width: 0.8em;
+    height: 0.8em;
+    background: url(/img/common/logo-x.png) no-repeat;
+    background-position: center;
+    background-size: 100%;
+    margin-right: 0.25em;
+    vertical-align: baseline;
+}
+
+a[href^="https://twitter.com/intent/tweet"][target="xpost"]:hover {
+    background: black;
+    transition: 0.3s ease;
+}
