@@ -8,11 +8,11 @@
         @csrf
         @method('PUT')
         <div class="mt-3">
-            <p class="p-2">{!! nl2br($memo['content']) !!}</p>
+            <p class="p-2" data-x="post">{!! nl2br($memo['content']) !!}</p>
         </div>
         <div class="mt-3">
             <label for="tags">タグ</label>
-            <input type="text" class="form-control" name="memo_tags" id="tags" minlength="2" maxlength="255" placeholder="空白区切りで複数登録（記号不可）" value="{{old('memo_tags', implode(' ', $memo['tags']))}}">
+            <input type="text" data-x="tag" class="form-control" name="memo_tags" id="tags" minlength="2" maxlength="255" placeholder="空白区切りで複数登録（記号不可）" value="{{old('memo_tags', implode(' ', $memo['tags']))}}">
             @error('tags.*')
             <span class="invalid-feedback">{{ $message }}</span>
             @enderror
@@ -25,4 +25,8 @@
         <span class="d-grid gap-3"><a href="{{route('memo.index')}}" class="btn btn-sm btn-secondary">メモ一覧へ</a></span>
     </div>
 </div>
+@endsection
+
+@section('asset')
+<script src="/js/xpost.js"></script>
 @endsection
