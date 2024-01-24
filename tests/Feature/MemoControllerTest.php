@@ -78,7 +78,7 @@ class MemoControllerTest extends TestCase
         $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
-                'tags' =>  ['tag1', 'タグ2'],
+                'tags' =>  ['tag1', 'aＡ1１あ亜'],
                 'has_tag' => 1,
             ])->assertRedirect(route('memo.index'));
         $this->assertDatabaseHas('memos', [
@@ -89,7 +89,7 @@ class MemoControllerTest extends TestCase
             'name' => 'tag1',
         ]);
         $this->assertDatabaseHas('tags', [
-            'name' => 'タグ2',
+            'name' => 'aＡ1１あ亜',
         ]);
         $this->assertDatabaseHas('memo_tag', [
             'memo_id' => $memoId,
