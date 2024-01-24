@@ -66,62 +66,6 @@ class MemoControllerTest extends TestCase
         $this->get(route('memo.create'))->assertOk()->assertViewIs('memo.create');
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function create_error_content_empty(): void
-    {
-        $this->from(route('memo.create'))
-            ->post(route('memo.store'), [
-                'memo_content' => '',
-            ])->assertRedirect(route('memo.create'))
-            ->assertSessionHasErrors(['memo_content']);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function create_error_tags_overflow(): void
-    {
-        $max = 20;
-        $this->from(route('memo.create'))
-            ->post(route('memo.store'), [
-                'memo_content' =>  'メモの内容',
-                'memo_tags' =>  str_repeat('あ', $max + 1),
-            ])->assertRedirect(route('memo.create'))
-            ->assertSessionHasErrors(['tags.0']);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function create_error_tags_underflow(): void
-    {
-        $min = 2;
-        $this->from(route('memo.create'))
-            ->post(route('memo.store'), [
-                'memo_content' =>  'メモの内容',
-                'memo_tags' =>  str_repeat('あ', $min - 1),
-            ])->assertRedirect(route('memo.create'))
-            ->assertSessionHasErrors(['tags.0']);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function create_error_tags_invalid(): void
-    {
-        $this->from(route('memo.create'))
-            ->post(route('memo.store'), [
-                'memo_content' =>  'メモの内容',
-                'memo_tags' =>  '#!#$%',
-            ])->assertRedirect(route('memo.create'))
-            ->assertSessionHasErrors(['tags.0']);
-    }
 
     /**
      * @test
@@ -134,7 +78,8 @@ class MemoControllerTest extends TestCase
         $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
-                'memo_tags' =>  'tag1 タグ2',
+                'tags' =>  ['tag1', 'タグ2'],
+                'has_tag' => 1,
             ])->assertRedirect(route('memo.index'));
         $this->assertDatabaseHas('memos', [
             'user_id' => $this->user->id,
@@ -162,12 +107,196 @@ class MemoControllerTest extends TestCase
      */
     public function store_with_add_next_redirect(): void
     {
+        $tags = ['tag1', 'タグ2'];
         $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' =>  'メモの内容',
-                'memo_tags' =>  'tag1 タグ2',
+                'tags' =>  $tags,
                 'add_next' => 1,
-            ])->assertRedirect(route('memo.create'));
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasInput('add_next', 1)
+            ->assertSessionHasInput('tags', $tags);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_with_zenkaku_lmit(): void
+    {
+        $max = 140;
+        $content = str_repeat('あ', $max);
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' =>  $content,
+            ])->assertRedirect(route('memo.index'));
+        $this->assertDatabaseHas('memos', [
+            'user_id' => $this->user->id,
+            'content' => $content,
+        ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_content_empty(): void
+    {
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => '',
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['memo_content']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_content_overflow(): void
+    {
+        $max = 280;
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => str_repeat('a', $max + 1),
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['memo_content']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_content_zenkaku_overflow(): void
+    {
+        $max = 140;
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => str_repeat('あ', $max + 1),
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['memo_content']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_content_with_tags_overflow(): void
+    {
+        $max = 280;
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => str_repeat('a', $max - 1),
+                'tags' => ['aa'],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['memo_content']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_content_underflow(): void
+    {
+        $min = 10;
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => str_repeat('a', $min - 1),
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['memo_content']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_content_zenkaku_underflow(): void
+    {
+        $min = 5;
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => str_repeat('あ', $min - 1),
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['memo_content']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_content_with_tags_underflow(): void
+    {
+        $min = 10;
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => str_repeat('a', $min - 1),
+                'tags' => ['aa'],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['memo_content']);
+    }
+
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_tags_not_sent(): void
+    {
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => 'メモの内容',
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_tags_empty(): void
+    {
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' => 'メモの内容',
+                'tags' => [],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_tags_overflow(): void
+    {
+        $max = 20;
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' =>  'メモの内容',
+                'tags' =>  [str_repeat('あ', $max + 1)],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags.0']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_tags_invalid(): void
+    {
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' =>  'メモの内容',
+                'tags' =>  ['#!#$%'],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags.0']);
     }
 
     /**
@@ -198,7 +327,7 @@ class MemoControllerTest extends TestCase
     public function index_tags(): void
     {
         $this->get(route('memo.index', [
-            'memo_tags' => $this->tag->name,
+            'tags' => [$this->tag->name],
         ]))->assertOk()->assertViewIs('memo.index')
         ->assertSee(route('memo.edit', ['memo' => $this->memo->id]));
     }
@@ -379,7 +508,8 @@ class MemoControllerTest extends TestCase
     {
         $this->from(route('memo.edit', ['memo' => $this->memo->id]))
             ->put(route('memo.update', ['memo' => $this->memo->id]), [
-                'memo_tags' => 'tag1 タグ2',
+                'tags' => ['tag1', 'タグ2'],
+                'has_tag' => 1,
             ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]));
         $this->assertDatabaseHas('tags', [
             'name' => 'tag1',
@@ -405,12 +535,40 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
+    public function update_error_tags_not_sent(): void
+    {
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasErrors(['tags']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update_error_tags_empty(): void
+    {
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'tags' => [],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasErrors(['tags']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
     public function update_error_tags_overflow(): void
     {
         $max = 20;
         $this->from(route('memo.edit', ['memo' => $this->memo->id]))
             ->put(route('memo.update', ['memo' => $this->memo->id]), [
-                'memo_tags' => str_repeat('あ', $max + 1),
+                'tags' => [str_repeat('あ', $max + 1)],
+                'has_tag' => 1,
             ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
             ->assertSessionHasErrors(['tags.*']);
     }
@@ -419,12 +577,12 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function edit_error_tags_underflow(): void
+    public function update_error_tags_invalid(): void
     {
-        $min = 2;
         $this->from(route('memo.edit', ['memo' => $this->memo->id]))
             ->put(route('memo.update', ['memo' => $this->memo->id]), [
-                'memo_tags' => str_repeat('あ', $min -1),
+                'tags' => ['#!#$%'],
+                'has_tag' => 1,
             ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
             ->assertSessionHasErrors(['tags.*']);
     }
@@ -433,13 +591,16 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function edit_error_tags_invalid(): void
+    public function update_error_tags_with_content_overflow(): void
     {
+        $this->memo->content = str_repeat('a', 280 - 1);
+        $this->memo->save();
         $this->from(route('memo.edit', ['memo' => $this->memo->id]))
             ->put(route('memo.update', ['memo' => $this->memo->id]), [
-                'memo_tags' => '#!#$%',
+                'tags' => ['bb'],
+                'has_tag' => 1,
             ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
-            ->assertSessionHasErrors(['tags.*']);
+            ->assertSessionHasErrors(['memo_content']);
     }
 
     /**

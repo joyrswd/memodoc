@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\PostCountRule;
+use App\Rules\TagRule;
+use App\Services\MemoService;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MemoRequest extends FormRequest
@@ -16,10 +19,21 @@ class MemoRequest extends FormRequest
             'memo_to' => 'nullable|date|before_or_equal:today|exclude_without:memo_from|after_or_equal:memo_from',
         ],
         'memo.store' => [
-            'memo_content' => 'required|min:5|max:140',
+            'memo_content' => ['required', 'string'],
+            'tags' => 'required_if:has_tag,1|array',
         ],
-        'memo.update' => [],
+        'memo.update' => [
+            'tags' => 'required_if:has_tag,1|array',
+        ],
     ];
+
+    private MemoService $memoService;
+
+    public function __construct(MemoService $memoService)
+    {
+        $this->memoService = $memoService;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -35,9 +49,12 @@ class MemoRequest extends FormRequest
      */
     public function rules(): array
     {
-        return array_merge($this->_rules[$this->route()->getName()], [
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|min:2|max:20|regex:/^[^!-\\/:-@[-`{-~]+$/',
+        $postRule = new PostCountRule((int)$this->input('has_tag', 0), $this->input('tags', []));
+        $key = $this->route()->getName();
+        $this->_rules['memo.store']['memo_content'][] = $postRule;
+        $this->_rules['memo.update']['memo_content'][] = $postRule;
+        return array_merge($this->_rules[$key], [
+            'tags.*' => [new TagRule($key)],
         ]);
     }
 
@@ -58,6 +75,13 @@ class MemoRequest extends FormRequest
      */
     protected function prepareForValidation() : void
     {
+        if($this->input('has_tag') != 1){
+            $this->merge(['tags' => []]);
+        }
+        if ($this->route()->getName() === 'memo.update') {
+            $memoId = $this->route()->parameter('memo');
+            $this->merge(['memo_content' => $this->memoService->getMemo(auth()->id(), $memoId)['content']]);
+        }
         //タグのリクエスト配列をスペース区切りの文字列から生成する
         $tags = $this->input('memo_tags');
         if ($tags) {

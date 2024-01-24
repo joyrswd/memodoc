@@ -18,7 +18,7 @@ class MemoFactory extends Factory
     public function definition(): array
     {
         return [
-            'content' => fake()->realText(140),
+            'content' => fake()->realText(100),
             'user_id' => User::factory()->create()->id,
         ];
     }
