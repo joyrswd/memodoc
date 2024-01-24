@@ -12,13 +12,24 @@
             @error('memo_content')
             <span class="invalid-feedback">{{ $message }}</span>
             @enderror
-        </div>
-        <div class="mt-3">
-            <label for="tags">タグ</label>
-            <input type="text" class="form-control" name="memo_tags" id="tags" data-x="tag" minlength="2" maxlength="255" placeholder="空白区切りで複数登録（記号不可）" value="{{old('memo_tags')}}">
+            <div data-x="tags">
+                <div class="row">
+                    <div class="col-10">
+                        @foreach(old('tags', []) as $tag)
+                        <input type="hidden" name="tags[]" value="{{$tag}}">
+                        @endforeach
+                    </div>
+                </div>
+            </div>
             @error('tags.*')
-            <span class="invalid-feedback">{{ $message }}</span>
+            <p><span class="invalid-feedback">{{ $message }}</span></p>
             @enderror
+            <div class="mt-2 text-end" data-x="controller">
+                <small class="form-switch me-2">
+                    <label class="form-check-label align-baseline" for="flexSwitchCheckDefault">タグ登録</label>
+                    <input class="form-check-input m-0 align-text-bottom" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="has_tag" value="1">
+                </small>
+            </div>
         </div>
         <div class="mt-3 small">
             <input type="checkbox" class="form-check-input" name="add_next" id="add_next" value="1"{{old('add_next')?' checked' : ''}}>
