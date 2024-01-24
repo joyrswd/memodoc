@@ -20,6 +20,7 @@
     }
 
     const updateXpostLink = (link, text) => {
+        console.log(text);
         link.href = postUrl + encodeURIComponent(text);
     }
 
@@ -78,9 +79,8 @@
         removeButton.value = 'x';
         removeButton.classList.add('remove');
         removeButton.addEventListener('click', () => {
-            //直後の改行を削除
-            const next = tagElement.nextSibling;
             tagElement.remove();
+            xpost.dispatchEvent(new Event('input'));
         });
         return removeButton;
     }
@@ -118,11 +118,11 @@
     }
 
     const setTagGenerator = (input) => {
-        const pattern =  '[!-\\\\/:@[-`{-~\\s\u3000-\u303F\uFF00-\uFFEF]+';
+        const pattern =  '[ -/:-@[-`{-~\u3000-\u303F\uFF00-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65\u2018\u2019\u2014]+';
         input.addEventListener('blur', updateTags);
         input.addEventListener('keydown', (e) => {
-            if (['Enter', 'Tab', ' ', '　'].includes(e.key)) {
-                updateTags();
+            if (['Enter', 'Escape', ' '].includes(e.key)) {
+                input.blur();
                 return false;
             }
         });
