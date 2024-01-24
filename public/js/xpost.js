@@ -135,7 +135,7 @@
 
     const updateTags = () => {
         const container = xtag.firstElementChild.firstElementChild;
-        const tags = container.querySelectorAll('input:not([type="button"])');
+        const tags = container.querySelectorAll('input[name="tags[]"], input[type="text"]');
         container.innerHTML = '';
         tags.forEach((tag) => {
             if (tag.value) {

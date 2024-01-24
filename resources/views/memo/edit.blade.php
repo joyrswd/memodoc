@@ -13,8 +13,9 @@
                 <div class="row">
                     <div class="col-10">
                         @foreach($memo['tags'] as $tag)
-                        <input type="hidden" name="tags[]" value="{{$tag}}">
+                        <input type="text" name="tags[]" value="{{$tag}}">
                         @endforeach
+                        <input type="text" name="tags[]" value="">
                     </div>
                 </div>
             </div>
@@ -24,7 +25,7 @@
             <div class="mt-2 text-end" data-x="controller">
                 <small class="form-switch me-2">
                     <label class="form-check-label align-baseline" for="flexSwitchCheckDefault">タグ登録</label>
-                    <input class="form-check-input m-0 align-text-bottom" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="has_tag" checked>
+                    <input class="form-check-input m-0 align-text-bottom" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="has_tag" value="1" checked>
                 </small>
             </div>
         </div>

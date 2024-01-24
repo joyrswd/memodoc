@@ -64,7 +64,7 @@ class MemoController extends Controller
             'tags' => $request->input('tags'),
         ]);
         // 連続作成の場合は入力画面へ、それ以外は一覧画面へ
-        return $request->has('add_next') ? back()->with('success', __('stored'))->withInput(['add_next' => $request->input('add_next')])
+        return $request->has('add_next') ? back()->with('success', __('stored'))->withInput(['add_next' => $request->input('add_next'), 'tags' => $request->input('tags')])
                 : redirect()->route('memo.index')->with('success', __('stored'));
     }
 
