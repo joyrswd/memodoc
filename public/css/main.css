@@ -211,3 +211,48 @@ a[href^="https://twitter.com/intent/tweet"][target="xpost"]:hover {
     float: left;
     margin-left: 0.5em;
 }
+
+[draggable="true"] {
+    cursor: grab;
+}
+
+[draggable="true"]>*:first-child,
+[draggable="true"]>*:last-child {
+    position: relative;
+}
+
+[draggable="true"]>*:first-child::before,
+[draggable="true"]>*:last-child::after {
+    content: " ";
+    position: absolute;
+    height: 80%;
+    width: 1px;
+    top: 10%;
+    border-left: groove 2px rgba(0, 0, 0, 0.5);
+    border-right: groove 2px rgba(0, 0, 0, 0.5);
+}
+
+[draggable="true"]>*:first-child::before {
+    left: -3px;
+}
+
+[draggable="true"]>*:last-child::after {
+    right: -3px;
+}
+
+[draggable="true"]:hover>* {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+[draggable="true"].dragging {
+    opacity: 0.3;
+}
+
+[draggable="true"].dragover>* {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
