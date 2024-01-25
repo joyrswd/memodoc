@@ -16,7 +16,7 @@
     text-shadow: -1px -1px 1px #000000, 1px 1px #999999;
     opacity: 0.4;
     -webkit-text-fill-color: transparent;
-    min-width: 1em;
+    min-width: 1.25em;
 }
 
 .steps p {

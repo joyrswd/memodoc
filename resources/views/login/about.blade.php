@@ -163,10 +163,18 @@
     </div>
     <div class="row">
         <p class="col-sm-8 d-flex align-items-center lead">
-            <em>9</em><span>作成済みの＜メモ編集＞画面ではタグの編集のみ可能。文字数のカウントは新規作成時と同様となっている。</span>
+            <em>9</em><span>「連続作成」にチェックを入れて「メモ保存」を押下すると、タグの内容が引き継がれた状態で再び＜メモ作成画面＞に遷移する。</span>
         </p>
         <p class="col-sm-3">
-            <span class="viewer"><label><input type="checkbox"><img src="/img/about/input_step_9.png" alt="input_step_9"></label></span>
+            <span class="viewer"><label><input type="checkbox"><img src="/img/about/input_step_9.gif" alt="input_step_9"></label></span>
+        </p>
+    </div>
+    <div class="row">
+        <p class="col-sm-8 d-flex align-items-center lead">
+            <em>10</em><span>作成済みの＜メモ編集＞画面ではタグの編集のみ可能。文字数のカウントは新規作成時と同様となっている。</span>
+        </p>
+        <p class="col-sm-3">
+            <span class="viewer"><label><input type="checkbox"><img src="/img/about/input_step_10.png" alt="input_step_10"></label></span>
         </p>
     </div>
     <p class="text-end mt-2">
@@ -177,15 +185,30 @@
         </a>
     </p>
 </div>
-<!--
 <h2 class="display-6 mt-5" id="xpost">Xへのポスト</h2>
 <div class="steps">
     <div class="row">
         <p class="col-sm-8 d-flex align-items-center lead">
-            <em>1</em><span><a href="{{route('memo.create')}}">＜メモ作成画面＞</a>へ移動し任意のメモを入力、フォーム下部で文字数がカウントされる</span>
+            <em>1</em><span><a href="{{route('memo.create')}}">＜メモ作成画面＞</a>へ移動し任意のメモを入力、任意のタグを複数入力し、「X Post」ボタンを押下する。</span>
         </p>
         <p class="col-sm-3">
-            <span class="viewer"><label><input type="checkbox"><img src="/img/about/input_step_1.png" alt="input_step_1"></label></span>
+            <span class="viewer"><label><input type="checkbox"><img src="/img/about/xpost_step_1.png" alt="xpost_step_1"></label></span>
+        </p>
+    </div>
+    <div class="row">
+        <p class="col-sm-8 d-flex align-items-center lead">
+            <em>2</em><span>別ウィンドウが開き、1で入力したメモ内容とタグが追記されたXのポスト画面が表示される。（その後のXでの操作は説明省略）</span>
+        </p>
+        <p class="col-sm-3">
+            <span class="viewer"><label><input type="checkbox"><img src="/img/about/xpost_step_2.png" alt="xpost_step_2"></label></span>
+        </p>
+    </div>
+    <div class="row">
+        <p class="col-sm-8 d-flex align-items-center lead">
+            <em>3</em><span>「改行」にチェックを入れて「X Post」ボタンを押下すると、タグが改行して追記される</span>
+        </p>
+        <p class="col-sm-3">
+            <span class="viewer"><label><input type="checkbox"><img src="/img/about/xpost_step_3.gif" alt="xpost_step_3"></label></span>
         </p>
     </div>
     <p class="text-end mt-2">
@@ -196,7 +219,6 @@
         </a>
     </p>
 </div>
--->
 <h2 class="display-6 mt-5" id="note">デモサイト注意事項</h2>
 <ul class="ms-5 mt-3">
     <li class="lead my-3">1日に一回データをすべてリセットしています。（ユーザーアカウントも消去されます）</li>
