@@ -9,6 +9,9 @@
         @method('PUT')
         <div class="mt-3">
             <p class="p-2" data-x="post">{!! nl2br($memo['content']) !!}</p>
+            @error('memo_content')
+            <span class="invalid-feedback">{{ $message }}</span>
+            @enderror
             <div data-x="tags">
                 <div class="row">
                     <div class="col-10">

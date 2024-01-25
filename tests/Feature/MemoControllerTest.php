@@ -141,6 +141,25 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
+    public function store_with_url_limit(): void
+    {
+        $max = 280;
+        $url = 'http://test.com/' . str_repeat('a', 23) . ' ';
+        $content = $url . str_repeat('a', $max - 24);
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' =>  $content,
+            ])->assertRedirect(route('memo.index'));
+        $this->assertDatabaseHas('memos', [
+            'user_id' => $this->user->id,
+            'content' => $content,
+        ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
     public function store_error_content_empty(): void
     {
         $this->from(route('memo.create'))
@@ -510,7 +529,8 @@ class MemoControllerTest extends TestCase
             ->put(route('memo.update', ['memo' => $this->memo->id]), [
                 'tags' => ['tag1', 'タグ2'],
                 'has_tag' => 1,
-            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]));
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasNoErrors();
         $this->assertDatabaseHas('tags', [
             'name' => 'tag1',
         ]);
@@ -529,6 +549,25 @@ class MemoControllerTest extends TestCase
             'memo_id' => $this->memo->id,
             'tag_id' => $this->tag->id,
         ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update_with_url_limit(): void
+    {
+        $max = 280;
+        $url = 'https://test.com/' . str_repeat('a', $max);
+        $this->memo->content = $url;
+        $this->memo->save();
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'tags' => ['tag1', 'タグ2'],
+                'has_tag' => 1,
+            ])
+            ->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasNoErrors();
     }
 
     /**
