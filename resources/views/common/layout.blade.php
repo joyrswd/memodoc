@@ -7,7 +7,7 @@
     <title>@yield('title') - {{config('app.name')}}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     @includeIf('common.outsource')
-    <link rel="stylesheet" href="{{asset('css/main.css')}}">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 
 <body>
@@ -15,13 +15,15 @@
         <div class="row justify-content-center pb-5">
             <div class="col-md-7">
                 @if(session('success'))
-                <div class="alert alert-success">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
+                    <button type="button" class="btn-close btn-small" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 @endif
                 @if(session('failed'))
-                <div class="alert alert-danger">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('failed') }}
+                    <button type="button" class="btn-close btn-small" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 @endif
                 <main class="row justify-content-center pt-5">

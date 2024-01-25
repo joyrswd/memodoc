@@ -20,7 +20,6 @@
     }
 
     const updateXpostLink = (link, text) => {
-        console.log(text);
         link.href = postUrl + encodeURIComponent(text);
     }
 
@@ -44,11 +43,11 @@
     }
 
     const countText = (realText) => {
-        const text = realText.replace(/[^\x01-\x7E\xA1-\xDF]/g, '  ');
-        const exp = /https?:\/\/[^\s]{24,}/g;
+        const text = realText.replace(/[^\x01-\x7E\xA1-\xDF]/g, 'aa');
+        const exp = /https?:\/\/[^\s]+/g;
         let count = text.length;
         text.match(exp)?.forEach((url) => {
-            count -= url.length - 23;
+            count -= (url.length > 23) ? url.length - 23 : 0;
         });
         return count;
     }

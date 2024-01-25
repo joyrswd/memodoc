@@ -10,7 +10,8 @@
 - 作成した短文メモを組み合わせて自動で文書を生成
 - OpenAIのAPIを利用
 - Laravelのプラグインを別途インストールせずに開発
-- Bootstrap5(外部読込)を利用したレスポンシブデザイン  
+- Bootstrap5(外部読込)を利用したレスポンシブデザイン
+- Vanilla Javascript使用  
 
 <a href="https://memodoc.joyrswd.com/about#begining"><img width="250" alt="文書生成" src="./public/img/common/introduction.gif"></a>
 <a href="https://memodoc.joyrswd.com/about#xpost"><img width="250" alt="文書生成" src="./public/img/about/xpost_step_3.gif"></a>
