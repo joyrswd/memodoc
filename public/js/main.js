@@ -2,6 +2,7 @@
 import setModal from './modules/setModal.js';
 import errorController from './modules/errorController.js';
 import setPartsController from './modules/setPartsController.js';
+import tagController from './modules/tagController.js';
 
 document.addEventListener("DOMContentLoaded", function() {
     // ツールチップ
@@ -14,4 +15,6 @@ document.addEventListener("DOMContentLoaded", function() {
     setPartsController('[data-parts]', '#parts_badge', 'tbody.table-group-divider>tr');
     //アラート自然消滅
     setTimeout((alert)=>alert?.click(), 3000, document.querySelector('[role="alert"] button'));
+    // タグ操作追加
+    tagController(document.querySelector('[data-x="post"]'));
 });
