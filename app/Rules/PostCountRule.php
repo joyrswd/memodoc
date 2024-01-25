@@ -9,7 +9,10 @@ class PostCountRule implements ValidationRule
 {
     const MAX_LENGTH = 280;
     const MIN_LENGTH = 10;
-    const ZENKAKU_PATTERN = '[^\x01-\x7E\xA1-\xDF]';
+    const MAX_URL_LENGTH = 23;
+    const ZENKAKU_PATTERN = '/[^\x01-\x7E\xA1-\xDF]/u';
+    //const URL_PATTERN = '/^(http|https|ftp):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i';
+    const URL_PATTERN = '/https?:\/\/[^\s]+/iu';
 
     private int $hasTag;
     private array $tags;
@@ -44,16 +47,16 @@ class PostCountRule implements ValidationRule
 
     private function invalidMinContentCheck(string $value): bool
     {
-        $value = $this->zen2han(trim($value));
+        $value = $this->convert(trim($value));
         $length = strlen($value);
         return ($length < self::MIN_LENGTH) ;
     }
 
     private function invalidMaxPostCheck(string $value, string $tags): bool
     {
-        $value = $this->zen2han($value);
+        $value = $this->convert($value);
         $length = strlen($value);
-        $tags = $this->zen2Han($tags);
+        $tags = $this->convert($tags);
         $length += strlen($tags);
         return ($length > self::MAX_LENGTH);
     }
@@ -61,8 +64,13 @@ class PostCountRule implements ValidationRule
     /**
      * 全角文字を半角スペース2つに変換する
      */
-    private function zen2han(string $value): string
+    private function convert(string $value): string
     {
-        return preg_replace('/' . self::ZENKAKU_PATTERN . '/u', '  ', $value);
+        $hanString = preg_replace(self::ZENKAKU_PATTERN, 'aa', $value);
+        $noUlrString = preg_replace_callback(self::URL_PATTERN, function($matches){
+            return strlen($matches[0]) > self::MAX_URL_LENGTH ? str_repeat('a', self::MAX_URL_LENGTH) : $matches[0];
+        }, $hanString);
+        $string = str_replace("\r\n", "\n", $noUlrString);
+        return $string;
     }
 }
