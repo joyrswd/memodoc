@@ -56,6 +56,25 @@ class PartsService
     }
 
     /**
+     * partsの並び替え
+     */
+    public function updateParts(array $memos): array
+    {
+        $parts = $this->partsRepository->all();
+        $ids = Arr::pluck($parts, 'value');
+        if (empty($ids)) {
+            return $this->setError('保存されたパーツがありません。');
+        } elseif (array_diff($memos, $ids)+array_diff($ids, $memos)) { 
+            return $this->setError('パーツの指定に過不足があります。');
+        }
+        $this->partsRepository->remove();
+        foreach ($memos as $id) {
+            $this->partsRepository->add($id);
+        }
+        return $this->setSuccess('更新しました。');
+    }
+
+    /**
      * 
      * @return int
      */

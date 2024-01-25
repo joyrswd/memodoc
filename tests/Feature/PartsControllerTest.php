@@ -44,6 +44,7 @@ class PartsControllerTest extends TestCase
         $this->get(route('parts.index'))->assertRedirect(route('home'));
         $this->put(route('parts.add', $this->memo))->assertRedirect(route('home'));
         $this->delete(route('parts.remove', $this->memo))->assertRedirect(route('home'));
+        $this->post(route('parts.update'))->assertRedirect(route('home'));
     }
 
     /**
@@ -159,4 +160,71 @@ class PartsControllerTest extends TestCase
                 'message' => '存在しません。',
             ]);
     }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update(): void
+    {
+        $this->put(route('parts.add', $this->memo->id))->assertOk();
+        $memo = Memo::factory(['user_id' => $this->user->id])->create();
+        $this->put(route('parts.add', $memo))->assertOk()
+            ->assertSessionHas(PartsRepository::KEY, [$this->memo->id, $memo->id]);
+        $this->post(route('parts.update'), ['memo' => [$memo->id, $this->memo->id]])->assertOk()
+            ->assertJson([
+                'status' => 'success',
+                'message' => '更新しました。',
+            ])->assertSessionHas(PartsRepository::KEY, [$memo->id, $this->memo->id]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update_error_empty_session(): void
+    {
+        $memo = Memo::factory(['user_id' => $this->user->id])->create();
+        $this->post(route('parts.update'), ['memo' => [$memo->id, $this->memo->id]])->assertStatus(422)
+            ->assertJson([
+                'status' => 'error',
+                'message' => '保存されたパーツがありません。',
+            ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update_error_empty(): void
+    {
+        $this->put(route('parts.add', $this->memo->id))->assertOk();
+        $this->post(route('parts.update'))->assertStatus(422)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'パーツの指定に過不足があります。',
+            ]);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update_error_unmatch(): void
+    {
+        $this->put(route('parts.add', $this->memo->id))->assertOk();
+        $memo = Memo::factory(['user_id' => $this->user->id])->create();
+        $this->post(route('parts.update'), ['memo' => [$memo->id, $this->memo->id]])->assertStatus(422)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'パーツの指定に過不足があります。',
+            ]);
+        $this->put(route('parts.add', $memo->id))->assertOk();
+        $this->post(route('parts.update'), ['memo' => [$memo->id]])->assertStatus(422)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'パーツの指定に過不足があります。',
+            ]);
+    }
+
 }

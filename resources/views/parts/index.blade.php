@@ -3,7 +3,7 @@
 @section('title','パーツ一覧')
 
 @section('content')
-<table class="table">
+<table class="table" id="parts">
     <thead>
         <tr>
             <th class="py-3" scope="col">日時</th>
@@ -14,7 +14,7 @@
     </thead>
     <tbody class="table-group-divider">
         @foreach($items as $row)
-        <tr>
+        <tr data-id="{{$row['id']}}">
             <td class="py-3">{{ $row['datetime'] }}</td>
             <td class="py-3"><a href="{{route('memo.edit', ['memo' => $row['id']])}}">{{ $row['intro'] }}</a></td>
             <td class="py-3">
