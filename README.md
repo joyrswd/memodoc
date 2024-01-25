@@ -33,9 +33,9 @@ https://github.com/joyrswd/memodoc-dev-environment
 
 ## システム構成
 
-- [サイト概要](doc/outline.md) doc/outline.md
-- [データベース構成](doc/database.md) doc/database.md
-- [クラス構成](doc/class.md) doc/class.md
+- [サイト概要](docs/outline.md) docs/outline.md
+- [データベース構成](docs/database.md) docs/database.md
+- [クラス構成](docs/class.md) docs/class.md
 
 ## インストール
 
@@ -96,14 +96,13 @@ https://memodoc.joyrswd.com/about
 
 ## 今後の開発予定
 （順不同）
-- パーツ内メモの順番入れ替え機能
+- ユーザー毎API利用回数制限機能
+- 他の生成AIのAPI導入
 - タグ入力のサジェスト機能
+- 文書生成時にメモのタグの内容を意識させる
 - 削除データの表示、復元機能
 - ユーザー管理機能
-- 他の生成AIのAPI導入
 - 多言語対応
-- ユーザー毎API利用回数制限機能
-- 文書生成時にメモのタグの内容を意識させる
 
 ## ライセンス
 
