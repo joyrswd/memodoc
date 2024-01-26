@@ -40,7 +40,7 @@ class LoginRequest extends FormRequest
         return $this->_rules[$this->route()->getName()];
     }
 
-    
 
-    
+
+
 }

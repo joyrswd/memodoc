@@ -77,27 +77,10 @@ export default (xpost) => {
         input.addEventListener('change', e => input.blur());
     }
 
-    const setSuggestion = (items) => {
-        const datalist = document.createElement('datalist');
-        datalist.id = suggestionId;
-        Object.values(items).forEach((tag) => {
-            const option = document.createElement('option');
-            option.value = tag;
-            datalist.appendChild(option);
-        });
-        xtag.appendChild(datalist);
-    }
-
-    const loadSuggestionList = (url) => {
-        fetch(url).then(response => response.json())
-            .then(data => setSuggestion(data?.items||{}));
-    }
-
     if (xtag) {
         //xtagにカスタムイベントを追加
         xtag.addEventListener('updateTags', updateTags);
         xtag.dispatchEvent(new Event('updateTags'));
-        loadSuggestionList('/tags');
     }
 
 };

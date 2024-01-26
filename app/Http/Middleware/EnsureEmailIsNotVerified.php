@@ -16,7 +16,7 @@ class EnsureEmailIsNotVerified
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user() ) {
+        if (! $request->user()) {
             // ログインしていない場合はホーム画面へリダイレクト
             return redirect()->route('home');
         } elseif(! $request->user() instanceof MustVerifyEmail

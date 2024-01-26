@@ -8,10 +8,9 @@ use Illuminate\Support\Facades\Log;
 
 class OpenAiApiService implements AiApiServiceInterface
 {
-    const KEY = 'openai';
-
-    private $config;
-    private $keys = ['endpoint', 'secret', 'model', 'prompt', 'timeout', 'daily_limit'];
+    public const KEY = 'openai';
+    private array $config;
+    private array $keys = ['endpoint', 'secret', 'model', 'prompt', 'timeout', 'daily_limit'];
 
     public function __construct(array $config)
     {
@@ -91,7 +90,7 @@ class OpenAiApiService implements AiApiServiceInterface
     /**
      * ChatGPTのAPIから返ってきたレスポンスからテキストを取得する
      */
-    private function getText(array $response) : string
+    private function getText(array $response): string
     {
         return $response['choices'][0]['message']['content'];
     }

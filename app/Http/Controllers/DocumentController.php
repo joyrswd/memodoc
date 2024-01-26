@@ -5,17 +5,10 @@ namespace App\Http\Controllers;
 use App\Services\DocumentService;
 use App\Http\Requests\DocumentRequest;
 
-
 class DocumentController extends Controller
 {
-    /**
-     * @var DocumentService
-     */
-    private $documentService;
+    private DocumentService $documentService;
 
-    /**
-     * @param DocumentService $documentService
-     */
     public function __construct(DocumentService $documentService)
     {
         $this->documentService = $documentService;

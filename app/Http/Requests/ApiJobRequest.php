@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ApiJobRequest extends FormRequest
 {
-    private $_rules = [
+    private array $_rules = [
         'job.index' => [
             'job_status' => 'nullable|array',
             'job_status.*' => ['required'],
@@ -23,21 +23,10 @@ class ApiJobRequest extends FormRequest
         ],
     ];
 
-    /**
-     * @var PartsService
-     */
-    private $partsService;
-
-    /**
-     * @var ApiJobService
-     */
-    private $apiJobService;
-
+    private PartsService $partsService;
+    private ApiJobService $apiJobService;
     private MemoService $memoService;
 
-    /**
-     * @param PartsService $partsService
-     */
     public function __construct(PartsService $partsService, ApiJobService $apiJobService, MemoService $memoService)
     {
         $this->partsService = $partsService;
@@ -69,7 +58,7 @@ class ApiJobRequest extends FormRequest
     /**
      * Prepare the data for validation.
      */
-    protected function prepareForValidation() : void
+    protected function prepareForValidation(): void
     {
         $memos = [];
         $userId = auth()->id();
@@ -96,6 +85,9 @@ class ApiJobRequest extends FormRequest
         }
     }
 
+    /**
+     * Apiジョブが再生成可能かチェック
+     */
     private function isRegeneratable($attribute, $value, $fail)
     {
         $userId = auth()->id();
@@ -105,6 +97,9 @@ class ApiJobRequest extends FormRequest
         }
     }
 
+    /**
+     * ステータスが定義されているものかチェック
+     */
     private function inStatuses($attribute, $value, $fail)
     {
         if (in_array($value, $this->apiJobService->getStatuses()) === false) {
@@ -112,6 +107,9 @@ class ApiJobRequest extends FormRequest
         }
     }
 
+    /**
+     * メモがログインユーザーのものかチェック
+     */
     private function isYourMemo($attribute, $value, $fail)
     {
         $userId = auth()->id();

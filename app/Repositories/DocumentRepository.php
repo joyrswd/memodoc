@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\Document;
@@ -24,7 +25,7 @@ class DocumentRepository
     /**
      * ユーザーIDに紐づくレコードを取得する
      */
-    public function findByUserId(int $userId, array $params) : Builder
+    public function findByUserId(int $userId, array $params): Builder
     {
         $query = Document::query();
         $query->where('user_id', $userId);

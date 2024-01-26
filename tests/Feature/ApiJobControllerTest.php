@@ -1,15 +1,14 @@
 <?php
 
 namespace Tests\Feature;
+
 use App\Models\User;
 use App\Models\Memo;
 use App\Models\ApiJob;
-use App\Repositories\ApiJobRepository;
+use App\Enums\ApiJobStatus;
 use App\Jobs\GenerateDocumentJob;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
-use Spatie\FlareClient\Api;
 use Tests\TestCase;
 
 class ApiJobControllerTest extends TestCase
@@ -28,7 +27,7 @@ class ApiJobControllerTest extends TestCase
         parent::setUp();
         $this->user = User::factory()->create();
         $this->memo = Memo::factory(['user_id' => $this->user->id])->create();
-        $this->apiJob = ApiJob::factory(['user_id' => $this->user->id, 'status' => ApiJobRepository::STATUS_ABORTED])->create();
+        $this->apiJob = ApiJob::factory(['user_id' => $this->user->id, 'status' => ApiJobStatus::Aborted])->create();
         $this->apiJob->memos()->attach($this->memo->id);
         $this->actingAs($this->user);
     }
@@ -93,7 +92,7 @@ class ApiJobControllerTest extends TestCase
      */
     public function index_status(): void
     {
-        $this->get(route('job.index', ['job_status' => [$this->apiJob->status]]))->assertOk()->assertViewIs('job.index')
+        $this->get(route('job.index', ['job_status' => [$this->apiJob->status->value]]))->assertOk()->assertViewIs('job.index')
             ->assertSee($this->apiJob->error_message);
     }
 
@@ -221,7 +220,7 @@ class ApiJobControllerTest extends TestCase
      */
     public function regenerate_error_not_renegetable_status(): void
     {
-        $apiJob = ApiJob::factory(['user_id' => $this->user->id, 'status' => ApiJobRepository::STATUS_SUCCESS])->create();
+        $apiJob = ApiJob::factory(['user_id' => $this->user->id, 'status' => ApiJobStatus::Success])->create();
         $memo = Memo::factory(['user_id' => $this->user->id])->create();
         $apiJob->memos()->attach($memo->id);
         $this->post(route('job.store'), ['regenerate' => $apiJob->id])->assertSessionHasErrors(['regenerate']);

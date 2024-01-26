@@ -28,8 +28,7 @@ class ContentSecurityPolicy
      */
     private function generateCsp(array $directives, array $hosts, string $nonce): string
     {
-        foreach ($directives as $directive => $value)
-        {
+        foreach ($directives as $directive => $value) {
             $swapped = Str::swap($hosts, $value);
             $nonced = Str::replaceFirst("'nonce'", "'nonce-{$nonce}'", $swapped);
             $csp[] = $directive.' '.$nonced;

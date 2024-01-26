@@ -9,7 +9,6 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class LoginController extends Controller
 {
-
     private UserService $userService;
     private LoginService $loginService;
 

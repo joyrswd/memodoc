@@ -6,10 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class DocumentRequest extends FormRequest
 {
-    /**
-     * @var array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    private $_rules = [
+    private array $_rules = [
         'doc.index' => [
             'doc_title' => 'nullable|min:2|max:100',
             'doc_content' => 'nullable|min:2|max:100',
@@ -33,7 +30,6 @@ class DocumentRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {

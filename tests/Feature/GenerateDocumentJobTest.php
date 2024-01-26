@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\Memo;
 use App\Models\ApiJob;
-use App\Repositories\ApiJobRepository;
+use App\Enums\ApiJobStatus;
 use App\Jobs\GenerateDocumentJob;
 use App\Interfaces\AiApiServiceInterface;
 use App\Services\DocumentService;
@@ -25,7 +25,7 @@ class GenerateDocumentJobTest extends TestCase
     private DocumentService $documentService;
     private ApiJobService $jobService;
 
-    const apiKeyName = 'expected key';
+    public const apiKeyName = 'expected key';
 
     /**
      * @return void
@@ -35,7 +35,7 @@ class GenerateDocumentJobTest extends TestCase
         parent::setUp();
         $this->user = User::factory()->create();
         $this->memo = Memo::factory(['user_id' => $this->user->id])->create();
-        $this->apiJob = ApiJob::factory(['user_id' => $this->user->id, 'status' => ApiJobRepository::STATUS_STARTED])->create();
+        $this->apiJob = ApiJob::factory(['user_id' => $this->user->id, 'status' => ApiJobStatus::Started])->create();
         $this->apiJob->memos()->attach($this->memo->id);
         $this->documentService = app(DocumentService::class);
         $this->jobService = app(ApiJobService::class);
@@ -59,7 +59,7 @@ class GenerateDocumentJobTest extends TestCase
         GenerateDocumentJob::dispatch($this->user->id, $this->apiJob->id);
         Queue::assertPushed(GenerateDocumentJob::class, function ($job) {
             return $job->userId === $this->user->id
-                && $job->jobId === $this->apiJob->id; 
+                && $job->jobId === $this->apiJob->id;
         });
     }
 
@@ -69,10 +69,10 @@ class GenerateDocumentJobTest extends TestCase
     public function success()
     {
         $this->apiService->shouldReceive('getDailyLimit')->andReturn(10);
-        $this->apiService->shouldReceive('sendRequest')->once()->andReturnUsing(function() {
+        $this->apiService->shouldReceive('sendRequest')->once()->andReturnUsing(function () {
             $this->assertDatabaseHas('api_jobs', [
                 'id' => $this->apiJob->id,
-                'status' => ApiJobRepository::STATUS_PROCESSING,
+                'status' => ApiJobStatus::Processing,
                 'api_name' => self::apiKeyName,
                 'response' => null,
             ]);
@@ -80,10 +80,10 @@ class GenerateDocumentJobTest extends TestCase
         });
         $this->apiService->shouldReceive('isError')->once()->andReturn(false);
         $this->apiService->shouldReceive('getTitle')->once()->andReturn('expected title');
-        $this->apiService->shouldReceive('getContent')->once()->andReturn('expected content')->andReturnUsing(function() {
+        $this->apiService->shouldReceive('getContent')->once()->andReturn('expected content')->andReturnUsing(function () {
             $this->assertDatabaseHas('api_jobs', [
                 'id' => $this->apiJob->id,
-                'status' => ApiJobRepository::STATUS_PROCESSED,
+                'status' => ApiJobStatus::Processed,
                 'api_name' => self::apiKeyName,
                 'response' => '{"result":"success"}',
             ]);
@@ -92,7 +92,7 @@ class GenerateDocumentJobTest extends TestCase
         $this->handle();
         $this->assertDatabaseHas('api_jobs', [
             'id' => $this->apiJob->id,
-            'status' => ApiJobRepository::STATUS_SUCCESS,
+            'status' => ApiJobStatus::Success,
             'api_name' => self::apiKeyName,
             'response' => '{"result":"success"}',
         ]);
@@ -119,7 +119,7 @@ class GenerateDocumentJobTest extends TestCase
         $this->handle();
         $this->assertDatabaseHas('api_jobs', [
             'id' => $this->apiJob->id,
-            'status' => ApiJobRepository::STATUS_SUCCESS,
+            'status' => ApiJobStatus::Success,
             'api_name' => self::apiKeyName,
             'response' => '{"result":"success"}',
         ]);
@@ -147,7 +147,7 @@ class GenerateDocumentJobTest extends TestCase
         $this->handle();
         $this->assertDatabaseHas('api_jobs', [
             'id' => $this->apiJob->id,
-            'status' => ApiJobRepository::STATUS_SUCCESS,
+            'status' => ApiJobStatus::Success,
             'api_name' => self::apiKeyName,
             'response' => '{"result":"success"}',
         ]);
@@ -174,7 +174,7 @@ class GenerateDocumentJobTest extends TestCase
         $this->handle();
         $this->assertDatabaseHas('api_jobs', [
             'id' => $this->apiJob->id,
-            'status' => ApiJobRepository::STATUS_SUCCESS,
+            'status' => ApiJobStatus::Success,
             'api_name' => self::apiKeyName,
             'response' => '{"result":"success"}',
         ]);
@@ -197,7 +197,7 @@ class GenerateDocumentJobTest extends TestCase
         $this->handle();
         $this->assertDatabaseHas('api_jobs', [
             'id' => $this->apiJob->id,
-            'status' => ApiJobRepository::STATUS_ABORTED,
+            'status' => ApiJobStatus::Aborted,
             'api_name' => null,
             'response' => '',
             'error_message' => 'ジョブが削除されているため、処理を中断しました。',
@@ -209,12 +209,12 @@ class GenerateDocumentJobTest extends TestCase
      */
     public function error_over_limit()
     {
-        ApiJob::factory(['user_id' => $this->user->id, 'status' => ApiJobRepository::STATUS_SUCCESS, 'started_at' => now()])->create();
+        ApiJob::factory(['user_id' => $this->user->id, 'status' => ApiJobStatus::Success, 'started_at' => now()])->create();
         $this->apiService->shouldReceive('getDailyLimit')->andReturn(1);
         $this->handle();
         $this->assertDatabaseHas('api_jobs', [
             'id' => $this->apiJob->id,
-            'status' => ApiJobRepository::STATUS_ABORTED,
+            'status' => ApiJobStatus::Aborted,
             'api_name' => null,
             'response' => '',
             'error_message' => 'リクエスト回数上限に達したため、処理を中断しました。',
@@ -231,7 +231,7 @@ class GenerateDocumentJobTest extends TestCase
         $this->handle();
         $this->assertDatabaseHas('api_jobs', [
             'id' => $this->apiJob->id,
-            'status' => ApiJobRepository::STATUS_ABORTED,
+            'status' => ApiJobStatus::Aborted,
             'api_name' => self::apiKeyName,
             'response' => 'An error occurred',
             'error_message' => 'エラーが発生したため中断されました。',
@@ -249,7 +249,7 @@ class GenerateDocumentJobTest extends TestCase
         $this->handle();
         $this->assertDatabaseHas('api_jobs', [
             'id' => $this->apiJob->id,
-            'status' => ApiJobRepository::STATUS_ERROR,
+            'status' => ApiJobStatus::Error,
             'api_name' => self::apiKeyName,
             'response' => '{"result":"error"}',
             'error_message' => 'APIのリクエストに失敗しました',

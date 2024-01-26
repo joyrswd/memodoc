@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\Memo;
@@ -7,8 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 class MemoRepository
 {
     /**
-     * @param array<string, mixed> $params
-     * @return int
+     * メモを新規登録
      */
     public function store(array $params): int
     {
@@ -20,10 +20,7 @@ class MemoRepository
     }
 
     /**
-     * 
-     * @param int $userId
-     * @param array<string, mixed> $params
-     * @return Builder<Memo>
+     * ユーザーIDに紐づくレコードを取得する
      */
     public function findByUserId(int $userId, array $params): Builder
     {
@@ -46,10 +43,7 @@ class MemoRepository
     }
 
     /**
-     * 
-     * @param int $userId
-     * @param int $memoId
-     * @return array<string, mixed>
+     * ユーザーIDとIDに紐づくレコードを取得する
      */
     public function findByIdAndUserId(int $userId, int $memoId): array
     {
@@ -60,7 +54,7 @@ class MemoRepository
     }
 
     /**
-     * @param int $memoId
+     * メモからタグを全削除
      */
     public function detachTags(int $memoId): void
     {
@@ -68,8 +62,7 @@ class MemoRepository
     }
 
     /**
-     * @param int $userId
-     * @param int $memoId
+     * ユーザーIDとIDに紐づくレコードを削除する
      */
     public function deleteByIdAndUserId(int $userId, int $memoId): void
     {

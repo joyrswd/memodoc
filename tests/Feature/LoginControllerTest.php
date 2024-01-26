@@ -12,7 +12,7 @@ class LoginControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    const USER_PASSWORD = 'password';
+    public const USER_PASSWORD = 'password';
     private $user;
 
     /**
@@ -232,7 +232,7 @@ class LoginControllerTest extends TestCase
      * @return void
      */
     public function password_update(): void
-    {        
+    {
         $token = $this->createToken();
         $newPassword = self::USER_PASSWORD . '-new';
         $this->from(route('password.reset', ['token' => $token]))

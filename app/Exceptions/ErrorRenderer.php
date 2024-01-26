@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Exceptions;
+
 use Symfony\Component\HttpFoundation\Response;
 
 class ErrorRenderer
@@ -26,7 +27,7 @@ class ErrorRenderer
     /**
      * Get status title
      */
-    private function getStatusTitle(int $code, ?string $message=null): string
+    private function getStatusTitle(int $code, ?string $message = null): string
     {
         $reflection = new \ReflectionClass(Response::class);
         $codes = $reflection->getConstants();
