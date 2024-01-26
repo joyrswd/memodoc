@@ -6,6 +6,9 @@ use App\Models\Tag;
 
 class TagRepository
 {
+    /**
+     * タグを新規登録しメモと紐付ける
+     */
     public function store(string $string, int $memoId = null): int
     {
         $tag = $this->findByName($string);
@@ -20,11 +23,17 @@ class TagRepository
         return $tag->id;
     }
 
+    /**
+     * タグ名からレコードを取得する
+     */
     public function findByName(string $string): ?Tag
     {
         return Tag::where('name', $string)->first();
     }
 
+    /**
+     * メモIDに紐づくタグを全削除する
+     */
     public function detachFromMemo(int $memoId): void
     {
         Tag::whereHas('memos', function ($query) use ($memoId) {

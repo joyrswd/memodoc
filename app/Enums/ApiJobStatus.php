@@ -31,5 +31,5 @@ enum ApiJobStatus: string
     {
         return in_array($status, [self::Aborted->value]);
     }
-    
+
 }

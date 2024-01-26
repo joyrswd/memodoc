@@ -85,6 +85,9 @@ class ApiJobRequest extends FormRequest
         }
     }
 
+    /**
+     * Apiジョブが再生成可能かチェック
+     */
     private function isRegeneratable($attribute, $value, $fail)
     {
         $userId = auth()->id();
@@ -94,6 +97,9 @@ class ApiJobRequest extends FormRequest
         }
     }
 
+    /**
+     * ステータスが定義されているものかチェック
+     */
     private function inStatuses($attribute, $value, $fail)
     {
         if (in_array($value, $this->apiJobService->getStatuses()) === false) {
@@ -101,6 +107,9 @@ class ApiJobRequest extends FormRequest
         }
     }
 
+    /**
+     * メモがログインユーザーのものかチェック
+     */
     private function isYourMemo($attribute, $value, $fail)
     {
         $userId = auth()->id();
