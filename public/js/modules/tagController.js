@@ -1,6 +1,7 @@
 export default (xpost) => {
     const xtag = document.querySelector('[data-x="tags"]');
     const pattern = '[ -/:-@[-`{-~\u3000-\u303F\uFF00-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65\u2018\u2019\u2014]+'; // 半角記号と全角記号のみ
+    const suggestionId = 'tag_suggestions';
 
     const updateTags = () => {
         const tags = xtag.querySelectorAll('input[name="tags[]"], input[type="text"]');
@@ -54,6 +55,7 @@ export default (xpost) => {
         input.type = 'text';
         input.placeholder = '新規タグ';
         input.maxLength = 20;
+        input.setAttribute('list', suggestionId);
         setTagGenerator(input);
         span.appendChild(input);
         return span;
@@ -72,12 +74,30 @@ export default (xpost) => {
             const exp = new RegExp(pattern, 'g');
             input.value = text.replace(exp, '');
         });
+        input.addEventListener('change', e => input.blur());
+    }
+
+    const setSuggestion = (items) => {
+        const datalist = document.createElement('datalist');
+        datalist.id = suggestionId;
+        Object.values(items).forEach((tag) => {
+            const option = document.createElement('option');
+            option.value = tag;
+            datalist.appendChild(option);
+        });
+        xtag.appendChild(datalist);
+    }
+
+    const loadSuggestionList = (url) => {
+        fetch(url).then(response => response.json())
+            .then(data => setSuggestion(data?.items||{}));
     }
 
     if (xtag) {
         //xtagにカスタムイベントを追加
         xtag.addEventListener('updateTags', updateTags);
         xtag.dispatchEvent(new Event('updateTags'));
+        loadSuggestionList('/tags');
     }
 
 };

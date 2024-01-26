@@ -23,7 +23,7 @@
                 </div>
             </div>
             @error('tags.*')
-            <p><span class="invalid-feedback">{{ $message }}</span></p>
+            <span class="invalid-feedback">{{ $message }}</span>
             @enderror
             <div class="mt-2 text-end" data-x="controller">
                 <small class="form-switch me-2">
