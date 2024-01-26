@@ -7,22 +7,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ApiJobRepository
 {
-    public const STATUS_STARTED = 'started';
-    public const STATUS_WAITING = 'waiting';
-    public const STATUS_PROCESSING = 'processing';
-    public const STATUS_PROCESSED = 'processed';
-    public const STATUS_SUCCESS = 'success';
-    public const STATUS_ERROR = 'error';
-    public const STATUS_ABORTED = 'aborted';
-
     /**
      * apiJobのレコードを作成する
      */
-    public function store(int $userId, array $memos): int
+    public function store(int $userId, array $memos, string $status): int
     {
         $apiJob = new ApiJob();
         $apiJob->user_id = $userId;
-        $apiJob->status = self::STATUS_STARTED;
+        $apiJob->status = $status;
         $apiJob->save();
         foreach ($memos as $index => $memo) {
             $apiJob->memos()->attach($memo, ['order' => $index + 1]);
@@ -122,46 +114,6 @@ class ApiJobRepository
     public function deleteByIdAndUserId(int $userId, int $id): void
     {
         ApiJob::whereUserId($userId)->whereId($id)->delete();
-    }
-
-    /**
-     * ステータスのリストを取得する
-     */
-    public function getStatuses(): array
-    {
-        return [
-            self::STATUS_STARTED,
-            self::STATUS_WAITING,
-            self::STATUS_PROCESSING,
-            self::STATUS_PROCESSED,
-            self::STATUS_SUCCESS,
-            self::STATUS_ERROR,
-            self::STATUS_ABORTED,
-        ];
-    }
-
-    /**
-     * これから生成される文書のステータスを取得する
-     */
-    public function getUpcomingStatuses(): array
-    {
-        return [self::STATUS_WAITING, self::STATUS_PROCESSING];
-    }
-
-    /**
-     * 削除可能なステータスを取得する
-     */
-    public function getDeletableStatuses(): array
-    {
-        return [self::STATUS_STARTED, self::STATUS_WAITING, self::STATUS_ERROR, self::STATUS_ABORTED];
-    }
-
-    /**
-     * 再生成可能なステータスを取得する
-     */
-    public function getRegeneratableStatuses(): array
-    {
-        return [self::STATUS_ABORTED];
     }
 
 }
