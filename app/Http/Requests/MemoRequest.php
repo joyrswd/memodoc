@@ -9,10 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class MemoRequest extends FormRequest
 {
-    /**
-     * @var array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    private $_rules = [
+    private array $_rules = [
         'memo.index' => [
             'memo_content' => 'nullable|min:2|max:100',
             'memo_from' => 'nullable|date|before_or_equal:today|exclude_without:memo_to|before_or_equal:memo_to',
@@ -45,7 +42,6 @@ class MemoRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -63,7 +59,6 @@ class MemoRequest extends FormRequest
     /**
      * Get the validation attributes that apply to the request.
      *
-     * @return array<string, string>
      */
     public function attributes(): array
     {

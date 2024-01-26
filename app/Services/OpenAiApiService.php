@@ -9,9 +9,8 @@ use Illuminate\Support\Facades\Log;
 class OpenAiApiService implements AiApiServiceInterface
 {
     const KEY = 'openai';
-
-    private $config;
-    private $keys = ['endpoint', 'secret', 'model', 'prompt', 'timeout', 'daily_limit'];
+    private array $config;
+    private array $keys = ['endpoint', 'secret', 'model', 'prompt', 'timeout', 'daily_limit'];
 
     public function __construct(array $config)
     {

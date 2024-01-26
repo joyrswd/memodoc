@@ -13,21 +13,11 @@ class TagRule implements ValidationRule
 
     private string $key;
 
-    /**
-     * Create a new rule instance.
-     *
-     * @param string $key
-     */
     public function __construct(string $key)
     {
         $this->key = $key;
     }
 
-    /**
-     * Run the validation rule.
-     *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (empty($value)) {

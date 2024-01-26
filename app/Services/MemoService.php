@@ -8,26 +8,10 @@ use Illuminate\Support\Str;
 
 class MemoService
 {
-    /**
-     * @var MemoRepository
-     */
-    private $memoRepository;
+    private MemoRepository $memoRepository;
+    private TagRepository $tagRepository;
+    private PartsRepository $partsRepository;
 
-    /**
-     * @var TagRepository
-     */
-    private $tagRepository;
-
-    /**
-     * @var PartsRepository
-     */
-    private $partsRepository;
-
-    /**
-     * @param MemoRepository $memoRepository
-     * @param TagRepository $tagRepository
-     * @param PartsRepository $partsRepository
-     */
     public function __construct(MemoRepository $memoRepository, TagRepository $tagRepository, PartsRepository $partsRepository)
     {
         $this->memoRepository = $memoRepository;
@@ -44,10 +28,6 @@ class MemoService
         abort(404);
     }
 
-
-    /**
-     * @param array<string, mixed> $params
-     */
     public function addMemoAndTags(array $params): void
     {
         $memoId = $this->memoRepository->store($params);        
@@ -58,11 +38,6 @@ class MemoService
         }
     }
 
-    /**
-     * 
-     * @param int $userId
-     * @param array<string, mixed> $params
-     */
     public function getMemos(int $userId, array $params): array
     {
         $pagination = $this->memoRepository->findByUserId($userId, $params)->paginate(10);
@@ -76,20 +51,11 @@ class MemoService
         return $data;
     }
 
-    /**
-     * 
-     * @param int $userId
-     * @param int $memoId
-     * @return array<string, mixed>
-     */
     public function getMemo(int $userId, int $memoId): ?array
     {
         return $this->memoRepository->findByIdAndUserId($userId, $memoId);
     }
 
-    /**
-     * @param array<string, mixed> $params
-     */
     public function updateTags(array $params): void
     {
         $this->memoRepository->detachTags($params['memo_id']);
@@ -100,9 +66,6 @@ class MemoService
         }
     }
 
-    /**
-     * @param array<string, mixed> $params
-     */
     public function deleteMemo(int $userId, int $memoId): void
     {
         $this->memoRepository->deleteByIdAndUserId($userId, $memoId);

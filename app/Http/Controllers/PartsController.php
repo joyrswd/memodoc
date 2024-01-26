@@ -7,14 +7,8 @@ use Illuminate\Http\Request;
 
 class PartsController extends Controller
 {
-    /**
-     * @var PartsService
-     */
-    private $partsService;
+    private PartsService $partsService;
 
-    /**
-     * @param PartsService $partsService
-     */
     public function __construct(PartsService $partsService)
     {
         $this->partsService = $partsService;

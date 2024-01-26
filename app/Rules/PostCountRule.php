@@ -11,29 +11,17 @@ class PostCountRule implements ValidationRule
     const MIN_LENGTH = 10;
     const MAX_URL_LENGTH = 23;
     const ZENKAKU_PATTERN = '/[^\x01-\x7E\xA1-\xDF]/u';
-    //const URL_PATTERN = '/^(http|https|ftp):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i';
     const URL_PATTERN = '/https?:\/\/[^\s]+/iu';
 
     private int $hasTag;
     private array $tags;
 
-    /**
-     * Create a new rule instance.
-     *
-     * @param int $hasTag
-     * @param array $tags
-     */
     public function __construct(int $hasTag, array $tags)
     {
         $this->hasTag = $hasTag;
         $this->tags = $tags;
     }
 
-    /**
-     * Run the validation rule.
-     *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if ($this->invalidMinContentCheck($value)) {

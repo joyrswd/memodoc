@@ -6,10 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class MemoRepository
 {
-    /**
-     * @param array<string, mixed> $params
-     * @return int
-     */
     public function store(array $params): int
     {
         $memo = new Memo();
@@ -19,12 +15,6 @@ class MemoRepository
         return $memo->id;
     }
 
-    /**
-     * 
-     * @param int $userId
-     * @param array<string, mixed> $params
-     * @return Builder<Memo>
-     */
     public function findByUserId(int $userId, array $params): Builder
     {
         $query = Memo::whereUserId($userId);
@@ -45,12 +35,6 @@ class MemoRepository
         return $query->orderBy('created_at', 'desc');
     }
 
-    /**
-     * 
-     * @param int $userId
-     * @param int $memoId
-     * @return array<string, mixed>
-     */
     public function findByIdAndUserId(int $userId, int $memoId): array
     {
         $memo = Memo::whereUserId($userId)->whereId($memoId)->first();
@@ -59,18 +43,11 @@ class MemoRepository
         ]);
     }
 
-    /**
-     * @param int $memoId
-     */
     public function detachTags(int $memoId): void
     {
         Memo::find($memoId)->tags()->detach();
     }
 
-    /**
-     * @param int $userId
-     * @param int $memoId
-     */
     public function deleteByIdAndUserId(int $userId, int $memoId): void
     {
         Memo::whereUserId($userId)->whereId($memoId)->delete();

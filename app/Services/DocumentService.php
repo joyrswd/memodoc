@@ -6,14 +6,8 @@ use App\Repositories\DocumentRepository;
 
 class DocumentService
 {
-    /**
-     * @var DocumentRepository
-     */
-    private $documentRepository;
+    private DocumentRepository $documentRepository;
 
-    /**
-     * @param DocumentRepository $documentRepository
-     */
     public function __construct(DocumentRepository $documentRepository)
     {
         $this->documentRepository = $documentRepository;

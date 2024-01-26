@@ -11,28 +11,15 @@ class PartsService
     const STATUS_SUCCESS = 'success';
     const STATUS_ERROR = 'error';
 
-    /**
-     * @var PartsRepository
-     */
-    private $partsRepository;
+    private PartsRepository $partsRepository;
+    private MemoRepository $memoRepository;
 
-    /**
-     * @var MemoRepository
-     */
-    private $memoRepository;
-
-    /**
-     * @param PartsRepository $partsRepository
-     */
     public function __construct(PartsRepository $partsRepository, MemoRepository $memoRepository)
     {
         $this->partsRepository = $partsRepository;
         $this->memoRepository = $memoRepository;
     }
 
-    /**
-     * @param int $id
-     */
     public function addParts(int $id): array
     {
         if ($this->partsRepository->isUnderLimit() === false) {
@@ -44,9 +31,6 @@ class PartsService
         }
     }
 
-    /**
-     * @param int $id
-     */
     public function deleteParts(?int $id=null): array
     {
         if ($this->partsRepository->remove($id) === true) {
@@ -55,9 +39,6 @@ class PartsService
         return $this->setError('存在しません。');
     }
 
-    /**
-     * partsの並び替え
-     */
     public function updateParts(array $memos): array
     {
         $parts = $this->partsRepository->all();
@@ -74,19 +55,12 @@ class PartsService
         return $this->setSuccess('更新しました。');
     }
 
-    /**
-     * 
-     * @return int
-     */
     public function getStatus(?string $name)
     {
         $status = $this->setSuccess('現在のパーツ内容です。'); 
         return empty($name) ? $status : $status[$name];
     }
 
-    /**
-     * @param int $id
-     */
     public function getParts(int $userId): array
     {
         $items = $this->partsRepository->all();
@@ -110,32 +84,16 @@ class PartsService
         return Arr::pluck($this->getParts($userId), $key);
     }   
 
-    /**
-     * 
-     * @param string $message
-     * @return array<string, string>
-     */
     private function setSuccess(string $message): array
     {
         return $this->setResult(self::STATUS_SUCCESS, $message);
     }
 
-    /**
-     * 
-     * @param string $message
-     * @return array<string, string>
-     */
     private function setError(string $message): array
     {
         return $this->setResult(self::STATUS_ERROR, $message);
     }
 
-    /**
-     * 
-     * @param string $status
-     * @param string $message
-     * @return array<string, string>
-     */
     private function setResult(string $status, string $message): array
     {
         $items = $this->partsRepository->all();

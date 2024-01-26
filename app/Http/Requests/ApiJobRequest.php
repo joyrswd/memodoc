@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ApiJobRequest extends FormRequest
 {
-    private $_rules = [
+    private array $_rules = [
         'job.index' => [
             'job_status' => 'nullable|array',
             'job_status.*' => ['required'],
@@ -23,21 +23,10 @@ class ApiJobRequest extends FormRequest
         ],
     ];
 
-    /**
-     * @var PartsService
-     */
-    private $partsService;
-
-    /**
-     * @var ApiJobService
-     */
-    private $apiJobService;
-
+    private PartsService $partsService;
+    private ApiJobService $apiJobService;
     private MemoService $memoService;
 
-    /**
-     * @param PartsService $partsService
-     */
     public function __construct(PartsService $partsService, ApiJobService $apiJobService, MemoService $memoService)
     {
         $this->partsService = $partsService;
