@@ -70,9 +70,9 @@ class MemoRequest extends FormRequest
     /**
      * Prepare the data for validation.
      */
-    protected function prepareForValidation() : void
+    protected function prepareForValidation(): void
     {
-        if($this->isMethod('GET') === false && $this->input('has_tag') != 1){
+        if($this->isMethod('GET') === false && $this->input('has_tag') != 1) {
             $this->merge(['tags' => []]);
         }
         if ($this->route()->getName() === 'memo.update') {

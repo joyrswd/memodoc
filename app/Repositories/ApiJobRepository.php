@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\ApiJob;
@@ -6,13 +7,13 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ApiJobRepository
 {
-    const STATUS_STARTED = 'started';
-    const STATUS_WAITING = 'waiting';
-    const STATUS_PROCESSING = 'processing';
-    const STATUS_PROCESSED = 'processed';
-    const STATUS_SUCCESS = 'success';
-    const STATUS_ERROR = 'error';
-    const STATUS_ABORTED = 'aborted';
+    public const STATUS_STARTED = 'started';
+    public const STATUS_WAITING = 'waiting';
+    public const STATUS_PROCESSING = 'processing';
+    public const STATUS_PROCESSED = 'processed';
+    public const STATUS_SUCCESS = 'success';
+    public const STATUS_ERROR = 'error';
+    public const STATUS_ABORTED = 'aborted';
 
     /**
      * apiJobのレコードを作成する
@@ -24,7 +25,7 @@ class ApiJobRepository
         $apiJob->status = self::STATUS_STARTED;
         $apiJob->save();
         foreach ($memos as $index => $memo) {
-            $apiJob->memos()->attach($memo, ['order' => $index+1]);
+            $apiJob->memos()->attach($memo, ['order' => $index + 1]);
         }
         return $apiJob->id;
     }

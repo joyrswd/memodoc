@@ -13,7 +13,10 @@ use Illuminate\Queue\SerializesModels;
 
 class GenerateDocumentJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public int $userId;
     public int $jobId;

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\DocumentService;
 use App\Http\Requests\DocumentRequest;
 
-
 class DocumentController extends Controller
 {
     private DocumentService $documentService;

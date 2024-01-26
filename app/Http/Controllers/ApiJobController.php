@@ -8,7 +8,6 @@ use App\Jobs\GenerateDocumentJob;
 
 class ApiJobController extends Controller
 {
-
     private ApiJobService $apiJobService;
 
     public function __construct(ApiJobService $apiJobService)
@@ -37,7 +36,7 @@ class ApiJobController extends Controller
     public function store(ApiJobRequest $request)
     {
         $userId = auth()->id();
-        $result = $this->apiJobService->prepare($userId, $request->input('memos'), fn(...$args) => GenerateDocumentJob::dispatch(...$args));
+        $result = $this->apiJobService->prepare($userId, $request->input('memos'), fn (...$args) => GenerateDocumentJob::dispatch(...$args));
         if ($result === true) {
             if ($request->has('regenerate')) {
                 //　再作成の場合は元のジョブを削除

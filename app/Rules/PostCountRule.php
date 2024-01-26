@@ -7,11 +7,11 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class PostCountRule implements ValidationRule
 {
-    const MAX_LENGTH = 280;
-    const MIN_LENGTH = 10;
-    const MAX_URL_LENGTH = 23;
-    const ZENKAKU_PATTERN = '/[^\x01-\x7E\xA1-\xDF]/u';
-    const URL_PATTERN = '/https?:\/\/[^\s]+/iu';
+    public const MAX_LENGTH = 280;
+    public const MIN_LENGTH = 10;
+    public const MAX_URL_LENGTH = 23;
+    public const ZENKAKU_PATTERN = '/[^\x01-\x7E\xA1-\xDF]/u';
+    public const URL_PATTERN = '/https?:\/\/[^\s]+/iu';
 
     private int $hasTag;
     private array $tags;
@@ -55,7 +55,7 @@ class PostCountRule implements ValidationRule
     private function convert(string $value): string
     {
         $hanString = preg_replace(self::ZENKAKU_PATTERN, 'aa', $value);
-        $noUlrString = preg_replace_callback(self::URL_PATTERN, function($matches){
+        $noUlrString = preg_replace_callback(self::URL_PATTERN, function ($matches) {
             return strlen($matches[0]) > self::MAX_URL_LENGTH ? str_repeat('a', self::MAX_URL_LENGTH) : $matches[0];
         }, $hanString);
         $string = str_replace("\r\n", "\n", $noUlrString);

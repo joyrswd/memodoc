@@ -30,5 +30,5 @@ class UserRequest extends FormRequest
     {
         return $this->_rules[$this->route()->getName()];
     }
-    
+
 }

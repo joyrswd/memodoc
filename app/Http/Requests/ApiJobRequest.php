@@ -58,7 +58,7 @@ class ApiJobRequest extends FormRequest
     /**
      * Prepare the data for validation.
      */
-    protected function prepareForValidation() : void
+    protected function prepareForValidation(): void
     {
         $memos = [];
         $userId = auth()->id();

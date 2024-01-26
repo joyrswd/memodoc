@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use Illuminate\Support\Facades\Session;
@@ -6,11 +7,11 @@ use stdClass;
 
 class PartsRepository
 {
-    const KEY='parts';
-    const LIMIT=20;
+    public const KEY = 'parts';
+    public const LIMIT = 20;
 
     private Session $session;
-    private array $items=[];
+    private array $items = [];
 
     public function __construct(Session $session)
     {
@@ -32,7 +33,7 @@ class PartsRepository
         }
     }
 
-    private function make($key, $value) : stdClass
+    private function make($key, $value): stdClass
     {
         $item = new stdClass();
         $item->key = $key;
@@ -70,7 +71,7 @@ class PartsRepository
         return $this->save();
     }
 
-    public function remove(?int $id=null): bool
+    public function remove(?int $id = null): bool
     {
         if ($id === null) {
             $this->items = [];
@@ -82,7 +83,7 @@ class PartsRepository
         return $this->save();
     }
 
-    public function isUnderLimit($equal=false): bool
+    public function isUnderLimit($equal = false): bool
     {
         if ($equal === true) {
             return count($this->items) <= self::LIMIT;

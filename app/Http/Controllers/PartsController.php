@@ -28,16 +28,16 @@ class PartsController extends Controller
         return response()->json($result, $status);
     }
 
-    public function remove(int $id=null)
+    public function remove(int $id = null)
     {
         $result = $this->partsService->deleteParts($id);
         $status = ($result['status'] === PartsService::STATUS_SUCCESS) ? 200 : 422;
         return response()->json($result, $status);
     }
-    
+
     public function update(Request $request)
     {
-        $result = $this->partsService->updateParts($request->input('memo',[]));
+        $result = $this->partsService->updateParts($request->input('memo', []));
         $status = ($result['status'] === PartsService::STATUS_SUCCESS) ? 200 : 422;
         return response()->json($result, $status);
     }

@@ -125,7 +125,7 @@ class PartsControllerTest extends TestCase
             ->assertJson([
                 'status' => 'success',
                 'message' => '削除しました。',
-            ])->assertSessionHas(PartsRepository::KEY, function ($parts)  {
+            ])->assertSessionHas(PartsRepository::KEY, function ($parts) {
                 return !in_array($this->memo->id, $parts);
             });
     }
