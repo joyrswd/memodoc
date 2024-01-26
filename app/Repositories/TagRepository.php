@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\Tag;
@@ -30,5 +31,5 @@ class TagRepository
             $query->where('memo_id', $memoId);
         })->detach();
     }
-    
+
 }

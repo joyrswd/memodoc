@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Repositories\MemoRepository;
@@ -30,7 +31,7 @@ class MemoService
 
     public function addMemoAndTags(array $params): void
     {
-        $memoId = $this->memoRepository->store($params);        
+        $memoId = $this->memoRepository->store($params);
         if (empty($params['tags']) === false) {
             foreach($params['tags'] as $tag) {
                 $this->tagRepository->store($tag, $memoId);

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Repositories\PartsRepository;
@@ -8,8 +9,8 @@ use Illuminate\Support\Str;
 
 class PartsService
 {
-    const STATUS_SUCCESS = 'success';
-    const STATUS_ERROR = 'error';
+    public const STATUS_SUCCESS = 'success';
+    public const STATUS_ERROR = 'error';
 
     private PartsRepository $partsRepository;
     private MemoRepository $memoRepository;
@@ -31,7 +32,7 @@ class PartsService
         }
     }
 
-    public function deleteParts(?int $id=null): array
+    public function deleteParts(?int $id = null): array
     {
         if ($this->partsRepository->remove($id) === true) {
             return $this->setSuccess('削除しました。');
@@ -45,7 +46,7 @@ class PartsService
         $ids = Arr::pluck($parts, 'value');
         if (empty($ids)) {
             return $this->setError('保存されたパーツがありません。');
-        } elseif (array_diff($memos, $ids)+array_diff($ids, $memos)) { 
+        } elseif (array_diff($memos, $ids) + array_diff($ids, $memos)) {
             return $this->setError('パーツの指定に過不足があります。');
         }
         $this->partsRepository->remove();
@@ -57,7 +58,7 @@ class PartsService
 
     public function getStatus(?string $name)
     {
-        $status = $this->setSuccess('現在のパーツ内容です。'); 
+        $status = $this->setSuccess('現在のパーツ内容です。');
         return empty($name) ? $status : $status[$name];
     }
 
@@ -82,7 +83,7 @@ class PartsService
     public function getMemoValues(int $userId, string $key): array
     {
         return Arr::pluck($this->getParts($userId), $key);
-    }   
+    }
 
     private function setSuccess(string $message): array
     {

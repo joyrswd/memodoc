@@ -25,7 +25,7 @@ class GenerateDocumentJobTest extends TestCase
     private DocumentService $documentService;
     private ApiJobService $jobService;
 
-    const apiKeyName = 'expected key';
+    public const apiKeyName = 'expected key';
 
     /**
      * @return void
@@ -59,7 +59,7 @@ class GenerateDocumentJobTest extends TestCase
         GenerateDocumentJob::dispatch($this->user->id, $this->apiJob->id);
         Queue::assertPushed(GenerateDocumentJob::class, function ($job) {
             return $job->userId === $this->user->id
-                && $job->jobId === $this->apiJob->id; 
+                && $job->jobId === $this->apiJob->id;
         });
     }
 
@@ -69,7 +69,7 @@ class GenerateDocumentJobTest extends TestCase
     public function success()
     {
         $this->apiService->shouldReceive('getDailyLimit')->andReturn(10);
-        $this->apiService->shouldReceive('sendRequest')->once()->andReturnUsing(function() {
+        $this->apiService->shouldReceive('sendRequest')->once()->andReturnUsing(function () {
             $this->assertDatabaseHas('api_jobs', [
                 'id' => $this->apiJob->id,
                 'status' => ApiJobRepository::STATUS_PROCESSING,
@@ -80,7 +80,7 @@ class GenerateDocumentJobTest extends TestCase
         });
         $this->apiService->shouldReceive('isError')->once()->andReturn(false);
         $this->apiService->shouldReceive('getTitle')->once()->andReturn('expected title');
-        $this->apiService->shouldReceive('getContent')->once()->andReturn('expected content')->andReturnUsing(function() {
+        $this->apiService->shouldReceive('getContent')->once()->andReturn('expected content')->andReturnUsing(function () {
             $this->assertDatabaseHas('api_jobs', [
                 'id' => $this->apiJob->id,
                 'status' => ApiJobRepository::STATUS_PROCESSED,

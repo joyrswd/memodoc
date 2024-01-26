@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-
 class MemoSeeder extends Seeder
 {
     use WithoutModelEvents;
@@ -19,10 +18,13 @@ class MemoSeeder extends Seeder
     {
         // メモを作成するユーザーを選択する(初期値は管理者)
         $user = $this->command->choice(
-            'どのユーザーとしてメモを作成しますか？', [
+            'どのユーザーとしてメモを作成しますか？',
+            [
                 '管理者',
                 '即席ユーザー',
-            ], 0);
+            ],
+            0
+        );
         if ($user === '管理者') {
             $userId = User::where('name', config('app.admin.name'))->first()->id;
         } elseif ($user === '即席ユーザー') {

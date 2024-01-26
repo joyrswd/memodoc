@@ -45,7 +45,6 @@ class MemoController extends Controller
         return view('memo.create', [
             'datalist' => $this->userService->getTags(auth()->id()),
         ]);
-        //
     }
 
     /**
@@ -72,7 +71,6 @@ class MemoController extends Controller
             'memo' => $this->memoService->getMemo(auth()->id(), $id),
             'datalist' => $this->userService->getTags(auth()->id()),
         ]);
-        //
     }
 
     /**

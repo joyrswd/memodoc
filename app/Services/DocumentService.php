@@ -13,7 +13,7 @@ class DocumentService
         $this->documentRepository = $documentRepository;
     }
 
-    public function bind (mixed $value): int
+    public function bind(mixed $value): int
     {
         $int = filter_var($value, FILTER_VALIDATE_INT);
         if (is_int($int) && $this->getDocument(auth()->id(), $int)) {
@@ -59,7 +59,7 @@ class DocumentService
         $title = trim($rawTitle);
         return (mb_strlen($title) > 255) ? '' : $title;
     }
-    
+
     public function fixContent(string $rawContent, string $rawTitle, string $title): string
     {
         $content = trim($rawContent);

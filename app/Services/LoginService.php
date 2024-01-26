@@ -17,7 +17,7 @@ class LoginService
     {
         // $valueが正常なトークンかどうかをチェック
         $email = request()->query('email');
-        if($this->userRepository->checkTokenWithEmail($email, $value)){
+        if($this->userRepository->checkTokenWithEmail($email, $value)) {
             return $value;
         }
         abort(404);

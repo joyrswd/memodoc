@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+
 use App\Models\User;
 use App\Models\Memo;
 use App\Models\ApiJob;

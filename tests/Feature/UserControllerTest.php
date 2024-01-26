@@ -14,7 +14,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function create() :void
+    public function create(): void
     {
         $this->get(route('user.create'))->assertStatus(200)->assertViewIs('user.create');
     }
@@ -22,7 +22,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function create_redirect() :void
+    public function create_redirect(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -33,7 +33,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function store() :void
+    public function store(): void
     {
         $name = 'aA_-1';
         $this->post(route('user.store'), [
