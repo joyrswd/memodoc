@@ -9,11 +9,8 @@ class PartsRepository
     const KEY='parts';
     const LIMIT=20;
 
-    /**
-     * @var Session
-     */
-    private $session;
-    private $items=[];
+    private Session $session;
+    private array $items=[];
 
     public function __construct(Session $session)
     {

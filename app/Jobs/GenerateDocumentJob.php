@@ -15,8 +15,8 @@ class GenerateDocumentJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $userId;
-    public $jobId;
+    public int $userId;
+    public int $jobId;
 
     /**
      * Create a new job instance.
