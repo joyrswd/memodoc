@@ -112,9 +112,13 @@ class UserRepository
     public function getTags(int $userId): array
     {
         $user = User::find($userId);
-        if ($user === null) {
-            return [];
+        if( empty($user) === false
+            && ($memos = optional($user->memos))
+            && ($tags = $memos->pluck('tags'))
+            && ($tagNames = $tags->flatten()->pluck('name', 'id'))
+        ){
+            return $tagNames->unique()->toArray();
         }
-        return optional($user->memos)->pluck('tags')->flatten()->pluck('name', 'id')->unique()->toArray() ?? [];
+        return [];
     }
 }

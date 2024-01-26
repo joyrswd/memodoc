@@ -276,12 +276,12 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function store_error_tags_empty(): void
+    public function store_error_tags_not_array(): void
     {
         $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' => 'メモの内容',
-                'tags' => [],
+                'tags' => 'aaaaa',
                 'has_tag' => 1,
             ])->assertRedirect(route('memo.create'))
             ->assertSessionHasErrors(['tags']);
@@ -573,11 +573,11 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function update_error_tags_empty(): void
+    public function update_error_tags_not_array(): void
     {
         $this->from(route('memo.edit', ['memo' => $this->memo->id]))
             ->put(route('memo.update', ['memo' => $this->memo->id]), [
-                'tags' => [],
+                'tags' => 'aaaa',
                 'has_tag' => 1,
             ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
             ->assertSessionHasErrors(['tags']);

@@ -5,6 +5,7 @@ export default (target) => {
 
     const coloring = (element) => {
         const prevElem = element.previousElementSibling;
+        if (!prevElem) return;
         prevElem.classList.add(invalidClass);
         coloringDeeply(prevElem);
     };

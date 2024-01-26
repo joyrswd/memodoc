@@ -20,10 +20,10 @@ class MemoRequest extends FormRequest
         ],
         'memo.store' => [
             'memo_content' => ['required', 'string'],
-            'tags' => 'exclude_unless:has_tag,1|array',
+            'tags' => 'present_if:has_tag,1|array',
         ],
         'memo.update' => [
-            'tags' => 'exclude_unless:has_tag,1|array',
+            'tags' => 'present_if:has_tag,1|array',
         ],
     ];
 
@@ -49,12 +49,14 @@ class MemoRequest extends FormRequest
      */
     public function rules(): array
     {
-        $postRule = new PostCountRule((int)$this->input('has_tag', 0), $this->input('tags', []));
+        $tags = $this->input('tags');
+        is_array($tags) || $tags = [];
+        $postRule = new PostCountRule((int)$this->input('has_tag', 0), $tags);
         $key = $this->route()->getName();
         $this->_rules['memo.store']['memo_content'][] = $postRule;
         $this->_rules['memo.update']['memo_content'][] = $postRule;
         return array_merge($this->_rules[$key], [
-            'tags.*' => [new TagRule($key)],
+            'tags.*' => ['distinct', new TagRule($key)],
         ]);
     }
 
