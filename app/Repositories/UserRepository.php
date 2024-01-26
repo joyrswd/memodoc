@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\User;
@@ -112,11 +113,11 @@ class UserRepository
     public function getTags(int $userId): array
     {
         $user = User::find($userId);
-        if( empty($user) === false
+        if(empty($user) === false
             && ($memos = optional($user->memos))
             && ($tags = $memos->pluck('tags'))
             && ($tagNames = $tags->flatten()->pluck('name', 'id'))
-        ){
+        ) {
             return $tagNames->unique()->toArray();
         }
         return [];

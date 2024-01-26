@@ -42,7 +42,7 @@ class DocumentControllerTest extends TestCase
         $this->put(route('doc.update', ['doc' => $this->document->id]))->assertRedirect(route('home'));
         $this->delete(route('doc.destroy', ['doc' => $this->document->id]))->assertRedirect(route('home'));
     }
-    
+
     /**
      * @test
      * @return void
@@ -158,7 +158,7 @@ class DocumentControllerTest extends TestCase
     public function index_error_title_overflow(): void
     {
         $max = 100;
-        $this->get(route('doc.index', ['doc_title' => str_repeat('a', $max+1)]))->assertSessionHasErrors(['doc_title']);
+        $this->get(route('doc.index', ['doc_title' => str_repeat('a', $max + 1)]))->assertSessionHasErrors(['doc_title']);
     }
 
     /**
@@ -168,7 +168,7 @@ class DocumentControllerTest extends TestCase
     public function index_error_content_overflow(): void
     {
         $max = 100;
-        $this->get(route('doc.index', ['doc_content' => str_repeat('a', $max+1)]))->assertSessionHasErrors(['doc_content']);
+        $this->get(route('doc.index', ['doc_content' => str_repeat('a', $max + 1)]))->assertSessionHasErrors(['doc_content']);
     }
 
     /**
@@ -206,7 +206,7 @@ class DocumentControllerTest extends TestCase
     {
         $this->get(route('doc.index', ['doc_to' => 'aaaaaaaa']))->assertSessionHasErrors(['doc_to']);
     }
-    
+
     /**
      * @test
      * @return void
@@ -225,7 +225,7 @@ class DocumentControllerTest extends TestCase
         $max = 255;
         $this->from(route('doc.edit', ['doc' => $this->document->id]))
             ->put(route('doc.update', ['doc' => $this->document->id]), [
-            'doc_title' => str_repeat('a', $max+1),
+            'doc_title' => str_repeat('a', $max + 1),
             'doc_content' => 'test content',
         ])->assertRedirect(route('doc.edit', ['doc' => $this->document->id]))
         ->assertSessionHasErrors(['doc_title']);

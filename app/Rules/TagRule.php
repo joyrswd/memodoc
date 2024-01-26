@@ -7,27 +7,17 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class TagRule implements ValidationRule
 {
-    const MIN_LENGTH = 1;
-    const MAX_LENGTH = 20;
-    const TAG_PATTERN = '/[\p{P}\p{Z}]/u';//半角記号、全角記号、半角スペース、全角スペース
+    public const MIN_LENGTH = 1;
+    public const MAX_LENGTH = 20;
+    public const TAG_PATTERN = '/[\p{P}\p{Z}]/u';//半角記号、全角記号、半角スペース、全角スペース
 
     private string $key;
 
-    /**
-     * Create a new rule instance.
-     *
-     * @param string $key
-     */
     public function __construct(string $key)
     {
         $this->key = $key;
     }
 
-    /**
-     * Run the validation rule.
-     *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (empty($value)) {

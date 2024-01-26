@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\ApiJob;
@@ -6,25 +7,17 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ApiJobRepository
 {
-    const STATUS_STARTED = 'started';
-    const STATUS_WAITING = 'waiting';
-    const STATUS_PROCESSING = 'processing';
-    const STATUS_PROCESSED = 'processed';
-    const STATUS_SUCCESS = 'success';
-    const STATUS_ERROR = 'error';
-    const STATUS_ABORTED = 'aborted';
-
     /**
      * apiJobのレコードを作成する
      */
-    public function store(int $userId, array $memos): int
+    public function store(int $userId, array $memos, string $status): int
     {
         $apiJob = new ApiJob();
         $apiJob->user_id = $userId;
-        $apiJob->status = self::STATUS_STARTED;
+        $apiJob->status = $status;
         $apiJob->save();
         foreach ($memos as $index => $memo) {
-            $apiJob->memos()->attach($memo, ['order' => $index+1]);
+            $apiJob->memos()->attach($memo, ['order' => $index + 1]);
         }
         return $apiJob->id;
     }
@@ -121,46 +114,6 @@ class ApiJobRepository
     public function deleteByIdAndUserId(int $userId, int $id): void
     {
         ApiJob::whereUserId($userId)->whereId($id)->delete();
-    }
-
-    /**
-     * ステータスのリストを取得する
-     */
-    public function getStatuses(): array
-    {
-        return [
-            self::STATUS_STARTED,
-            self::STATUS_WAITING,
-            self::STATUS_PROCESSING,
-            self::STATUS_PROCESSED,
-            self::STATUS_SUCCESS,
-            self::STATUS_ERROR,
-            self::STATUS_ABORTED,
-        ];
-    }
-
-    /**
-     * これから生成される文書のステータスを取得する
-     */
-    public function getUpcomingStatuses(): array
-    {
-        return [self::STATUS_WAITING, self::STATUS_PROCESSING];
-    }
-
-    /**
-     * 削除可能なステータスを取得する
-     */
-    public function getDeletableStatuses(): array
-    {
-        return [self::STATUS_STARTED, self::STATUS_WAITING, self::STATUS_ERROR, self::STATUS_ABORTED];
-    }
-
-    /**
-     * 再生成可能なステータスを取得する
-     */
-    public function getRegeneratableStatuses(): array
-    {
-        return [self::STATUS_ABORTED];
     }
 
 }

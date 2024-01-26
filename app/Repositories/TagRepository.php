@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\Tag;
@@ -6,9 +7,7 @@ use App\Models\Tag;
 class TagRepository
 {
     /**
-     * @param string $string
-     * @param int|null $memoId
-     * @return int
+     * タグを新規登録しメモと紐付ける
      */
     public function store(string $string, int $memoId = null): int
     {
@@ -25,8 +24,7 @@ class TagRepository
     }
 
     /**
-     * @param string $string
-     * @return Tag|null
+     * タグ名からレコードを取得する
      */
     public function findByName(string $string): ?Tag
     {
@@ -34,8 +32,7 @@ class TagRepository
     }
 
     /**
-     * @param int $memoId
-     * @return array<string>
+     * メモIDに紐づくタグを全削除する
      */
     public function detachFromMemo(int $memoId): void
     {
@@ -43,5 +40,5 @@ class TagRepository
             $query->where('memo_id', $memoId);
         })->detach();
     }
-    
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Repositories\MemoRepository;
@@ -8,26 +9,10 @@ use Illuminate\Support\Str;
 
 class MemoService
 {
-    /**
-     * @var MemoRepository
-     */
-    private $memoRepository;
+    private MemoRepository $memoRepository;
+    private TagRepository $tagRepository;
+    private PartsRepository $partsRepository;
 
-    /**
-     * @var TagRepository
-     */
-    private $tagRepository;
-
-    /**
-     * @var PartsRepository
-     */
-    private $partsRepository;
-
-    /**
-     * @param MemoRepository $memoRepository
-     * @param TagRepository $tagRepository
-     * @param PartsRepository $partsRepository
-     */
     public function __construct(MemoRepository $memoRepository, TagRepository $tagRepository, PartsRepository $partsRepository)
     {
         $this->memoRepository = $memoRepository;
@@ -35,6 +20,10 @@ class MemoService
         $this->partsRepository = $partsRepository;
     }
 
+    /**
+     * {memo}のバリデーションルール
+     * @see \App\Providers\RouteServiceProvider::boot()
+     */
     public function bind(mixed $value): int
     {
         $int = filter_var($value, FILTER_VALIDATE_INT);
@@ -44,13 +33,12 @@ class MemoService
         abort(404);
     }
 
-
     /**
-     * @param array<string, mixed> $params
+     * メモとタグの登録
      */
     public function addMemoAndTags(array $params): void
     {
-        $memoId = $this->memoRepository->store($params);        
+        $memoId = $this->memoRepository->store($params);
         if (empty($params['tags']) === false) {
             foreach($params['tags'] as $tag) {
                 $this->tagRepository->store($tag, $memoId);
@@ -59,14 +47,13 @@ class MemoService
     }
 
     /**
-     * 
-     * @param int $userId
-     * @param array<string, mixed> $params
+     * ユーザーIDに紐づくメモ一覧を取得
      */
     public function getMemos(int $userId, array $params): array
     {
         $pagination = $this->memoRepository->findByUserId($userId, $params)->paginate(10);
         foreach ($pagination->items() as $item) {
+            // viewで表示するためのデータを追加
             $item->datetime = $item->created_at->format('Y-m-d H:i');
             $item->intro = Str::limit($item->content, 30, '...');
             $item->tagNames = $item->tags->pluck('name')->toArray();
@@ -77,10 +64,7 @@ class MemoService
     }
 
     /**
-     * 
-     * @param int $userId
-     * @param int $memoId
-     * @return array<string, mixed>
+     * 指定したメモIDがユーザーIDに紐づく場合データを取得
      */
     public function getMemo(int $userId, int $memoId): ?array
     {
@@ -88,7 +72,7 @@ class MemoService
     }
 
     /**
-     * @param array<string, mixed> $params
+     * タグの更新
      */
     public function updateTags(array $params): void
     {
@@ -101,7 +85,7 @@ class MemoService
     }
 
     /**
-     * @param array<string, mixed> $params
+     * 指定したメモIDがユーザーIDに紐づく場合データを削除
      */
     public function deleteMemo(int $userId, int $memoId): void
     {
