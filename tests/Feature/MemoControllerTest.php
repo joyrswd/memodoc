@@ -276,12 +276,12 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function store_error_tags_empty(): void
+    public function store_error_tags_not_array(): void
     {
         $this->from(route('memo.create'))
             ->post(route('memo.store'), [
                 'memo_content' => 'メモの内容',
-                'tags' => [],
+                'tags' => 'aaaaa',
                 'has_tag' => 1,
             ])->assertRedirect(route('memo.create'))
             ->assertSessionHasErrors(['tags']);
@@ -316,6 +316,21 @@ class MemoControllerTest extends TestCase
                 'has_tag' => 1,
             ])->assertRedirect(route('memo.create'))
             ->assertSessionHasErrors(['tags.0']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function store_error_tags_duplicated(): void
+    {
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' =>  'メモの内容',
+                'tags' =>  ['tag1', 'tag1'],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags.1']);
     }
 
     /**
@@ -412,22 +427,8 @@ class MemoControllerTest extends TestCase
         $max = 20;
         $this->from(route('memo.index'))
             ->get(route('memo.index', [
-                'memo_tags' => str_repeat('あ', $max + 1),
+                'tags' => [str_repeat('あ', $max + 1)],
         ]))->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors(['tags.*']);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function index_error_tags_underflow(): void
-    {
-        $min = 2;
-        $this->from(route('memo.index'))
-            ->get(route('memo.index', [
-                'memo_tags' => str_repeat('あ', $min - 1),
-            ]))->assertRedirect(route('memo.index'))
             ->assertSessionHasErrors(['tags.*']);
     }
 
@@ -439,7 +440,7 @@ class MemoControllerTest extends TestCase
     {
         $this->from(route('memo.index'))
             ->get(route('memo.index', [
-                'memo_tags' => '#!#$%',
+                'tags' => ['#!#$%'],
             ]))->assertRedirect(route('memo.index'))
             ->assertSessionHasErrors(['tags.*']);
     }
@@ -587,11 +588,11 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function update_error_tags_empty(): void
+    public function update_error_tags_not_array(): void
     {
         $this->from(route('memo.edit', ['memo' => $this->memo->id]))
             ->put(route('memo.update', ['memo' => $this->memo->id]), [
-                'tags' => [],
+                'tags' => 'aaaa',
                 'has_tag' => 1,
             ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
             ->assertSessionHasErrors(['tags']);
@@ -640,6 +641,20 @@ class MemoControllerTest extends TestCase
                 'has_tag' => 1,
             ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
             ->assertSessionHasErrors(['memo_content']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update_error_tags_duplicated(): void
+    {
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'tags' => ['tag1', 'tag1'],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasErrors(['tags.1']);
     }
 
     /**

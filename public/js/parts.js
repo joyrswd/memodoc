@@ -1,4 +1,4 @@
-(function() {
+{
     // tableが空になったらsubmitボタンを無効化する
 
     const disabler = (records) => {
@@ -56,7 +56,4 @@
     }
 
     document.querySelectorAll('#parts tbody tr').forEach(setUpDragAndDrop);
-    
-
-
-})();
+};

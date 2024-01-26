@@ -1,4 +1,4 @@
-(function(xTarget) {
+{
     const postUrl = 'https://twitter.com/intent/tweet?text=';
     const xpost = document.querySelector('[data-x="post"]');
     const xtag = document.querySelector('[data-x="tags"]');
@@ -65,100 +65,21 @@
 
     const toggleTagManeger = () => {
         if (switcher.checked) {
-            xtag.classList.add('open');
+            xtag.classList.remove('closed');
         } else {
-            xtag.classList.remove('open');
+            xtag.classList.add('closed');
         }
         xpost.dispatchEvent(new Event('input'));
     }
 
-    const createRemoveButton = (tagElement) => {
-        const removeButton = document.createElement('input');
-        removeButton.type = 'button';
-        removeButton.value = 'x';
-        removeButton.classList.add('remove');
-        removeButton.addEventListener('click', () => {
-            tagElement.remove();
-            xpost.dispatchEvent(new Event('input'));
-        });
-        return removeButton;
-    }
-
-    const createHiddenInput = (tag) => {
-        const inputHidden = document.createElement('input');
-        inputHidden.type = 'hidden';
-        inputHidden.name = 'tags[]';
-        inputHidden.value = tag;
-        return inputHidden;
-    }
-
-    const setTag = (tag, container) => {
-        const tagElement = document.createElement('small');
-        tagElement.classList.add('badge', 'bg-secondary', 'tag');
-        tagElement.appendChild(document.createTextNode('#' + tag));
-        const inputHidden = createHiddenInput(tag);
-        tagElement.appendChild(inputHidden);
-        const removeButton = createRemoveButton(tagElement);
-        tagElement.appendChild(removeButton);
-        container.appendChild(tagElement);
-    }
-
-
-    const createAddField = () => {
-        const span = document.createElement('span');
-        span.classList.add('add-new');
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.placeholder = '新規タグ';
-        input.maxLength = 20;
-        setTagGenerator(input);
-        span.appendChild(input);
-        return span;
-    }
-
-    const setTagGenerator = (input) => {
-        const pattern =  '[ -/:-@[-`{-~\u3000-\u303F\uFF00-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65\u2018\u2019\u2014]+';
-        input.addEventListener('blur', updateTags);
-        input.addEventListener('keydown', (e) => {
-            if (['Enter', 'Escape', ' '].includes(e.key)) {
-                input.blur();
-                return false;
-            }
-        });
-        input.addEventListener('input', (e) => {
-            const text = input.value;
-            const exp = new RegExp(pattern, 'g');
-            input.value = text.replace(exp, '');
-        });
-    }
-
-    const updateTags = () => {
-        const container = xtag.firstElementChild.firstElementChild;
-        const tags = container.querySelectorAll('input[name="tags[]"], input[type="text"]');
-        container.innerHTML = '';
-        tags.forEach((tag) => {
-            if (tag.value) {
-                setTag(tag.value, container);
-            }
-        });
-        const addFiled = createAddField();
-        container.appendChild(addFiled);
-        xpost.dispatchEvent(new Event('input'));
-    };
-
-    const initTagManeger = () => {
+    const fetchTagManeger = () => {
         const container = document.createElement('div');
         container.classList.add('col-2', 'newline');
         container.innerHTML = `<label>改行<input type="checkbox"></label>`;
         xtag.firstElementChild.appendChild(container);
-        updateTags();
-    }
-
-    const fetchTagManeger = () => {
-        initTagManeger();
         switcher.addEventListener('change', toggleTagManeger);
         switcher.dispatchEvent(new Event('change'));
-        xtag.querySelector('input[type="checkbox"]').addEventListener('change', updateTags);
+        xtag.querySelector('input[type="checkbox"]').addEventListener('change', e =>  xtag.dispatchEvent(new Event('updateTags')));
     }
 
     const setUpdater = (link, counter) => {
@@ -171,14 +92,14 @@
 
     const getText = () => {
         let text = isInput(xpost) ? xpost.value : xpost.innerText;
-        if (xtag && xtag.classList.contains('open')) {
+        if (xtag && !xtag.classList.contains('closed')) {
             text += getTagsText();
         }
         return text;
     }
 
     const getTagsText = () => {
-        const glue = xtag.querySelector('input[type="checkbox"]').checked ? '\n' : ' ';
+        const glue = xtag.querySelector('input[type="checkbox"]')?.checked ? '\n' : ' ';
         const tags = xtag.querySelectorAll('.badge:has(input[name="tags[]"])');
         const texts = [];
         tags.forEach((tag) => {
@@ -191,4 +112,4 @@
         fetchXpostButton();
     }
 
-})();
+};

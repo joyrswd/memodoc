@@ -1,7 +1,8 @@
 
-import setModal from './modules/setModal.js';
+import modalController from './modules/modalController.js';
 import errorController from './modules/errorController.js';
-import setPartsController from './modules/setPartsController.js';
+import partsController from './modules/partsController.js';
+import tagController from './modules/tagController.js';
 
 document.addEventListener("DOMContentLoaded", function() {
     // ツールチップ
@@ -9,9 +10,11 @@ document.addEventListener("DOMContentLoaded", function() {
     // エラー強調表示
     errorController('.form-control');
     // モーダル
-    setModal('#modal', '.modal-footer .btn-primary', '[data-dialog]');
+    modalController('#modal', '.modal-footer .btn-primary', '[data-dialog]');
     // パーツ追加・削除
-    setPartsController('[data-parts]', '#parts_badge', 'tbody.table-group-divider>tr');
+    partsController('[data-parts]', '#parts_badge', 'tbody.table-group-divider>tr');
+    // タグ操作追加
+    tagController(document.querySelector('[data-x="post"]'));
     //アラート自然消滅
     setTimeout((alert)=>alert?.click(), 3000, document.querySelector('[role="alert"] button'));
 });
