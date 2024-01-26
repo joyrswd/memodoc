@@ -26,4 +26,9 @@ class UserService
         return $user['name'] ?? null;
     }
 
+    public function getTags(int $userId): array
+    {
+        return $this->userRepository->getTags($userId);
+    }
+
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\PartsController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ApiJobController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TagsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,5 +53,6 @@ Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/job/', [ApiJobController::class, 'index'])->name('job.index');
     Route::post('/job/store', [ApiJobController::class, 'store'])->name('job.store');
     Route::delete('/job/{job}', [ApiJobController::class, 'destroy'])->name('job.destroy');
+    Route::get('/tags/', [TagsController::class, 'index'])->name('tags.index');
 });
 
