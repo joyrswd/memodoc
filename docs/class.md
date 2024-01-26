@@ -52,7 +52,6 @@ graph TB
         DocumentController --> DocumentRequest
         PartsController
         ApiJobController --> ApiJobRequest
-        TagsController
     end
     subgraph Job
         GenerateDocumentJob
@@ -67,11 +66,11 @@ graph TB
     UserController --> UserService
     MemoController --> MemoService
     MemoController --> PartsService
+    MemoController --> UserService
     DocumentController --> DocumentService
     PartsController --> PartsService
     ApiJobController --> ApiJobService
     ApiJobController --> GenerateDocumentJob
-    TagsController --> UserService
 
     UserService --> UserRepository
     LoginService --> UserRepository
@@ -158,11 +157,6 @@ graph TB
 |記事一覧|GET|/doc/|タイトル表示<br> 作成日時表示<br> 削除ボタン表示<br> タイトル検索<br>  内容検索<br> 作成日時絞り込み<br> ＊削除済み表示/非表示切り替え|
 |記事編集|GET|/doc/{doc}/edit|記事タイトル入力枠表示<br>  記事内容入力枠表示|
 |記事更新|PUT|/doc/{doc}|記事タイトル更新<br>  記事内容更新|
-
-#### TagsController
-| 機能名       | リクエスト     | URI           | 機能概要         |
-|------------|--------------|----------------|--------------|
-|設定済みタグ情報表示|GET|/tags/|現在ログイン中ユーザーのタグ情報をJSON表示|
 
 
 ### ジョブ

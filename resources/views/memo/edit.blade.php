@@ -16,11 +16,16 @@
                 <div class="row">
                     <div class="col-10">
                         @foreach($memo['tags'] as $tag)
-                        <input type="text" name="tags[]" value="{{$tag}}">
+                        <input type="text" list="tag_suggestions" name="tags[]" value="{{$tag}}">
                         @endforeach
-                        <input type="text" name="tags[]" value="">
+                        <input type="text" list="tag_suggestions" name="tags[]" value="">
                     </div>
                 </div>
+                <datalist id="tag_suggestions">
+                    @foreach($datalist as $suggest)
+                    <option value="{{$suggest}}">
+                    @endforeach
+                </datalist>
             </div>
             @error('tags.*')
             <span class="invalid-feedback">{{ $message }}</span>

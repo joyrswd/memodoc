@@ -5,27 +5,19 @@ namespace App\Http\Controllers;
 use App\Services\MemoService;
 use App\Services\PartsService;
 use App\Http\Requests\MemoRequest;
+use App\Services\UserService;
 
 class MemoController extends Controller
 {
-    /**
-     * @var MemoService
-     */
-    private $memoService;
+    private MemoService $memoService;
+    private PartsService $partsService;
+    private UserService $userService;
 
-    /**
-     * @var PartsService
-     */
-    private $partsService;
-
-    /**
-     * @param MemoService $memoService
-     * @param PartsService $partsService
-     */
-    public function __construct(MemoService $memoService, PartsService $partsService)
+    public function __construct(MemoService $memoService, PartsService $partsService, UserService $userService)
     {
         $this->memoService = $memoService;
         $this->partsService = $partsService;
+        $this->userService = $userService;
     }
 
     /**
@@ -40,7 +32,8 @@ class MemoController extends Controller
                 'from' => $request->input('memo_from'),
                 'to' => $request->input('memo_to'),
             ]),
-            'parts' => $this->partsService->getStatus('items')
+            'parts' => $this->partsService->getStatus('items'),
+            'datalist' => $this->userService->getTags(auth()->id()),
         ]);
     }
 
@@ -49,7 +42,9 @@ class MemoController extends Controller
      */
     public function create()
     {
-        return view('memo.create');
+        return view('memo.create', [
+            'datalist' => $this->userService->getTags(auth()->id()),
+        ]);
         //
     }
 
@@ -75,6 +70,7 @@ class MemoController extends Controller
     {
         return view('memo.edit', [
             'memo' => $this->memoService->getMemo(auth()->id(), $id),
+            'datalist' => $this->userService->getTags(auth()->id()),
         ]);
         //
     }
