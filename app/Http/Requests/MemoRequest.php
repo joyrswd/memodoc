@@ -75,18 +75,12 @@ class MemoRequest extends FormRequest
      */
     protected function prepareForValidation() : void
     {
-        if($this->input('has_tag') != 1){
+        if($this->isMethod('GET') === false && $this->input('has_tag') != 1){
             $this->merge(['tags' => []]);
         }
         if ($this->route()->getName() === 'memo.update') {
             $memoId = $this->route()->parameter('memo');
             $this->merge(['memo_content' => $this->memoService->getMemo(auth()->id(), $memoId)['content']]);
-        }
-        //タグのリクエスト配列をスペース区切りの文字列から生成する
-        $tags = $this->input('memo_tags');
-        if ($tags) {
-            $tagsArray = explode(' ', str_replace('　', ' ', $tags));
-            $this->merge(['tags' => array_values(array_filter($tagsArray))]);
         }
     }
 }

@@ -10,7 +10,7 @@
         </svg>
     </button>
 </div>
-<div class="collapse{{ ($errors->any() || request()->hasAny('memo_content', 'memo_tags', 'memo_from', 'memo_to')) ? ' show' : '' }}" id="finder">
+<div class="collapse{{ ($errors->any() || request()->hasAny('memo_content', 'tags', 'memo_from', 'memo_to')) ? ' show' : '' }}" id="finder">
     <form action="{{route('memo.index')}}" method="GET" class="mb-3 p-4 small shadow">
         <div class="row mt-3">
             <label for="content" class="col-sm-2 col-form-label">メモ</label>
@@ -24,7 +24,14 @@
         <div class="row mt-3">
             <label for="tags" class="col-sm-2 col-form-label">タグ</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="memo_tags" minlength="2" maxlength="100" id="tags" value="{{old('memo_tags', request()->input('memo_tags'))}}">
+                <div data-x="tags">
+                    <div>
+                        @foreach (request()->input('tags', []) as $tag)
+                        <input type="text" maxlength="20" name="tags[]" value="{{ $tag }}">
+                        @endforeach
+                        <input type="text" maxlength="20" name="tags[]">
+                    </div>
+                </div>
                 @error('tags.*')
                 <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -68,7 +75,7 @@
             <td class="py-3"><a href="{{route('memo.edit', ['memo' => $row['id']])}}">{{ $row['intro'] }}</a></td>
             <td class="py-3">
                 @foreach($row['tagNames'] as $tag)
-                <a href="{{route('memo.index', ['memo_tags' => $tag])}}" class="badge bg-secondary">{{ $tag }}</a>
+                <a href="{{route('memo.index', ['tags[]' => $tag])}}" class="badge bg-secondary">{{ $tag }}</a>
                 @endforeach
             </td>
             <td class="py-3">

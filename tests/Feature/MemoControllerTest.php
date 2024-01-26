@@ -412,22 +412,8 @@ class MemoControllerTest extends TestCase
         $max = 20;
         $this->from(route('memo.index'))
             ->get(route('memo.index', [
-                'memo_tags' => str_repeat('あ', $max + 1),
+                'tags' => [str_repeat('あ', $max + 1)],
         ]))->assertRedirect(route('memo.index'))
-            ->assertSessionHasErrors(['tags.*']);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function index_error_tags_underflow(): void
-    {
-        $min = 2;
-        $this->from(route('memo.index'))
-            ->get(route('memo.index', [
-                'memo_tags' => str_repeat('あ', $min - 1),
-            ]))->assertRedirect(route('memo.index'))
             ->assertSessionHasErrors(['tags.*']);
     }
 
@@ -439,7 +425,7 @@ class MemoControllerTest extends TestCase
     {
         $this->from(route('memo.index'))
             ->get(route('memo.index', [
-                'memo_tags' => '#!#$%',
+                'tags' => ['#!#$%'],
             ]))->assertRedirect(route('memo.index'))
             ->assertSessionHasErrors(['tags.*']);
     }

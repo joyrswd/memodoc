@@ -19,7 +19,7 @@
             <td class="py-3"><a href="{{route('memo.edit', ['memo' => $row['id']])}}">{{ $row['intro'] }}</a></td>
             <td class="py-3">
                 @foreach($row['tags'] as $tag)
-                <a href="{{route('memo.index', ['memo_tags' => $tag])}}" class="badge bg-secondary">{{ $tag }}</a>
+                <a href="{{route('memo.index', ['tags[]' => $tag])}}" class="badge bg-secondary">{{ $tag }}</a>
                 @endforeach
             </td>
             <td class="py-3">

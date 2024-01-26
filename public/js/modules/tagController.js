@@ -3,8 +3,8 @@ export default (xpost) => {
     const pattern = '[ -/:-@[-`{-~\u3000-\u303F\uFF00-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65\u2018\u2019\u2014]+'; // 半角記号と全角記号のみ
 
     const updateTags = () => {
-        const container = xtag.firstElementChild.firstElementChild;
-        const tags = container.querySelectorAll('input[name="tags[]"], input[type="text"]');
+        const tags = xtag.querySelectorAll('input[name="tags[]"], input[type="text"]');
+        const container = tags[0].closest('div');
         container.innerHTML = '';
         tags.forEach((tag) => {
             if (tag.value) {
