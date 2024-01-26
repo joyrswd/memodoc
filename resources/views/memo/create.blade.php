@@ -12,7 +12,7 @@
             @error('memo_content')
             <span class="invalid-feedback">{{ $message }}</span>
             @enderror
-            <div data-x="tags">
+            <div data-x="tags" class="closed">
                 <div class="row">
                     <div class="col-10">
                         @foreach(old('tags', []) as $tag)

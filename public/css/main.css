@@ -124,18 +124,18 @@ a[href^="https://twitter.com/intent/tweet"][target="xpost"]:hover {
 
 [data-x="tags"] {
     display: grid;
-    grid-template-rows: 0fr;
+    grid-template-rows: 1fr;
     transition: grid-template-rows 0.5s ease-out;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 0.5em;
     border: solid 1px #111111;
     line-height: 1.5em;
-    padding:0 0.5em;
+    padding: 0.5em;
 }
 
-[data-x="tags"].open {
-    padding: 0.5em;
-    grid-template-rows: 1fr;
+[data-x="tags"].closed {
+    padding:0 0.5em;
+    grid-template-rows: 0fr;
 }
 
 [data-x="tags"]>* {

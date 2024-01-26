@@ -65,9 +65,9 @@
 
     const toggleTagManeger = () => {
         if (switcher.checked) {
-            xtag.classList.add('open');
+            xtag.classList.remove('closed');
         } else {
-            xtag.classList.remove('open');
+            xtag.classList.add('closed');
         }
         xpost.dispatchEvent(new Event('input'));
     }
@@ -92,14 +92,14 @@
 
     const getText = () => {
         let text = isInput(xpost) ? xpost.value : xpost.innerText;
-        if (xtag && xtag.classList.contains('open')) {
+        if (xtag && !xtag.classList.contains('closed')) {
             text += getTagsText();
         }
         return text;
     }
 
     const getTagsText = () => {
-        const glue = xtag.querySelector('input[type="checkbox"]').checked ? '\n' : ' ';
+        const glue = xtag.querySelector('input[type="checkbox"]')?.checked ? '\n' : ' ';
         const tags = xtag.querySelectorAll('.badge:has(input[name="tags[]"])');
         const texts = [];
         tags.forEach((tag) => {
