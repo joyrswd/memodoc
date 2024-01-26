@@ -21,6 +21,9 @@ class PartsService
         $this->memoRepository = $memoRepository;
     }
 
+    /**
+     * 指定されたメモIDをパーツに追加
+     */
     public function addParts(int $id): array
     {
         if ($this->partsRepository->isUnderLimit() === false) {
@@ -32,6 +35,9 @@ class PartsService
         }
     }
 
+    /**
+     * 指定されたメモIDをパーツから削除
+     */
     public function deleteParts(?int $id = null): array
     {
         if ($this->partsRepository->remove($id) === true) {
@@ -40,6 +46,9 @@ class PartsService
         return $this->setError('存在しません。');
     }
 
+    /**
+     * パーツの並び順を更新
+     */
     public function updateParts(array $memos): array
     {
         $parts = $this->partsRepository->all();
@@ -56,17 +65,24 @@ class PartsService
         return $this->setSuccess('更新しました。');
     }
 
+    /**
+     * パーツの状態を取得
+     */
     public function getStatus(?string $name)
     {
         $status = $this->setSuccess('現在のパーツ内容です。');
         return empty($name) ? $status : $status[$name];
     }
 
+    /**
+     * ユーザーIDに紐づくパーツ内のメモ一覧を取得
+     */
     public function getParts(int $userId): array
     {
         $items = $this->partsRepository->all();
         $result = [];
         foreach ($items as $item) {
+            // viewで表示するためのデータを追加
             $memo = $this->memoRepository->findByIdAndUserId($userId, $item->value);
             if ($memo) {
                 //日付をフォーマット
@@ -80,21 +96,33 @@ class PartsService
         return $result;
     }
 
+    /**
+     * ユーザーIDに紐づくパーツ内のメモの指定されたキーの値を取得
+     */
     public function getMemoValues(int $userId, string $key): array
     {
         return Arr::pluck($this->getParts($userId), $key);
     }
 
+    /**
+     * Ajax通信に成功した場合のレスポンスを返す
+     */
     private function setSuccess(string $message): array
     {
         return $this->setResult(self::STATUS_SUCCESS, $message);
     }
 
+    /**
+     * Ajax通信に失敗した場合のレスポンスを返す
+     */
     private function setError(string $message): array
     {
         return $this->setResult(self::STATUS_ERROR, $message);
     }
 
+    /**
+     * Ajax通信のレスポンスを返す
+     */
     private function setResult(string $status, string $message): array
     {
         $items = $this->partsRepository->all();

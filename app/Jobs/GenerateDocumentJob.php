@@ -57,15 +57,9 @@ class GenerateDocumentJob implements ShouldQueue
         }
     }
 
-    private function createDocuemnt(AiApiServiceInterface $apiService, DocumentService $documentService, array $apiResponse, array $memoIds): void
-    {
-        $rawTitle = $apiService->getTitle($apiResponse);
-        $title = $documentService->fixTitle($rawTitle);
-        $rawContent = $apiService->getContent($apiResponse);
-        $content = $documentService->fixContent($rawContent, $rawTitle, $title);
-        $documentService->addDocument($this->userId, $this->jobId, $title, $content, $memoIds);
-    }
-
+    /**
+     * リクエスト回数が上限に達しているかどうかをチェック
+     */
     private function isOverLimit(ApiJobService $jobService, int $limit): ?string
     {
         // リクエスト回数が上限に達している場合は、ジョブを中断する
@@ -76,6 +70,9 @@ class GenerateDocumentJob implements ShouldQueue
         return null;
     }
 
+    /**
+     * ジョブが削除されているかどうかをチェック
+     */
     private function isDeleted(ApiJobService $jobService): ?string
     {
         // ジョブが削除されている場合は、ジョブを中断する
@@ -84,5 +81,38 @@ class GenerateDocumentJob implements ShouldQueue
             return $message;
         }
         return null;
+    }
+
+    /**
+     * ドキュメントを作成
+     */
+    private function createDocuemnt(AiApiServiceInterface $apiService, DocumentService $documentService, array $apiResponse, array $memoIds): void
+    {
+        $rawTitle = $apiService->getTitle($apiResponse);
+        $title = $this->fixTitle($rawTitle);
+        $rawContent = $apiService->getContent($apiResponse);
+        $content = $this->fixContent($rawContent, $rawTitle, $title);
+        $documentService->addDocument($this->userId, $this->jobId, $title, $content, $memoIds);
+    }
+
+    /**
+     * タイトルが255文字を超えている場合は空文字にする
+     */
+    private function fixTitle(string $rawTitle): string
+    {
+        $title = trim($rawTitle);
+        return (mb_strlen($title) > 255) ? '' : $title;
+    }
+
+    /**
+     * 内容が空の場合はタイトルを内容とする
+     */
+    private function fixContent(string $rawContent, string $rawTitle, string $title): string
+    {
+        $content = trim($rawContent);
+        if (empty($title) && !empty($rawTitle)) {
+            $content = $rawTitle . "\n" . $content;
+        }
+        return empty($content) ? $title : $content;
     }
 }

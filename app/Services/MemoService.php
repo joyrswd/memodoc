@@ -20,6 +20,10 @@ class MemoService
         $this->partsRepository = $partsRepository;
     }
 
+    /**
+     * {memo}のバリデーションルール
+     * @see \App\Providers\RouteServiceProvider::boot()
+     */
     public function bind(mixed $value): int
     {
         $int = filter_var($value, FILTER_VALIDATE_INT);
@@ -29,6 +33,9 @@ class MemoService
         abort(404);
     }
 
+    /**
+     * メモとタグの登録
+     */
     public function addMemoAndTags(array $params): void
     {
         $memoId = $this->memoRepository->store($params);
@@ -39,10 +46,14 @@ class MemoService
         }
     }
 
+    /**
+     * ユーザーIDに紐づくメモ一覧を取得
+     */
     public function getMemos(int $userId, array $params): array
     {
         $pagination = $this->memoRepository->findByUserId($userId, $params)->paginate(10);
         foreach ($pagination->items() as $item) {
+            // viewで表示するためのデータを追加
             $item->datetime = $item->created_at->format('Y-m-d H:i');
             $item->intro = Str::limit($item->content, 30, '...');
             $item->tagNames = $item->tags->pluck('name')->toArray();
@@ -52,11 +63,17 @@ class MemoService
         return $data;
     }
 
+    /**
+     * 指定したメモIDがユーザーIDに紐づく場合データを取得
+     */
     public function getMemo(int $userId, int $memoId): ?array
     {
         return $this->memoRepository->findByIdAndUserId($userId, $memoId);
     }
 
+    /**
+     * タグの更新
+     */
     public function updateTags(array $params): void
     {
         $this->memoRepository->detachTags($params['memo_id']);
@@ -67,6 +84,9 @@ class MemoService
         }
     }
 
+    /**
+     * 指定したメモIDがユーザーIDに紐づく場合データを削除
+     */
     public function deleteMemo(int $userId, int $memoId): void
     {
         $this->memoRepository->deleteByIdAndUserId($userId, $memoId);
