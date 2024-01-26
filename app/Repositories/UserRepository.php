@@ -106,4 +106,15 @@ class UserRepository
         return true;
     }
 
+    /**
+     * タグ一覧取得
+     */
+    public function getTags(int $userId): array
+    {
+        $user = User::find($userId);
+        if ($user === null) {
+            return [];
+        }
+        return optional($user->memos)->pluck('tags')->flatten()->pluck('name', 'id')->unique()->toArray() ?? [];
+    }
 }

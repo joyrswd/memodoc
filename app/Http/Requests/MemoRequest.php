@@ -20,10 +20,10 @@ class MemoRequest extends FormRequest
         ],
         'memo.store' => [
             'memo_content' => ['required', 'string'],
-            'tags' => 'required_if:has_tag,1|array',
+            'tags' => 'exclude_unless:has_tag,1|array',
         ],
         'memo.update' => [
-            'tags' => 'required_if:has_tag,1|array',
+            'tags' => 'exclude_unless:has_tag,1|array',
         ],
     ];
 
