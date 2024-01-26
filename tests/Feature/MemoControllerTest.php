@@ -322,6 +322,21 @@ class MemoControllerTest extends TestCase
      * @test
      * @return void
      */
+    public function store_error_tags_duplicated(): void
+    {
+        $this->from(route('memo.create'))
+            ->post(route('memo.store'), [
+                'memo_content' =>  'メモの内容',
+                'tags' =>  ['tag1', 'tag1'],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.create'))
+            ->assertSessionHasErrors(['tags.1']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
     public function index(): void
     {
         $this->get(route('memo.index'))->assertOk()->assertViewIs('memo.index');
@@ -626,6 +641,20 @@ class MemoControllerTest extends TestCase
                 'has_tag' => 1,
             ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
             ->assertSessionHasErrors(['memo_content']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function update_error_tags_duplicated(): void
+    {
+        $this->from(route('memo.edit', ['memo' => $this->memo->id]))
+            ->put(route('memo.update', ['memo' => $this->memo->id]), [
+                'tags' => ['tag1', 'tag1'],
+                'has_tag' => 1,
+            ])->assertRedirect(route('memo.edit', ['memo' => $this->memo->id]))
+            ->assertSessionHasErrors(['tags.1']);
     }
 
     /**
